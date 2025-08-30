@@ -6,14 +6,19 @@
   <title>PROJCT structure</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="cursor.css">
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/p5.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/addons/p5.sound.min.js" defer></script>
  
-   <script src="cursor.js" defer></script>
+
  
 
 </head>
-<body>
+<body data-theme="blue">
+  <!-- Page transition overlay -->
+<div class="page-wipe" aria-hidden="true"></div>
+
   <div class="header"> 
-    <div class="logo_PROJCT"><img src = "SVG/logo-white.svg" alt="logo" class = "logo-svg"/></div>
+    <div class="logo_PROJCT"><img src = "SVG/logo-white.svg" alt="logo" class = "logo-svg" height="40"/></div>
     <div class="nav-right">
 
         <button class="mobile" id="mobileTrigger"
@@ -50,8 +55,133 @@
     </div>
     <div class="description-text is-hidden">
         <p> Multidisciplinary network, building better experiences, ventures and culture.</p>
-       
-    </div>
+            <div class="team-grid_inner" style="pointer-events: auto;">
+                          <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Vlad1.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Vlad1.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+           <div class="team-grid_info">
+                  <p class="team-grid_name">Влад Седов</p>
+                  <p class="team-grid_post">Основатель и генеральный директор</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Polina1.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Polina1.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Полина Кузурман</p>
+                  <p class="team-grid_post">Арт-директор</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Alina1.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Alina1.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Алина Маликова</p>
+                  <p class="team-grid_post">Аккаунт-менеджер</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/VladR1.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/VladR2.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Владислав Романов</p>
+                  <p class="team-grid_post">Ведущий дизайнер и архитектор</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Katya.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Katya2.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Екатерина Замбахидзе</p>
+                  <p class="team-grid_post">Ведущий дизайнер и декоратор</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Vitya1.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Vitya2.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Виктор Соколов</p>
+                  <p class="team-grid_post">Дизайнер</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Tanya1.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Tanya2.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Татьяна Мелентьева</p>
+                  <p class="team-grid_post">Ведущий проектировщик</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Kristina1.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/Kristina2.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Кристина Сухорукова</p>
+                  <p class="team-grid_post">Проектный менеджер</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/cropped-images/KristinaN1-70-389-2228-2268-1747746055.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/cropped-images/KristinaN2-34-157-606-644-1747746075.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Кристина Никифорова</p>
+                  <p class="team-grid_post">Проектный менеджер</p>
+                </div>
+                </div>
+
+                      <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/cropped-images/Julia1-8-199-1085-1020-1747664775.jpg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="https://linesdesign.ru/storage/app/media/About/Team/cropped-images/Julia2-23-222-963-984-1747664838.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Юлия Полянская</p>
+                  <p class="team-grid_post">Комплектатор</p>
+                </div>
+                </div>
+
+                
+
+                </div>
+
+        </div>
+    
     <div class="index-outer list-item"> 
     <img src = "SVG/Asset 4.svg" alt="Arrow" class = "nav-svg1"/>
     <div class="index">
@@ -108,17 +238,20 @@
         <div class="index-item-images"><div class="image-div"><img src="./images/627fb211d6314de7f78f4635_HSBC-hnwi-retail-banking.jpeg" ></div>  </div>
     </div>
 
+  </div>
 </div>
    
 </div>
 <div class="cursor-circle"></div>
-<!-- <div id="swap-overlay" aria-hidden="true"></div> -->
+
 
   
 </body>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+
 
 <!-- swup + plugins -->
 <script src="https://unpkg.com/swup@4"></script>
@@ -132,4 +265,5 @@
 
 
 <script src="interaction.js"></script>
+
 </html>
