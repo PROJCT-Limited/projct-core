@@ -70,7 +70,22 @@ function mouseReleased() {
   }
 }
 
-// touch → delegate to mouse handlers
-function touchStarted(){ pointer.isTouch = true; if (touches.length){ pointer.x=touches[0].x; pointer.y=touches[0].y; mousePressed(); } return false; }
-function touchMoved(){ if (touches.length){ pointer.x=touches[0].x; pointer.y=touches[0].y; mouseDragged(); } return false; }
-function touchEnded(){ pointer.down=false; pointer.justReleased=true; mouseReleased(); return false; }
+// Delegate touch to mouse logic, but mark as touch and avoid default scrolling
+function touchStarted() {
+  pointer.isTouch = true;
+  if (touches && touches.length) { pointer.x = touches[0].x; pointer.y = touches[0].y; }
+  mousePressed();
+  return false;
+  }
+  
+  function touchMoved() {
+  if (touches && touches.length) { pointer.x = touches[0].x; pointer.y = touches[0].y; }
+  mouseDragged();
+  return false;
+  }
+  
+  function touchEnded() {
+  pointer.down = false; pointer.justReleased = true;
+  mouseReleased();
+  return false;
+  }
