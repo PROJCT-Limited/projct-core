@@ -39,7 +39,7 @@ function drawTopBar() {
   
   // Two rows of meta at the bottom of the panel
   const rowH = 18;
-  const y0 = panelH - rowH * 2 - 10;
+  const y0 = panelH - rowH * 2 - 200;
   
   stroke(255, 180); strokeWeight(1);
   line(padX, y0 - 6, panelW - padX, y0 - 6);
