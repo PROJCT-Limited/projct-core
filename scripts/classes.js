@@ -106,8 +106,15 @@ function placeNodeNoOverlap(newNode, others, bounds, maxTries = 250, pad = 6) {
       this.vx += this.fx * 0.01; this.vy += this.fy * 0.01;
       this.vx *= UI.damping; this.vy *= UI.damping;
       this.x += this.vx; this.y += this.vy;
-      this.x = constrain(this.x, this.baseR, baseWidth - this.baseR);
-      this.y = constrain(this.y, this.baseR, baseHeight - this.baseR);
+      
+      // Bounce against world bounds
+      const minX = this.baseR, maxX = baseWidth - this.baseR;
+      const minY = this.baseR, maxY = baseHeight - this.baseR;
+      
+      if (this.x < minX) { this.x = minX; this.vx *= -0.7; }
+      if (this.x > maxX) { this.x = maxX; this.vx *= -0.7; }
+      if (this.y < minY) { this.y = minY; this.vy *= -0.7; }
+      if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
     }
   
     display(){
