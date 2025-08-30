@@ -2,6 +2,8 @@ function mouseMoved(){ pointer.x = mouseX; pointer.y = mouseY; }
 
 function mousePressed() {
   pointer.isTouch = false; pointer.x = mouseX; pointer.y = mouseY; pointer.down = true;
+  const w = screenToWorld(pointer.x, pointer.y);   // ← add
+  pointer.worldX = w.x; pointer.worldY = w.y;  
 
   if (mode === "select") {
     // pick a tag (world hit)
@@ -34,6 +36,8 @@ function mousePressed() {
 
 function mouseDragged() {
   pointer.x = mouseX; pointer.y = mouseY;
+  const w = screenToWorld(pointer.x, pointer.y);   // ← add
+  pointer.worldX = w.x; pointer.worldY = w.y; 
 
   if (mode === "select" && draggingTag) {
     draggingTag.x = pointer.worldX - draggingTag.dx;
@@ -46,6 +50,8 @@ function mouseDragged() {
 
 function mouseReleased() {
   pointer.x = mouseX; pointer.y = mouseY; pointer.down = false; pointer.justReleased = true;
+  const w = screenToWorld(pointer.x, pointer.y);   // ← add
+  pointer.worldX = w.x; pointer.worldY = w.y; 
 
   if (mode === "select") {
     if (draggingTag) {
@@ -162,19 +168,8 @@ function finishPointerGesture() {
   pointer.down = false;
   pointer.dragging = false;
   pointer.id = null;
-  // do NOT clear draggingTag/draggingNode here; mouseReleased already did
-  pointer.dragNode = null;
+  pointer.dragNode = null; // (unused now, fine to keep or remove)
 }
-
-
-// If the browser cancels the touch (e.g., OS gesture), also clean up
-function finishPointerGesture() {
-  pointer.down = false;
-  pointer.dragging = false;
-  pointer.dragNode = null;
-  pointer.id = null;
-}
-
 
 
   // Touch/drag state
