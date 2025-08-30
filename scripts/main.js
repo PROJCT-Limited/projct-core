@@ -1,18 +1,23 @@
 function setup() {
-  createCanvas(windowWidth, windowHeight- windowHeight/5.5);
+  createCanvas(windowWidth, windowHeight);
+  sizeToViewport();                       // ← add this immediately after createCanvas
   textFont('monospace');
   textAlign(CENTER, CENTER);
 
   UI = getUIConfig();
   baseWidth = UI.baseWidth;
   baseHeight = UI.baseHeight;
-// If we’re on a mobile viewport at startup, default to touch mode
-pointer.isTouch = isMobileViewport();
+
+  pointer.isTouch = isMobileViewport();
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', sizeToViewport);
+    window.visualViewport.addEventListener('scroll', sizeToViewport); // ← add this too
+  }
 
   computeTopBar();
   computeTransform();
 
-  // initial fixed center node (dot)
   centerNode = new GraphNode("•", baseWidth / 2, baseHeight / 2, [], true);
   centerNode.fixed = true;
   activeNode = centerNode;
@@ -21,9 +26,18 @@ pointer.isTouch = isMobileViewport();
   spawnFloatingTags();
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight - 100);
 
+function sizeToViewport() {
+  const vv = window.visualViewport;
+  const w = vv ? Math.round(vv.width)  : windowWidth;
+  const h = vv ? Math.round(vv.height) : windowHeight;
+  resizeCanvas(w, h);
+}
+
+
+function windowResized() {
+  // resizeCanvas(windowWidth, windowHeight);  
+  sizeToViewport();
   UI = getUIConfig();
   baseWidth = UI.baseWidth;
   baseHeight = UI.baseHeight;
