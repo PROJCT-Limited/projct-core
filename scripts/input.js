@@ -70,11 +70,9 @@ function mouseReleased() {
   }
 }
 
-// Delegate touch to mouse logic, but mark as touch and avoid default scrolling
 function touchStarted() {
   pointer.isTouch = true;
 
-  // Only track the first active touch
   if (!touches || touches.length === 0 || pointer.id !== null) return false;
 
   const t = touches[0];
@@ -83,11 +81,28 @@ function touchStarted() {
   const w = screenToWorld(pointer.x, pointer.y);
   pointer.worldX = w.x; pointer.worldY = w.y;
 
-  // Don't start a drag if the finger is on the blue panel
-  if (!isInPanelScreen(pointer.x, pointer.y) && mode === "select") {
-    pointer.dragNode = pickTagNodeAt(pointer.worldX, pointer.worldY);
+  // don't start a drag if on the blue panel
+  if (isInPanelScreen(pointer.x, pointer.y)) {
+    draggingTag = null; draggingNode = null;
+  } else if (mode === "select") {
+    // PICK TAG — mirror mousePressed
+    draggingTag = pickTagNodeAt(pointer.worldX, pointer.worldY);
+    if (draggingTag) {
+      draggingTag.dragging = false;                    // will flip to true after slop
+      draggingTag.dx = pointer.worldX - draggingTag.x; // same offsets as mouse
+      draggingTag.dy = pointer.worldY - draggingTag.y;
+    }
   } else {
-    pointer.dragNode = null;
+    // PICK GRAPH NODE — mirror mousePressed
+    draggingNode = null;
+    for (let i = nodes.length - 1; i >= 0; i--) {
+      const n = nodes[i];
+      if (n.isPointInside(pointer.worldX, pointer.worldY)) {
+        draggingNode = n; n.fixed = true;
+        n.offsetX = pointer.worldX - n.x; n.offsetY = pointer.worldY - n.y;
+        activeNode = n; break;
+      }
+    }
   }
 
   pointer.down = true;
@@ -95,13 +110,13 @@ function touchStarted() {
   pointer.startY = pointer.y;
   pointer.dragging = false;
 
-  return false; // prevent page scroll
+  return false;
 }
 
-function touchMoved() {
-  if (pointer.id === null) return false; // not our touch
 
-  // Find the active touch by id
+function touchMoved() {
+  if (pointer.id === null) return false;
+
   let t = null;
   for (const tt of touches) if (tt.id === pointer.id) { t = tt; break; }
   if (!t) return false;
@@ -110,30 +125,47 @@ function touchMoved() {
   const w = screenToWorld(pointer.x, pointer.y);
   pointer.worldX = w.x; pointer.worldY = w.y;
 
-  // Only lock into a drag after moving past a small threshold
-  if (!pointer.dragging && pointer.dragNode) {
+  if (!pointer.dragging) {
     const dx = pointer.x - pointer.startX, dy = pointer.y - pointer.startY;
     if (dx*dx + dy*dy > DRAG_SLOP*DRAG_SLOP) {
       pointer.dragging = true;
+      if (draggingTag) draggingTag.dragging = true;
     }
   }
 
-  // While dragging, directly place the node at the finger
-  if (pointer.dragging && pointer.dragNode) {
-    const n = pointer.dragNode;
-    n.x = pointer.worldX; n.y = pointer.worldY;
-    n.vx = 0; n.vy = 0; // stop physics from fighting the finger
+  if (pointer.dragging) {
+    if (mode === "select" && draggingTag) {
+      draggingTag.x = pointer.worldX - draggingTag.dx;
+      draggingTag.y = pointer.worldY - draggingTag.dy;
+      draggingTag.vx = 0; draggingTag.vy = 0;
+    } else if (mode === "graph" && draggingNode) {
+      draggingNode.x = pointer.worldX - draggingNode.offsetX;
+      draggingNode.y = pointer.worldY - draggingNode.offsetY;
+      draggingNode.vx = 0; draggingNode.vy = 0;
+    }
   }
 
   return false;
 }
 
+
 function touchEnded() {
-  // Release regardless of which finger ended (safest for single-touch)
+  // Reuse your existing drop logic
+  if (typeof mouseReleased === 'function') mouseReleased();
+
+  // Now clear touch state
   finishPointerGesture();
-  if (typeof mouseReleased === 'function') mouseReleased(); // keep your drop-zone logic
   return false;
 }
+
+function finishPointerGesture() {
+  pointer.down = false;
+  pointer.dragging = false;
+  pointer.id = null;
+  // do NOT clear draggingTag/draggingNode here; mouseReleased already did
+  pointer.dragNode = null;
+}
+
 
 // If the browser cancels the touch (e.g., OS gesture), also clean up
 function finishPointerGesture() {
