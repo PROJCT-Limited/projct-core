@@ -6,8 +6,8 @@ html, body {
     cursor:url(myBall.cur),auto;
     /* cursor: none; */
     font-family: "Headers";
-    /* overflow: hidden; */
-    overflow-y: auto;
+    overflow: hidden;
+    /* overflow-y: auto; */
     cursor: auto;
   }
 
@@ -38,7 +38,7 @@ html, body {
     color: white;
     align-items: center;
     justify-content: space-between; 
-    z-index: 9999;
+    z-index: 999999;
     /* z-index: 1; */
   
   }
@@ -326,7 +326,7 @@ html, body {
 
 
 
-
+  canvas { display:block; } 
 
 
 .desktop { display: none; }
