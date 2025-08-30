@@ -6,7 +6,9 @@ html, body {
     cursor:url(myBall.cur),auto;
     /* cursor: none; */
     font-family: "Headers";
-    overflow: hidden;
+    /* overflow: hidden; */
+    overflow-y: auto;
+    cursor: auto;
   }
 
 
@@ -36,8 +38,8 @@ html, body {
     color: white;
     align-items: center;
     justify-content: space-between; 
-
-    z-index: 1;
+    z-index: 9999;
+    /* z-index: 1; */
   
   }
   .button-header {
@@ -183,14 +185,14 @@ html, body {
   }
 
 
-  .logo-svg {
-    /* width: 40px; */
-    /* height: 10%; */
-    width: 12rem;
-    height: 100%;
-    align-items: center;
-    gap: 1rem;
-    padding-right: 50px;
+  
+    .logo-svg {
+      display: block;
+      width: auto;                  /* adjust to your real design size */
+      height: 40px;                  /* keep height fixed for stability */
+      object-fit: contain;
+    
+    
     cursor: pointer;
   }
   .nav-svg1{
@@ -460,3 +462,119 @@ body.menu-open { overflow: hidden; }
 .box {
   border-top: 1px solid #fff;
 }
+
+
+
+
+
+/* ===== Theming (per page accent) ===== */
+:root { --accent: #0e50c8; }                  /* default blue */
+html[data-theme="yellow"] { --accent: #dbe120; } /* example 2nd page */
+
+/* ===== Page color fade overlay ===== */
+.page-wipe {
+  position: fixed;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+  transition: opacity 420ms ease-in-out; /* duration matches JS timeout */
+}
+
+/* Swup phases toggle these */
+html.transitioning[data-phase="leave"] .page-wipe { opacity: 1; }  /* fade in color */
+html.transitioning[data-phase="enter"] .page-wipe { opacity: 0; }  /* fade back out */
+
+
+.transition-fade { transition: opacity 640ms ease-in-out; }
+html.transitioning .transition-fade { opacity: 0.9; }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 320ms ease, transform 420ms ease;
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal {
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Motion safety */
+@media (prefers-reduced-motion: reduce) {
+  .page-wipe,
+  .transition-fade,
+  .reveal {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+
+html { scrollbar-gutter: stable both-edges; }
+.header {  box-sizing: border-box; }
+.logo-svg { width: 160px; height: 40px; display: block; object-fit: contain; }
+
+/* 
+#machine {
+  flex: 1;            
+  width: 100%;
+  height: 100%;
+  cursor: none;
+} */
+/* #machine { min-height: 100vh; }             
+#machine canvas { display: block; }   */
+
+.team-grid_inner {
+  grid-column-gap: 0.4rem;
+  grid-row-gap: 1.75rem;
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-auto-columns: 1fr;
+  justify-items: stretch;
+  display: grid;
+  }
+
+  .team-grid_item {
+    grid-column-gap: 1.25rem;
+    grid-row-gap: 1.25rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 13.5rem;
+    display: flex;
+    }
+
+
+  .team-grid_image-wrapper {
+    border-radius: 50%;
+    width: 13.5rem;
+    height: 13.5rem;
+    position: relative;
+    overflow: hidden;
+    }
+
+    .team-grid_info {
+      flex-flow: column;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      }
+
+   
+       .team-grid_name {
+          font-size: 1.125rem;
+          margin: 0px;
+          }
+
+        .team-grid_post {
+            color: var(--color--gray-accent);
+            text-align: center;
+            font-size: 1rem;
+            margin: 5px;
+            }
