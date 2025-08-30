@@ -57,6 +57,14 @@ function draw() {
   const wpt = screenToWorld(pointer.x, pointer.y);
   pointer.worldX = wpt.x; pointer.worldY = wpt.y;
 
+  // after updating pointer.worldX/Y
+if (pointer.dragging && pointer.dragNode) {
+  const n = pointer.dragNode;
+  n.x = pointer.worldX; n.y = pointer.worldY;
+  n.vx = 0; n.vy = 0;
+}
+
+
   if (mode === "select") {
     // tag physics
     for (const n of tagNodes) { n.resetForces(); n.applyRepulsion(tagNodes); }
