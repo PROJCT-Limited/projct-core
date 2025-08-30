@@ -73,19 +73,107 @@ function mouseReleased() {
 // Delegate touch to mouse logic, but mark as touch and avoid default scrolling
 function touchStarted() {
   pointer.isTouch = true;
-  if (touches && touches.length) { pointer.x = touches[0].x; pointer.y = touches[0].y; }
-  mousePressed();
-  return false;
+
+  // Only track the first active touch
+  if (!touches || touches.length === 0 || pointer.id !== null) return false;
+
+  const t = touches[0];
+  pointer.id = t.id;
+  pointer.x = t.x; pointer.y = t.y;
+  const w = screenToWorld(pointer.x, pointer.y);
+  pointer.worldX = w.x; pointer.worldY = w.y;
+
+  // Don't start a drag if the finger is on the blue panel
+  if (!isInPanelScreen(pointer.x, pointer.y) && mode === "select") {
+    pointer.dragNode = pickTagNodeAt(pointer.worldX, pointer.worldY);
+  } else {
+    pointer.dragNode = null;
   }
-  
-  function touchMoved() {
-  if (touches && touches.length) { pointer.x = touches[0].x; pointer.y = touches[0].y; }
-  mouseDragged();
-  return false;
+
+  pointer.down = true;
+  pointer.startX = pointer.x;
+  pointer.startY = pointer.y;
+  pointer.dragging = false;
+
+  return false; // prevent page scroll
+}
+
+function touchMoved() {
+  if (pointer.id === null) return false; // not our touch
+
+  // Find the active touch by id
+  let t = null;
+  for (const tt of touches) if (tt.id === pointer.id) { t = tt; break; }
+  if (!t) return false;
+
+  pointer.x = t.x; pointer.y = t.y;
+  const w = screenToWorld(pointer.x, pointer.y);
+  pointer.worldX = w.x; pointer.worldY = w.y;
+
+  // Only lock into a drag after moving past a small threshold
+  if (!pointer.dragging && pointer.dragNode) {
+    const dx = pointer.x - pointer.startX, dy = pointer.y - pointer.startY;
+    if (dx*dx + dy*dy > DRAG_SLOP*DRAG_SLOP) {
+      pointer.dragging = true;
+    }
   }
-  
-  function touchEnded() {
-  pointer.down = false; pointer.justReleased = true;
-  mouseReleased();
-  return false;
+
+  // While dragging, directly place the node at the finger
+  if (pointer.dragging && pointer.dragNode) {
+    const n = pointer.dragNode;
+    n.x = pointer.worldX; n.y = pointer.worldY;
+    n.vx = 0; n.vy = 0; // stop physics from fighting the finger
   }
+
+  return false;
+}
+
+function touchEnded() {
+  // Release regardless of which finger ended (safest for single-touch)
+  finishPointerGesture();
+  if (typeof mouseReleased === 'function') mouseReleased(); // keep your drop-zone logic
+  return false;
+}
+
+// If the browser cancels the touch (e.g., OS gesture), also clean up
+function finishPointerGesture() {
+  pointer.down = false;
+  pointer.dragging = false;
+  pointer.dragNode = null;
+  pointer.id = null;
+}
+
+
+
+  // Touch/drag state
+pointer.id = null;           // active touch id (mobile)
+pointer.dragging = false;    // are we dragging a node?
+pointer.dragNode = null;     // which node
+pointer.startX = 0;          // screen coords at press
+pointer.startY = 0;
+
+const DRAG_SLOP = 8;         // px finger must move before we "lock" the drag
+
+// Is the press inside the blue panel?
+function isInPanelScreen(px, py) {
+  if (LAYOUT === 'top') return py < topBarH;
+  return px < sideBarW;
+}
+
+// Larger hit area on touch so picking is easy on phones
+function touchHitRadius(node) {
+  const sr = (node.baseR || 16) * (scaleFactor || 1);
+  return Math.max(28, sr * 1.25); // min 28px, or 1.25× visual radius
+}
+
+// Pick a tag node under a world-space point (select mode)
+function pickTagNodeAt(xw, yw) {
+  if (!Array.isArray(tagNodes)) return null;
+  let best = null, bestD = Infinity;
+  for (const n of tagNodes) {
+    const d = dist(xw, yw, n.x, n.y);
+    const r = pointer.isTouch ? touchHitRadius(n) / (scaleFactor || 1) : (n.baseR || 16);
+    if (d <= r && d < bestD) { best = n; bestD = d; }
+  }
+  return best;
+}
