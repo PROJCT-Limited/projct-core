@@ -81,10 +81,10 @@ function getUIConfig() {
     playRadius:  mobile ? 28 : 36,
     playY:       (h) => Math.min(h - (mobile ? 60 : 80), h * 0.86),
 
-    rCenter:     mobile ? 14 : 16,
-    rNode:       mobile ? 16 : 18,
-    rChild:      mobile ? 12 : 12,
-    rTag:        mobile ? 16 : 18,
+    rCenter:     mobile ? 20 : 24,
+    rNode:       mobile ? 20 : 24,
+    rChild:      mobile ? 18 : 18,
+    rTag:        mobile ? 18 : 20,
 
     repulseGraph: mobile ? 52000 : 60000,
     repulseTag:   mobile ? 32000 : 38000,
@@ -95,7 +95,7 @@ function getUIConfig() {
 
     fontTitle:   mobile ? 16 : 18,
     fontBody:    mobile ? 12 : 13,
-    fontNode:    mobile ? 12 : 12,
+    fontNode:    mobile ? 14 : 14,
     fontCenter:  mobile ? 13 : 14,
 
     maxSelected: 3,
