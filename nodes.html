@@ -5,64 +5,77 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>PROJCT structure</title>
   <link rel="stylesheet" href="style.css">
+
+
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/p5.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/addons/p5.sound.min.js"></script>
-
-  
- 
-
 </head>
+
 <body>
-  <div class="header"> 
-    <div class="logo_PROJCT"><img src = "SVG/logo-white.svg" alt="logo" class = "logo-svg"/></div>
+  <div class="header">
+    <div class="logo_PROJCT">
+      <img src="SVG/logo-white.svg" alt="logo" class="logo-svg" />
+    </div>
+
     <div class="nav-right">
-      
+      <!-- Hamburger (opens overlay) -->
       <button class="mobile" id="mobileTrigger"
-        aria-controls="mobileOverlay"
-        aria-expanded="false"
-        aria-label="Open menu"
-        style="background:none;border:0;padding:0;cursor:pointer;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2" class="hamburger">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              aria-controls="mobileOverlay"
+              aria-expanded="false"
+              aria-label="Open menu"
+              style="background:none;border:0;padding:0;cursor:pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none"
+             viewBox="0 0 24 24" stroke="white" stroke-width="2" class="hamburger">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
-      
-    
-      <nav class="mobile-overlay" id="mobileOverlay" aria-hidden="true">
-        <div class="overlay-inner">
-       <div class ='row1'><img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/><a href="nodes.html">SYNTHETIC MACHINE</a></div> 
-      <div class ='row2'> <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/><a href="index.html">INDEX</a></div> </div> 
-      </nav>
 
-
-        <div class="button-header button_header1 desktop"> 
-          
-          <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg"/>
-          <div class="nav-arrow"><p><a href="nodes.html" >SYNTHETIC MACHINE</a></p></div>
-          <img src="SVG/Asset 2.svg" alt="Arrow" class="nav-svg"/>
-          <div class="nav-text"><p><a href="index.html">INDEX </a></p></div>
-        </div>
-        </div>
-        
+      <!-- Desktop links -->
+      <div class="button-header button_header1 desktop">
+        <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg" />
+        <div class="nav-arrow"><p><a href="nodes.html">SYNTHETIC MACHINE</a></p></div>
+        <img src="SVG/Asset 2.svg" alt="Arrow" class="nav-svg" />
+        <div class="nav-text"><p><a href="index.html">INDEX</a></p></div>
+      </div>
+    </div>
   </div>
 
-  <!-- <div class="mainbody transition-fade" id="swup"> -->
-    <div id="machine"></div> 
-   
+  <!-- Mobile overlay (direct child of body, above canvas) -->
+  <nav class="mobile-overlay" id="mobileOverlay">
+    <button id="mobileClose" class="mobile-close" aria-label="Close menu">
+      <!-- X icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none"
+           viewBox="0 0 24 24" stroke="white" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
 
+    <div class="overlay-inner">
+      <div class="row1">
+        <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile" />
+        <a class="overlay-link" href="nodes.html">SYNTHETIC MACHINE</a>
+      </div>
+      <div class="row2">
+        <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile" />
+        <a class="overlay-link" href="index.html">INDEX</a>
+      </div>
+    </div>
+  </nav>
 
-  
-</body>
+  <!-- p5 container -->
+  <div id="machine"></div>
 
-<script
+  <!-- libs -->
+  <script
     src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous"></script> 
-     <script src="https://unpkg.com/swup@4"></script>
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/swup@4"></script>
   <script src="https://unpkg.com/@swup/forms-plugin@2"></script>
   <script src="https://unpkg.com/@swup/scroll-plugin@3"></script>
   <script src="https://unpkg.com/@swup/head-plugin@2"></script>
- 
+
+  <!-- your scripts (order matters: p5 sketch files before interaction.js) -->
   <script src="./scripts/config.js"></script>
   <script src="./scripts/state.js"></script>
   <script src="./scripts/world.js"></script>
@@ -71,6 +84,9 @@
   <script src="./scripts/select_mode.js"></script>
   <script src="./scripts/graph_logic.js"></script>
   <script src="./scripts/input.js"></script>
-  <script src="./scripts/main.js" ></script>
-    <script src="./interaction.js" defer></script>
+  <script src="./scripts/main.js"></script>
+
+  <!-- one clean mobile menu / UI toggles -->
+  <script src="./interaction.js" defer></script>
+</body>
 </html>
