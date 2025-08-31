@@ -1,154 +1,128 @@
-$(document).ready(() => {
-
-  // $(".index").on("click", () => {
-  //     $(".index-item").toggleClass('is-hidden');
-  //   });
-  //   $(".nav-svg1").on("click", () => {
-  //     $(".index-item").toggleClass('is-hidden');
-  //   });
-
-    $(".index").on("click", event => {
-      $(".list-projects").toggleClass('is-hidden1');
-    });
-
-    $(".section-about-us").on("click", event => {
-      $(".description-text").toggleClass('is-hidden');
-    });
-
-    $('.list-projects').on('click', '.list-projects1', function () {
-      $(this).next('.index-item').toggleClass('is-hidden');   
-      $(this).find('.nav-svg1').toggleClass('rotated');   
-    });
-
-
-   $('.nav-svg2').on('click',()=>{
-      $('.search-filter').toggleClass('is-hidden');
-   } )
-
-
-
-
-  $(".list-item").on("click", function (e) {
-      if ($(e.target).hasClass("nav-svg2")) return; 
-      $(this).find(".nav-svg1").toggleClass("rotated");
-    });
-
-    $(function () {
-
-      $(".list-projects1").on("click", function (event) {        
-        $(event.currentTarget).find(".nav-svg1").toggleClass("rotated");
-
-      });
-    });
-  
-  })
-
-// Mobile menu functionality
-let isMenuTransitioning = false; // Prevent rapid toggling
-
-function initializeMobileMenu() {
-  console.log("Initializing mobile menu...");
-  
-  const trigger = document.getElementById('mobileTrigger');
-  const overlay = document.getElementById('mobileOverlay');
-  
-  if (!trigger || !overlay) {
-    console.error("Mobile menu elements not found:", { trigger: !!trigger, overlay: !!overlay });
+// ---------- tiny event helper ----------
+function on(root, type, selectorOrHandler, maybeHandler) {
+  if (typeof selectorOrHandler === 'function') {
+    root.addEventListener(type, selectorOrHandler, { passive: true });
     return;
   }
-  
-  console.log("Mobile menu elements found, setting up event listeners...");
-
-  function toggleOverlay() {
-    if (isMenuTransitioning) {
-      console.log("Menu transition in progress, ignoring click");
-      return;
-    }
-    
-    console.log("Toggle overlay called");
-    isMenuTransitioning = true;
-    
-    const willOpen = !overlay.classList.contains('open');
-    overlay.classList.toggle('open', willOpen);
-    trigger.setAttribute('aria-expanded', String(willOpen));
-    overlay.setAttribute('aria-hidden', String(!willOpen));
-    document.body.classList.toggle('menu-open', willOpen);
-    console.log("Menu state:", willOpen ? 'opened' : 'closed');
-    
-    // Allow new interactions after transition completes
-    setTimeout(() => {
-      isMenuTransitioning = false;
-    }, 300); // Slightly longer than CSS transition
-  }
-
-  // // Add visual feedback for debugging
-  // trigger.style.border = '2px solid red';
-  // trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
-  
-  // Remove any existing event listeners
-  trigger.removeEventListener('click', handleTriggerClick);
-  trigger.removeEventListener('touchstart', handleTriggerTouch);
-  
-  // Single handler for both click and touch
-  function handleTriggerClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    // console.log("Hamburger clicked!");
-    // trigger.style.backgroundColor = 'rgba(0, 255, 0, 0.3)'; // Green feedback
-    // setTimeout(() => {
-    //   trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
-    // }, 200);
-    toggleOverlay();
-  }
-  
-  function handleTriggerTouch(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    // console.log("Hamburger touched!");
-    // trigger.style.backgroundColor = 'rgba(0, 255, 0, 0.3)'; // Green feedback
-    // setTimeout(() => {
-    //   trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
-    // }, 200);
-    toggleOverlay();
-  }
-  
-  // Add event listeners
-  trigger.addEventListener('click', handleTriggerClick);
-  trigger.addEventListener('touchstart', handleTriggerTouch, { passive: false });
-
-  // Optional: close on ESC
-  document.removeEventListener('keydown', handleEscape);
-  document.addEventListener('keydown', handleEscape);
-  
-  function handleEscape(e) {
-    if (e.key === 'Escape' && overlay.classList.contains('open')) {
-      toggleOverlay();
-    }
-  }
-
-  // Optional: close when a link is clicked
-  overlay.removeEventListener('click', handleOverlayClick);
-  overlay.addEventListener('click', handleOverlayClick);
-  
-  function handleOverlayClick(e) {
-    const link = e.target.closest('a');
-    if (link) {
-      console.log("Link clicked, closing menu");
-      toggleOverlay();
-    }
-  }
-  
-  console.log("Mobile menu initialized successfully");
+  const selector = selectorOrHandler, handler = maybeHandler;
+  root.addEventListener(type, (e) => {
+    const m = e.target.closest(selector);
+    if (m && root.contains(m)) handler.call(m, e);
+  }, { passive: true });
 }
 
-// Initialize mobile menu when DOM is ready
+// ---------- page UI (no jQuery) ----------
+function wirePageToggles() {
+  on(document, 'click', '.index', () => {
+    const el = document.querySelector('.list-projects');
+    if (el) el.classList.toggle('is-hidden1');
+  });
+
+  on(document, 'click', '.section-about-us', () => {
+    const el = document.querySelector('.description-text');
+    if (el) el.classList.toggle('is-hidden');
+  });
+
+  on(document, 'click', '.list-projects1', function () {
+    const next = this.nextElementSibling;
+    if (next && next.classList.contains('index-item')) next.classList.toggle('is-hidden');
+    const arrow = this.querySelector('.nav-svg1');
+    if (arrow) arrow.classList.toggle('rotated');
+  });
+
+  on(document, 'click', '.nav-svg2', (e) => {
+    const el = document.querySelector('.search-filter');
+    if (el) el.classList.toggle('is-hidden');
+    e.stopPropagation();
+  });
+
+  on(document, 'click', '.list-item', function (e) {
+    if (e.target.closest('.nav-svg2')) return;
+    const arrow = this.querySelector('.nav-svg1');
+    if (arrow) arrow.classList.toggle('rotated');
+  });
+}
+
+// ---------- mobile menu (single source of truth) ----------
+function initMobileMenu() {
+  const trigger  = document.getElementById('mobileTrigger');
+  const overlay  = document.getElementById('mobileOverlay');
+  const closeBtn = document.getElementById('mobileClose');
+  if (!overlay || !trigger) return;
+
+  let busy = false;
+  const isOpen = () => overlay.classList.contains('open');
+
+  const allCanvases = () => Array.from(document.querySelectorAll('canvas'));
+  const machine = document.getElementById('machine');
+
+  function disableCanvasPointer() {
+    allCanvases().forEach(c => c.style.pointerEvents = 'none');
+    if (machine) machine.style.pointerEvents = 'none';
+  }
+  function enableCanvasPointer() {
+    allCanvases().forEach(c => c.style.pointerEvents = '');
+    if (machine) machine.style.pointerEvents = '';
+  }
+
+  function open() {
+    overlay.classList.add('open');
+    document.body.classList.add('menu-open');   // lock bg scroll
+    trigger.setAttribute('aria-expanded', 'true');
+    disableCanvasPointer();                     // <- critical on nodes page
+  }
+  function close() {
+    overlay.classList.remove('open');
+    document.body.classList.remove('menu-open');
+    trigger.setAttribute('aria-expanded', 'false');
+    enableCanvasPointer();
+  }
+  function toggle() {
+    if (busy) return;
+    busy = true;
+    isOpen() ? close() : open();
+    setTimeout(() => busy = false, 320);
+  }
+
+  // Open/close
+  trigger.addEventListener('click', (e) => { e.stopPropagation(); toggle(); }, { passive: true });
+  trigger.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); toggle(); }, { passive: false });
+
+  if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); close(); }, { passive: true });
+
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); }, { passive: true });
+
+  // Links: always navigate (Swup if available), even if something prevented default
+  overlay.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault(); // we will drive navigation
+      const href = a.getAttribute('href');
+      close();
+      if (window.swup && typeof window.swup.navigate === 'function') {
+        window.swup.navigate(href);
+      } else if (href) {
+        window.location.href = href;
+      }
+    }, { passive: false });
+  });
+
+  // ESC to close
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) close(); });
+}
+
+// ---------- boot + swup rebind ----------
+function boot() {
+  wirePageToggles();
+  initMobileMenu();
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeMobileMenu);
+  document.addEventListener('DOMContentLoaded', boot);
 } else {
-  initializeMobileMenu();
+  boot();
 }
 
-// Also initialize on window load to ensure everything is ready
-window.addEventListener('load', () => {
-  setTimeout(initializeMobileMenu, 100);
+// When Swup swaps content, elements are replaced -> rebind everything
+document.addEventListener('swup:contentReplaced', () => {
+  boot();
 });
