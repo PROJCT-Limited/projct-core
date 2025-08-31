@@ -6,8 +6,8 @@ html, body {
     cursor:url(myBall.cur),auto;
     /* cursor: none; */
     font-family: "Headers";
-    overflow: hidden;
-    /* overflow-y: auto; */
+    /* overflow: hidden; */
+    overflow-y: auto;
     cursor: auto;
   }
 
@@ -358,6 +358,9 @@ html, body {
   pointer-events: none;
   transform: translateY(-8px);
   transition: opacity 260ms ease, transform 260ms ease, visibility 0s linear 260ms;
+  
+  /* Debug: make it visible even when closed */
+  border: 2px solid transparent;
 }
 
 /* OPEN state */
@@ -369,6 +372,9 @@ html, body {
   transform: translateY(0);
    
   transition: opacity 260ms ease, transform 260ms ease; /* visibility shows immediately */
+  
+  /* Debug: make it more visible when open */
+  border: 2px solid yellow;
 }
 
 .mobile-overlay .overlay-inner {
@@ -395,9 +401,24 @@ html, body {
   .mobile  { display: inline-flex; align-items: center; }
   .desktop { display: none; }
   .logo_PROJCT { flex: 1; }
-  .nav-right { margin-left: auto;
-  z-index: 10000; }
+  .nav-right { margin-left: auto; z-index: 10000; }
   .logo-svg {z-index: 100000;}
+  
+  /* Ensure hamburger button is clickable */
+  #mobileTrigger {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    cursor: pointer;
+    z-index: 10001;
+    position: relative;
+  }
+  
+  .hamburger {
+    pointer-events: none;
+  }
   .description-text {font-size: 1.6em;}
   body {overflow: auto;}
   .search-filter {font-size: 0.3em;}
@@ -467,7 +488,7 @@ body.menu-open { overflow: hidden; }
 
 
 
-/* ===== Theming (per page accent) ===== */
+/* ===== Theming (per page accent) =====
 :root { --accent: #0e50c8; }                  /* default blue */
 html[data-theme="yellow"] { --accent: #dbe120; } /* example 2nd page */
 
@@ -503,7 +524,7 @@ html.transitioning .transition-fade { opacity: 0.9; }
 
 .reveal {
   transition-delay: var(--reveal-delay, 0ms);
-}
+} */
 
 /* Motion safety */
 @media (prefers-reduced-motion: reduce) {
@@ -520,45 +541,63 @@ html { scrollbar-gutter: stable both-edges; }
 .header {  box-sizing: border-box; }
 .logo-svg { width: 160px; height: 40px; display: block; object-fit: contain; }
 
-/* 
 #machine {
   flex: 1;            
   width: 100%;
-  height: 100%;
-  cursor: none;
-} */
-/* #machine { min-height: 100vh; }             
-#machine canvas { display: block; }   */
+  height: calc(100vh - 80px); /* Subtract header height */
+  position: relative;
+  z-index: 1;
+}
+
+#machine canvas { 
+  display: block; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
 
 .team-grid_inner {
+
+  --card-min: 13rem;   
+  
+  --card-max: 16.5rem; 
+
   grid-column-gap: 0.4rem;
   grid-row-gap: 1.75rem;
   grid-template-rows: auto auto;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min)), 1fr));
   grid-auto-columns: 1fr;
   justify-items: stretch;
   display: grid;
+  margin-bottom: 50px;
   }
 
   .team-grid_item {
-    grid-column-gap: 1.25rem;
-    grid-row-gap: 1.25rem;
-    flex-flow: column;
-    justify-content: flex-start;
-    align-items: center;
-    width: 13.5rem;
     display: flex;
-    }
+    flex-flow: column;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: var(--card-max);
+  }
 
+  /* circular image: scales with card width */
+.team-grid_image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;   /* perfect square that scales */
+  border-radius: 50%;
+  overflow: hidden;
+}
 
-  .team-grid_image-wrapper {
-    border-radius: 50%;
-    width: 13.5rem;
-    height: 13.5rem;
-    position: relative;
-    overflow: hidden;
-    }
-
+/* make sure images fill the circle nicely */
+.team-grid_image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
     .team-grid_info {
       flex-flow: column;
       justify-content: center;
@@ -571,10 +610,9 @@ html { scrollbar-gutter: stable both-edges; }
           font-size: 1.125rem;
           margin: 0px;
           }
-
-        .team-grid_post {
-            color: var(--color--gray-accent);
-            text-align: center;
-            font-size: 1rem;
+ .team-grid_post {
             margin: 5px;
-            }
+            text-align: center;
+            color: var(--color--gray-accent);
+            font-size: clamp(0.9rem, 0.8rem + 0.4vw, 1rem);
+          }
