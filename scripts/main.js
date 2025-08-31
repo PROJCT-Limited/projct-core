@@ -1,6 +1,6 @@
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  sizeToViewport();                       // ← add this immediately after createCanvas
+  sizeToViewport();                     
   textFont('monospace');
   textAlign(CENTER, CENTER);
 
