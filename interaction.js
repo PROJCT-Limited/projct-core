@@ -81,9 +81,9 @@ function initializeMobileMenu() {
     }, 300); // Slightly longer than CSS transition
   }
 
-  // Add visual feedback for debugging
-  trigger.style.border = '2px solid red';
-  trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+  // // Add visual feedback for debugging
+  // trigger.style.border = '2px solid red';
+  // trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
   
   // Remove any existing event listeners
   trigger.removeEventListener('click', handleTriggerClick);
@@ -93,22 +93,22 @@ function initializeMobileMenu() {
   function handleTriggerClick(e) {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Hamburger clicked!");
-    trigger.style.backgroundColor = 'rgba(0, 255, 0, 0.3)'; // Green feedback
-    setTimeout(() => {
-      trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
-    }, 200);
+    // console.log("Hamburger clicked!");
+    // trigger.style.backgroundColor = 'rgba(0, 255, 0, 0.3)'; // Green feedback
+    // setTimeout(() => {
+    //   trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+    // }, 200);
     toggleOverlay();
   }
   
   function handleTriggerTouch(e) {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Hamburger touched!");
-    trigger.style.backgroundColor = 'rgba(0, 255, 0, 0.3)'; // Green feedback
-    setTimeout(() => {
-      trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
-    }, 200);
+    // console.log("Hamburger touched!");
+    // trigger.style.backgroundColor = 'rgba(0, 255, 0, 0.3)'; // Green feedback
+    // setTimeout(() => {
+    //   trigger.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+    // }, 200);
     toggleOverlay();
   }
   
