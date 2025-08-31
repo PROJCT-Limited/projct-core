@@ -93,7 +93,7 @@ function getUIConfig() {
     childRest:    mobile ? 100    : 120,
     kick:         mobile ? 1.8    : 2.2,
 
-    fontTitle:   mobile ? 16 : 18,
+    fontTitle:   mobile ? 18 : 20,
     fontBody:    mobile ? 12 : 13,
     fontNode:    mobile ? 14 : 14,
     fontCenter:  mobile ? 13 : 14,
