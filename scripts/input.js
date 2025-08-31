@@ -1,4 +1,6 @@
 function mouseMoved(){ pointer.x = mouseX; pointer.y = mouseY; }
+pointer.tapCandidate = false;
+
 
 function mousePressed() {
   pointer.isTouch = false; pointer.x = mouseX; pointer.y = mouseY; pointer.down = true;
@@ -91,7 +93,7 @@ function touchStarted() {
   if (isInPanelScreen(pointer.x, pointer.y)) {
     draggingTag = null; draggingNode = null;
   } else if (mode === "select") {
-    // PICK TAG — mirror mousePressed
+
     draggingTag = pickTagNodeAt(pointer.worldX, pointer.worldY);
     if (draggingTag) {
       draggingTag.dragging = false;                    // will flip to true after slop
@@ -115,6 +117,7 @@ function touchStarted() {
   pointer.startX = pointer.x;
   pointer.startY = pointer.y;
   pointer.dragging = false;
+  pointer.tapCandidate = true;
 
   return false;
 }
@@ -135,6 +138,7 @@ function touchMoved() {
     const dx = pointer.x - pointer.startX, dy = pointer.y - pointer.startY;
     if (dx*dx + dy*dy > DRAG_SLOP*DRAG_SLOP) {
       pointer.dragging = true;
+      pointer.tapCandidate = false;  
       if (draggingTag) draggingTag.dragging = true;
     }
   }
@@ -156,6 +160,17 @@ function touchMoved() {
 
 
 function touchEnded() {
+
+   // If it was a tap and we're in select mode, treat like clicking the Play button.
+   if (mode === "select" && pointer.tapCandidate) {
+    const d = dist(pointer.x, pointer.y, playBtn.x, playBtn.y); // screen coords
+    if (d <= playBtn.r && selected.length > 0 && selected.length <= UI.maxSelected) {
+      launchGraphFromSelection();
+      finishPointerGesture();
+      return false;
+    }
+  }
+
   // Reuse your existing drop logic
   if (typeof mouseReleased === 'function') mouseReleased();
 
@@ -178,6 +193,7 @@ pointer.dragging = false;    // are we dragging a node?
 pointer.dragNode = null;     // which node
 pointer.startX = 0;          // screen coords at press
 pointer.startY = 0;
+
 
 const DRAG_SLOP = 8;         // px finger must move before we "lock" the drag
 
