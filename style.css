@@ -560,9 +560,9 @@ z-index: 1;
 
 .team-grid_inner {
 
---card-min: 13rem;   
+--card-min: 11rem;   
 
---card-max: 16.5rem; 
+--card-max: 15.5rem; 
 
 grid-column-gap: 0.4rem;
 grid-row-gap: 1.75rem;
