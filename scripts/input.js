@@ -1,3 +1,18 @@
+// Allow taps on UI (hamburger, overlay links, close button) to pass through.
+function uiWantsThisTouch(ev) {
+  const t = ev && (ev.target || ev.srcElement);
+  if (!t) return false;
+  return !!t.closest('#mobileOverlay, #mobileTrigger, .mobile-close, .button-header, .header, a, button');
+}
+
+// If the overlay is open, all touches should go to the overlay/UI.
+function overlayIsOpen() {
+  const ov = document.getElementById('mobileOverlay');
+  return ov && ov.classList.contains('open');
+}
+
+
+
 function mouseMoved(){ pointer.x = mouseX; pointer.y = mouseY; }
 pointer.tapCandidate = false;
 
@@ -78,10 +93,12 @@ function mouseReleased() {
   }
 }
 
-function touchStarted() {
-  pointer.isTouch = true;
+function touchStarted(ev) {
+  // If the overlay is open or the touch began on UI, let the browser handle it.
+  if (overlayIsOpen() || uiWantsThisTouch(ev)) return true;
 
-  if (!touches || touches.length === 0 || pointer.id !== null) return false;
+  pointer.isTouch = true;
+  if (!touches || touches.length === 0 || pointer.id !== null) return true;
 
   const t = touches[0];
   pointer.id = t.id;
@@ -89,19 +106,17 @@ function touchStarted() {
   const w = screenToWorld(pointer.x, pointer.y);
   pointer.worldX = w.x; pointer.worldY = w.y;
 
-  // don't start a drag if on the blue panel
+  // don't start a drag if on the blue panel (your func)
   if (isInPanelScreen(pointer.x, pointer.y)) {
     draggingTag = null; draggingNode = null;
   } else if (mode === "select") {
-
     draggingTag = pickTagNodeAt(pointer.worldX, pointer.worldY);
     if (draggingTag) {
-      draggingTag.dragging = false;                    // will flip to true after slop
-      draggingTag.dx = pointer.worldX - draggingTag.x; // same offsets as mouse
+      draggingTag.dragging = false;
+      draggingTag.dx = pointer.worldX - draggingTag.x;
       draggingTag.dy = pointer.worldY - draggingTag.y;
     }
   } else {
-    // PICK GRAPH NODE — mirror mousePressed
     draggingNode = null;
     for (let i = nodes.length - 1; i >= 0; i--) {
       const n = nodes[i];
@@ -117,18 +132,19 @@ function touchStarted() {
   pointer.startX = pointer.x;
   pointer.startY = pointer.y;
   pointer.dragging = false;
-  pointer.tapCandidate = true;
+  pointer.tapCandidate = true; 
 
-  return false;
+  return false; // prevent page scroll ONLY for canvas interactions
 }
 
-
-function touchMoved() {
-  if (pointer.id === null) return false;
+function touchMoved(ev) {
+  // Let UI touches through, and ignore if we don't own the gesture
+  if (overlayIsOpen() || uiWantsThisTouch(ev)) return true;
+  if (pointer.id === null) return true;
 
   let t = null;
   for (const tt of touches) if (tt.id === pointer.id) { t = tt; break; }
-  if (!t) return false;
+  if (!t) return true;
 
   pointer.x = t.x; pointer.y = t.y;
   const w = screenToWorld(pointer.x, pointer.y);
@@ -155,29 +171,34 @@ function touchMoved() {
     }
   }
 
-  return false;
+  return false; // keep preventing default only during canvas drags
 }
 
+function touchEnded(ev) {
+  // If touch ended on UI or overlay is open, let default click fire
+  if (overlayIsOpen() || uiWantsThisTouch(ev)) {
+    finishPointerGesture();
+    return true;
+  }
 
-function touchEnded() {
-
-   // If it was a tap and we're in select mode, treat like clicking the Play button.
-   if (mode === "select" && pointer.tapCandidate) {
-    const d = dist(pointer.x, pointer.y, playBtn.x, playBtn.y); // screen coords
-    if (d <= playBtn.r && selected.length > 0 && selected.length <= UI.maxSelected) {
+  if (mode === "select" && pointer.tapCandidate && typeof playBtn === 'object') {
+    const TOUCH_HIT = 1.3; // slightly bigger finger target
+    const d = dist(pointer.x, pointer.y, playBtn.x, playBtn.y);
+    if (d <= playBtn.r * TOUCH_HIT &&
+        selected.length > 0 &&
+        selected.length <= UI.maxSelected) {
       launchGraphFromSelection();
       finishPointerGesture();
       return false;
     }
   }
 
-  // Reuse your existing drop logic
-  if (typeof mouseReleased === 'function') mouseReleased();
-
-  // Now clear touch state
+  // Treat as a tap-to-play if you implemented tapCandidate (optional)
+  if (typeof mouseReleased === 'function') mouseReleased(); // reuse your drop logic
   finishPointerGesture();
   return false;
 }
+
 
 function finishPointerGesture() {
   pointer.down = false;
