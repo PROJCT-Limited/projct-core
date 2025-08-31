@@ -10,7 +10,7 @@
  
 
 </head>
-<body data-theme="blue">
+<body >
   <!-- Page transition overlay -->
 <div class="page-wipe" aria-hidden="true"></div>
 
@@ -18,31 +18,55 @@
     <div class="logo_PROJCT"><img src = "SVG/logo-white.svg" alt="logo" class = "logo-svg" height="40"/></div>
     <div class="nav-right">
 
-        <button class="mobile" id="mobileTrigger"
-        aria-controls="mobileOverlay"
-        aria-expanded="false"
-        aria-label="Open menu"
-        style="background:none;border:0;padding:0;cursor:pointer;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2" class="hamburger">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
-          
-        
-          <nav class="mobile-overlay" id="mobileOverlay" aria-hidden="true">
-            <div class="overlay-inner">
-           <div class ='row1'><img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/><a href="nodes.html">SYNTHETIC MACHINE</a></div> 
-          <div class ='row2'> <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/><a href="index.html">INDEX</a></div> </div> 
-          </nav>
+           <button class="mobile" id="mobileTrigger"
+      aria-controls="mobileOverlay"
+      aria-expanded="false"
+      aria-label="Open menu"
+      style="background:none;border:0;padding:0;cursor:pointer;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none"
+           viewBox="0 0 24 24" stroke="white" stroke-width="2" class="hamburger">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
 
+    <div class="button-header button_header1 desktop">
+      <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg"/>
+      <div class="nav-arrow"><p><a href="nodes.html">SYNTHETIC MACHINE</a></p></div>
+      <img src="SVG/Asset 2.svg" alt="Arrow" class="nav-svg"/>
+      <div class="nav-text"><p><a href="index.html">INDEX</a></p></div>
+    </div>
+  </div>
+</div>
 
-        <div class="button-header button_header1 desktop"> 
+<!-- 🔁 MOVE OVERLAY OUTSIDE HEADER (direct child of body) -->
+<nav class="mobile-overlay" id="mobileOverlay">
+  <button id="mobileClose" class="mobile-close" aria-label="Close menu">
+    <!-- X icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none"
+         viewBox="0 0 24 24" stroke="white" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/>
+    </svg>
+  </button>
+
+  <div class="overlay-inner">
+    <div class="row1">
+      <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/>
+      <a class="overlay-link" href="nodes.html">SYNTHETIC MACHINE</a>
+    </div>
+    <div class="row2">
+      <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/>
+      <a class="overlay-link" href="index.html">INDEX</a>
+    </div>
+  </div>
+  </nav>
+
+        <!-- <div class="button-header button_header1 desktop"> 
           <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg"/>
           <div class="nav-arrow"><p><a href="nodes.html" >SYNTHETIC MACHINE</a></p></div>
           <img src="SVG/Asset 2.svg" alt="Arrow" class="nav-svg"/>
           <div class="nav-text"><p><a href="index.html" >INDEX </a></p></div>
         </div>
-        </div>
+        </div> -->
         
   </div>
 
