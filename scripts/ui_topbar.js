@@ -10,11 +10,11 @@ function drawTopBar() {
   pop();
   
   // Text/content styling
-  const padX = 10, padY = 8; // a touch more padding looks nicer in a side panel
+  const padX = 10, padY = 8; 
   const contentW = panelW - padX * 2;
   textAlign(LEFT, TOP);
   noStroke();
-  fill(255); // white text on blue bg
+  fill(255);
   
   if (mode === "select") {
   textSize(UI.fontTitle);
