@@ -10,20 +10,16 @@ function preload() {
   myFont = loadFont('./fonts/PPNeueMachina-InktrapLight.otf');
 }
 
-
-
 // Wave settings
-// Wave settings
-const WAVE_SPEED   = 0.18;    // a bit faster drift
-const WAVE_DETAIL  = 0.0016;  // more curvature across the width
-const WAVE_OCTAVES = 4;       // richer detail
-const WAVE_PAD     = 10;      // keep off the band edges
+const WAVE_SPEED   = 0.18;    
+const WAVE_DETAIL  = 0.0016;  
+const WAVE_OCTAVES = 4;       
+const WAVE_PAD     = 10;       
 
-
-function fbm(n) {
-  // fractal Brownian motion: layered noise for richer shape
+// ---- fbm with variable octaves ----
+function fbm(n, octaves = WAVE_OCTAVES) {
   let total = 0, amp = 0.5, freq = 1, norm = 0;
-  for (let i = 0; i < WAVE_OCTAVES; i++) {
+  for (let i = 0; i < octaves; i++) {
     total += amp * noise(n * freq);
     norm  += amp;
     amp  *= 0.5;
@@ -31,9 +27,6 @@ function fbm(n) {
   }
   return total / norm; // 0..1
 }
-
-
-
 
 // Ring geometry
 const RING_DEG = 260;
@@ -43,23 +36,19 @@ const RING_END   = TARGET + RING_SPAN/2;
 
 // Colors
 const COL_RING_BG = 225;       // light gray
-const COL_RING_ON = '#0e50c8'; // blue
-const COL_KNOB    = '#0e50c8'; // blue
 const COL_POINTER = 255;       // white
+const LINE_COLORS = ['#ff5a5f', '#00a699', '#4a90e2']; // line/knob/label colors
 
 let knobs = [];
 let selectedKnob = null;
 let triggered = false;
 
 function setup() {
-
   const headerEl = document.querySelector('.header');
   const headerH = headerEl ? headerEl.offsetHeight : 0;
 
   cnv = createCanvas(windowWidth, windowHeight - headerH);
   cnv.position(0, headerH);
-
-//   textFont('system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif');
   textSize(16);
 
   // Initial knob layout based on canvas size
@@ -68,63 +57,74 @@ function setup() {
 
   knobs = [];
   for (let i = 0; i < 3; i++) {
-    knobs.push(new Knob(xs[i], height * 0.85, 48, labels[i]));
+    knobs.push(new Knob(xs[i], height * 0.85, 48, labels[i], LINE_COLORS[i]));
   }
 }
 
 function draw() {
   clear();
 
-  // Draw knobs
+  // Draw knobs first (so lines sit "behind" labels visually)
   for (const k of knobs) k.display();
 
+  // Screen frame + waveform band
+  const wx = 0, wy = 80, ww = width, wh = 260;
 
-// Screen frame + waveform band
-// Screen frame + waveform band
-const wx = 0, wy = 80, ww = width, wh = 260;
+  noFill();
+  noStroke();
+  strokeWeight(2);
+  rect(wx, wy, ww, wh, 12);
 
-noFill();
-noStroke();
-strokeWeight(2);
-rect(wx, wy, ww, wh, 12);
+  const t = millis() * 0.001;
 
-// knob “energy” 0..3 (unaltered)
-let energy = 0;
-for (const k of knobs) energy += Math.abs(normalizeAngle(k.angle - TARGET)) / PI;
-const t = millis() * 0.001;
+  //WAVES: each tied to one knob
+  noFill();
+  strokeWeight(2.5);
+  strokeJoin(ROUND);
+  strokeCap(ROUND);
 
-// style for the wave line
-noFill();
-stroke(COL_KNOB);
-strokeWeight(2);
-strokeJoin(ROUND);
-strokeCap(ROUND);
+  for (let i = 0; i < 3; i++) {
+    const k = knobs[i];
+    const prog = constrain(k.progressToTarget(), 0, 1); // 0..1 (closer to 1 = closer to target)
 
-beginShape();
-curveVertex(wx - 20, wy + wh * 0.5);
+    // Roughness/detail shrinks as knob aligns (smoother curve when prog→1)
+    const roughMult = map(1 - prog, 0, 1, 0.7, 2.2); // small→smooth, big→rough
+    const detail = WAVE_DETAIL * roughMult;
 
-for (let x = 0; x <= ww; x += 2) {
-  
-  const nx = (x * WAVE_DETAIL) + (t * WAVE_SPEED);
+    // More octaves when rough; fewer when aligned (cleaner)
+    const octaves = Math.round(lerp(2, 6, 1 - prog));
 
-  const n = (fbm(nx) - 0.5) * 2.0;
+    // Phase offset collapses toward 0 as knob aligns → curves "almost" match
+    const baseOffset = (i + 1) * 7.123;           // unique per line
+    const offset = baseOffset * lerp(0.05, 1.0, 1 - prog);
 
-  
-  const env = map(fbm(nx * 0.25 + 100.0), 0, 1, 0.85, 1.0);
+    // Draw line
+    stroke(k.color);
+    beginShape();
+    curveVertex(wx - 20, wy + wh * 0.6); // padding vertex
 
+    for (let x = 0; x <= ww; x += 2) {
+      const nx = (x * detail) + (t * WAVE_SPEED) + offset;
 
-  const amp = (wh * 0.9 - WAVE_PAD) * env * map(energy, 0, 3, 0.8, 1.9);
+      // core noise (centered -1..1)
+      const n = (fbm(nx, octaves) - 0.5) * 2.0;
 
-  const y = wy + wh * 0.7 + n * amp;
-  curveVertex(wx + x, y);
-}
+      // subtle envelope to avoid hitting top/bottom edges
+      const env = map(fbm(nx * 0.25 + 100.0, 3), 0, 1, 0.88, 1.0);
 
-curveVertex(wx + ww + 20, wy + wh * 0.5);
-endShape();
+      // amplitude — consistent across lines so they share a band
+      const amp = (wh * 0.9 - WAVE_PAD) * env;
 
+      // all three lines share the same vertical center ("aligned in height")
+      const y = wy + wh * 0.6 + n * amp;
+      curveVertex(wx + x, y);
+    }
 
+    curveVertex(wx + ww + 20, wy + wh * 0.6); // padding vertex
+    endShape();
+  }
 
-
+  // Trigger when all aligned
   if (!triggered && knobs.every(k => k.isAligned())) {
     triggered = true;
     setTimeout(() => window.location.replace("nodes.html"), 2000);
@@ -153,23 +153,22 @@ function wrappedSpan(a0,a1){ let s=a1-a0; if(s<=0) s+=TWO_PI; return s; }
 
 // ---------- Knob ----------
 class Knob {
-  constructor(x,y,r,label){
+  constructor(x,y,r,label,color){
     this.x = x;
     this.y = y;
     this.r = r;
     this.label = label;
+    this.color = color;
     this.angle = Math.random()*TWO_PI - PI;
 
- 
     this.el = createP(label);
     this.el.style('margin', '0');
-    this.el.style('color', '#0e50c8');
+    this.el.style('color', this.color);
     this.el.style('position', 'absolute');
     this.el.style('pointer-events', 'none');
     this.el.style('font-family', 'PPNeueMachina, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif');
     this.el.style('font-weight', '300');
-    
-    this.el.style('transform', 'translateX(-50%)'); 
+    this.el.style('transform', 'translateX(-50%)');
   }
 
   contains(px,py){ return dist(px,py,this.x,this.y) < this.r; }
@@ -184,24 +183,23 @@ class Knob {
     push(); translate(this.x, this.y);
 
     // Outer ring
-    // fill(white);
     strokeWeight(12);
     stroke('white');
     drawWrappedArc(0, 0, (this.r + 16) * 2, RING_START, RING_END);
 
-    // Progress arc
+    // Progress arc (green when aligned)
     const span = wrappedSpan(RING_START, RING_END);
     const prog = constrain(this.progressToTarget(), 0, 1);
     if (this.isAligned()) {
-      stroke(60, 190, 120); //change color if needed
+      stroke(60, 190, 120);
     } else {
-      stroke(COL_RING_ON);
+      stroke(this.color);
     }
     drawWrappedArc(0, 0, (this.r + 16) * 2, RING_START, RING_START + span * prog);
 
-    // Knob body
+    // Knob body (match line color)
     noStroke();
-    fill(COL_KNOB);
+    fill(this.color);
     circle(0, 0, this.r * 2);
 
     // Pointer
@@ -213,25 +211,24 @@ class Knob {
 
     pop();
 
-    // --- DOM label aligned to canvas coordinates ---
-    const rect = cnv.elt.getBoundingClientRect(); 
+
+    const rect = cnv.elt.getBoundingClientRect();
     const pageX = rect.left + window.scrollX;
     const pageY = rect.top  + window.scrollY;
     const labelX = pageX + this.x;
     const labelY = pageY + this.y + this.r + 16;
+    this.el.style('color', this.color);
     this.el.position(labelX, labelY);
   }
 }
 
 function windowResized() {
-  // Keep canvas under header on resize
   const headerEl = document.querySelector('.header');
   const headerH = headerEl ? headerEl.offsetHeight : 0;
 
   resizeCanvas(windowWidth, windowHeight - headerH);
   cnv.position(0, headerH);
 
-  // Keep knobs laid out proportionally
   const xs = [width/4, width/2, (3*width)/4];
   knobs[0].x = xs[0];
   knobs[1].x = xs[1];
@@ -239,24 +236,13 @@ function windowResized() {
   knobs.forEach(k => k.y = height * 0.85);
 }
 
-
-
-
-
-
-
-
+// Custom cursor (unchanged)
 const cursor = document.querySelector('.cursor');
-
-// move the custom cursor
 window.addEventListener('mousemove', (e) => {
   cursor.style.left = e.clientX + 'px';
   cursor.style.top  = e.clientY + 'px';
   cursor.style.opacity = '1';
 });
-
-// (optional) hide when leaving the window
 window.addEventListener('mouseleave', () => {
   cursor.style.opacity = '0';
 });
-
