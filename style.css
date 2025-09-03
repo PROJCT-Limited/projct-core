@@ -587,9 +587,26 @@ margin-bottom: 50px;
 .team-grid_image-wrapper {
 position: relative;
 width: 100%;
-aspect-ratio: 1 / 1;   /* perfect square that scales */
+aspect-ratio: 1 / 1;   
 border-radius: 50%;
 overflow: hidden;
+}
+.team-grid_image-up {
+  transition: opacity 0.1s ease-in-out;
+  opacity: 1;
+}
+
+.team-grid_image-wrapper:hover .team-grid_image-up {
+  opacity: 0;
+}
+
+.team-grid_image-down {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }
 
 /* make sure images fill the circle nicely */
