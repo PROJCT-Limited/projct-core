@@ -18,10 +18,10 @@ function drawTopBar() {
   
   if (mode === "select") {
   textSize(UI.fontTitle);
-  text("Pick up to 3 tags", padX, padY, contentW);
+  text("Pick up to 3 tags", padX, padY+100, contentW);
   
   textSize(UI.fontBody);
-  const bodyY = padY + (UI.fontTitle + 8);
+  const bodyY = padY + (UI.fontTitle + 110);
   const bodyH = panelH - bodyY - 16;
   const picked = selected.map(s => s.label).join(", ") || "—";
   text(`Selected: ${picked}`, padX, bodyY, contentW, Math.max(0, bodyH));
@@ -29,17 +29,17 @@ function drawTopBar() {
   } else {
   const node = activeNode || centerNode;
   textSize(UI.fontTitle);
-  text(node.title || node.label || "—", padX, padY, contentW);
+  text(node.title || node.label || "—", padX, padY+100, contentW);
   
   textSize(UI.fontBody);
   const desc = node.info?.desc || "Click a node to view details.";
   const bodyY = padY + (UI.fontTitle + 8);
   const bodyH = panelH - bodyY - 40;
-  text(desc, padX, bodyY, contentW, Math.max(0, bodyH));
+  text(desc, padX, bodyY+100, contentW, Math.max(0, bodyH));
   
   // Two rows of meta at the bottom of the panel
   const rowH = 18;
-  const y0 = panelH - rowH * 2 - 100;
+  const y0 = panelH - rowH * 2 - 200;
   
   stroke(255, 180); strokeWeight(1);
   line(padX, y0 - 6, panelW - padX, y0 - 6);
