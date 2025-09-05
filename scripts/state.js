@@ -17,7 +17,7 @@ let topBarH = 0;
 // Select-mode
 let tagNodes = [];
 let selected = []; // [{label, tags[]}]
-let  = null;
+
 let draggingTag = null;
 let playBtn = null;
 
