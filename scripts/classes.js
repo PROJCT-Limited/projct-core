@@ -107,32 +107,63 @@ function placeNodeNoOverlap(newNode, others, bounds, maxTries = 250, pad = 6) {
       this.vx *= UI.damping; this.vy *= UI.damping;
       this.x += this.vx; this.y += this.vy;
       
-      // Bounce against world bounds
-      const minX = this.baseR, maxX = baseWidth - this.baseR;
-      const minY = this.baseR, maxY = baseHeight - this.baseR;
-      
-      if (this.x < minX) { this.x = minX; this.vx *= -0.7; }
-      if (this.x > maxX) { this.x = maxX; this.vx *= -0.7; }
-      if (this.y < minY) { this.y = minY; this.vy *= -0.7; }
-      if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
+  // Bounce against the VISIBLE graph bounds (exclude the blue panel)
+const panelLeft = (typeof LAYOUT !== "undefined" && LAYOUT === "left") ? (sideBarW || 0) : 0;
+const panelTop  = (typeof LAYOUT !== "undefined" && LAYOUT === "top")  ? (topBarH  || 0) : 0;
+
+// Size of the usable area on screen
+const availW = (typeof windowWidth  !== "undefined" ? windowWidth  : width)  - panelLeft;
+const availH = (typeof windowHeight !== "undefined" ? windowHeight : height) - panelTop;
+
+// Convert the visible rect from screen → world coordinates using current camera
+const s = (typeof scaleFactor !== "undefined" && scaleFactor) ? scaleFactor : 1;
+const minX = (((panelLeft+10) - worldOffsetX) / s) + this.baseR;
+const maxX = ((((panelLeft-10) + availW) - worldOffsetX) / s) - this.baseR;
+const minY = ((panelTop  - worldOffsetY) / s) + this.baseR;
+const maxY = (((panelTop  + availH) - worldOffsetY) / s) - this.baseR;
+
+// Clamp with a soft bounce
+if (this.x < minX) { this.x = minX; this.vx *= -0.7; }
+if (this.x > maxX) { this.x = maxX; this.vx *= -0.7; }
+if (this.y < minY) { this.y = minY; this.vy *= -0.7; }
+if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
     }
   
-    display(){
+    display() {
+     
       let fillCol = "#CBD5E1";
       for (const t of this.tags) { if (TAG_COLORS[t]) { fillCol = TAG_COLORS[t]; break; } }
-      noStroke(); fill(fillCol); ellipse(this.x, this.y, Math.max(1, this.r * 2));
-      fill(40); textAlign(CENTER, TOP);
-      textSize(this.isCenter ? UI.fontCenter : UI.fontNode);
+    
+      // Target radius: bigger if this is the centered node
+      const targetR = (this === centerNode) ? (UI.rFocused || 35) : (UI.rNode || 20);
+    
+      // Smoothly animate radius toward target (optional). If you don't want animation,
+      // just do: this.r = targetR;
+      this.r = lerp(this.r || targetR, targetR, 0.2);
+    
+      // Draw
+      noStroke();
+      fill(fillCol);
+      ellipse(this.x, this.y, Math.max(1, this.r * 2)); // now uses this.r
+    
+      // Label
+      fill(40);
+      textAlign(CENTER, TOP);
+      textSize((this === centerNode) ? UI.fontCenter : UI.fontNode);
       text(this.title, this.x, this.y + this.r + 6);
     }
-  
-    isPointInside(wx, wy){ return dist(wx, wy, this.x, this.y) < Math.max(8, this.r); }
-  
-    sharesTagWith(other){
+    
+    isPointInside(wx, wy) {
+      // Hit test matches visual size
+      return dist(wx, wy, this.x, this.y) < Math.max(8, this.r || (UI.rNode || 14));
+    }
+    
+    sharesTagWith(other) {
       if (!other || !other.tags) return false;
       for (const t of this.tags) if (other.tags.includes(t)) return true;
       return false;
     }
+    
   }
   
   /* === Spring link === */
