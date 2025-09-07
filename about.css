@@ -1,0 +1,415 @@
+@font-face {
+    font-family: "Acumin-Light";
+    src: url('./fonts/Acumin Pro/Acumin\ Pro\ Light.otf') ;
+
+  }
+  
+  @font-face {
+    font-family: "Acumin-Regular";
+    src: url('./fonts/Acumin Pro/Acumin\ Pro\ Book.otf') ;
+  
+  }
+
+:root{
+    --brand-blue:#0e50c8;
+    --ink:#0a1a2b;
+    --paper:#ffffff;
+    --muted:rgba(10,26,43,.65);
+    --highlight:#EBF21B;
+    --grid-max:1240px;
+    --gutter:20px;
+    --columns:12;
+    --page-pad: 20px; /* NEW */
+  }
+  
+  .main{ flex:1 0 auto; }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;}
+  body{
+    min-height:100dvh;       
+    margin:0;
+    color:var(--ink);
+    background:var(--paper);
+    display:flex;                    
+    flex-direction:column;
+    line-height:1.45;
+  
+  }
+  img{max-width:100%;height:auto;display:block}
+  
+  a{color:inherit;text-decoration:none}
+ 
+  .container{
+    width:100%;
+    margin-inline:0;                         /* no auto-centering */
+    margin-top: 80px;
+    padding-inline:var(--page-pad);          /* 20px gutters */
+    display:grid;
+    grid-template-columns:repeat(var(--columns), minmax(0,1fr));
+    gap:var(--gutter);
+    align-items:start;
+  }
+  
+  section.panel{
+    min-height:100svh;
+    display:grid;
+    align-content:start;
+    margin:0}
+  
+
+  .panel.hero{
+    font-family: "Acumin-Light";
+    background:var(--brand-blue);
+    color:#fff}
+  .hero .headline{
+    grid-column:1/-1;
+    padding-top: 0;
+    line-height: 104.5%;
+    font-size:clamp(70px,5.55vw,170px);
+    font-weight:500}
+  .hero .headline .hl{
+    background:var(--highlight);
+    color:#0e50c8;
+    padding:.006em .05em;
+}
+  .hero .aside{
+    font-family: "Acumin-Light";
+    grid-column:5/-3;
+    margin-top:0.5rem;
+    color:rgba(255,255,255,.85);
+    font-size:clamp(24px,1.3vw,40px);}
+  
+
+  .kicker{grid-column:1/4;
+    font-size:clamp(20px,1.3vw,36px);
+    font-family: "Acumin-Light";
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--brand-blue);
+    align-self:start;margin:0}
+  .section-copy{
+    grid-column:5/-2;
+    color:var(--brand-blue);
+    font-family: "Acumin-Light";
+    font-size:clamp(24px,1.3vw,40px);
+    margin:0}
+  .objective-copy,.team-intro,.address{
+    grid-column:5/-2
+}
+
+
+
+
+
+.venn{
+    grid-column: 2 / -2;   /* span all 12 columns */
+    margin-top: 24px;
+  }
+  
+  .venn img{
+    align-items: center;
+    align-content: center;
+    width: 70%;           /* fill the container */
+    height: auto;          /* keep aspect ratio */
+    display: block;
+    margin-inline: auto;  
+    margin-top: 100px;
+    margin-bottom: 30px;
+
+  }
+  
+
+
+ 
+  .section-copy>p{margin:0 0 1em}
+  .section-copy>p:first-child{margin-top:0}
+  
+  /* Team */
+  .team-grid{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-top:28px}
+  .member{
+    text-align:center
+}
+
+hr {
+    grid-column:5/-2;
+    border-top: 1.5px solid var(--brand-blue);
+    color:var(--brand-blue);
+    padding: 20px 20px;
+    width: 97vw;
+    margin-top: 30px;
+    margin: 20px;
+    padding-top: 20px;
+    margin:auto;
+  }
+
+  .member .avatar{
+    width:200px;
+    aspect-ratio:1;
+    border:2px solid rgba(0,0,0,.2);
+    border-radius:50%;
+    margin:auto;
+    display:grid;
+    place-items:center}
+  .member .name{margin-top: 20px;font-size:14px;color:var(--brand-blue)}
+  .member .role{font-size:12px;color:var(--brand-blue)}
+  
+  /* Space */
+  .address{justify-self:start;margin:0}
+  .space-grid{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .space-grid img{object-fit:cover;
+    width:100%;
+    height:clamp(600px,55vh,920px)}
+  
+  /* Quote + CTAs */
+  .quote{
+    grid-column:1/9;
+    font-size:clamp(30px,3.2vw,62px);
+    line-height: 120%;
+    font-weight: 10;
+    font-family: "Acumin-Regular";
+    letter-spacing: 2%;
+    margin: 0;
+    color:var(--brand-blue)}
+
+
+  .ctas{
+    grid-column:1/-1;
+    display:flex;
+    gap:80px;
+    margin-top:50px;
+    flex-wrap:wrap}
+  .btn{    
+    font-family: "Acumin-Light";
+    padding:10px 14px;
+    border:1px solid var(--brand-blue);
+    font-size:20px;
+    color:var(--brand-blue);background:transparent;cursor:pointer}
+  .btn:hover{background:rgba(27,92,255,.08)}
+  
+  /* Responsive */
+  @media (max-width:1024px){
+    .hero .aside{grid-column:7/-1}
+    .team-grid{grid-template-columns:repeat(4,1fr)}
+  }
+  @media (max-width:860px){
+    .kicker{grid-column:1/4}
+    .section-copy,.objective-copy,.team-intro,.address{grid-column:4/-1}
+    .space-grid{grid-template-columns:1fr}
+    .team-grid{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width:640px){
+    .hero .aside{grid-column:1/-1}
+    .team-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  
+
+
+
+
+  /* Header overlays page */
+  .header{
+    position: fixed;
+    inset: 0 0 auto 0;           /* top:0;left:0;right:0 */
+    z-index: 1000;
+    padding-inline: var(--page-pad, 20px);
+    background: transparent;
+    transition:
+      transform .28s ease,
+      background-color .24s ease,
+      backdrop-filter .24s ease,
+      box-shadow .24s ease;
+  }
+  
+  /* Solid/blur once you’re off the very top */
+  .header.is-solid{
+    background: var(--header-bg);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+  }
+  
+  /* Hidden state */
+  .header.is-hidden{ transform: translateY(-100%); }
+  
+  @media (prefers-reduced-motion: reduce){
+    .header{ transition: none; }
+    .header.is-hidden{ transform: none; }
+  }
+  
+
+  /* LAST PANEL: 3 rows = quote / spacer (CTAs at bottom) / footer */
+  .site-footer{
+    font-family: "Acumin-Light";
+    margin-top:auto;                         /* pushes footer to the end */
+    background:var(--brand-blue); color:#fff;
+    padding-block:clamp(16px,3vh,36px);
+    padding-inline:var(--page-pad);          /* keep 20px rails */
+    display:grid;
+    grid-template-columns:repeat(var(--columns),minmax(0,1fr));
+    gap:var(--gutter);
+    align-items:center;
+  }
+  .footer-meta{
+    grid-column:1/9;
+    display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:clamp(12px,3vw,36px);
+  }
+  .footer-meta p{ margin:0; line-height:1.35; font-size:clamp(14px,1.1vw,18px); color:rgba(255,255,255,.95); }
+  .footer-brand{ grid-column:10/-1; justify-self:end; align-self:center; }
+  .footer-logo{ display:block; width:clamp(110px,12vw,200px); height:auto; }
+  .footer-social{ grid-column:1/9; display:flex; gap:clamp(20px,6vw,80px); margin:0; }
+  .site-footer a{ color:rgba(255,255,255,.95); text-decoration:none; }
+  .site-footer a:hover{ text-decoration:underline; }
+  
+  @media (max-width:1024px){
+    .footer-meta{ grid-column:1/10; }
+    .footer-brand{ grid-column:10/-1; }
+  }
+  @media (max-width:860px){
+    .footer-meta{ grid-column:1/-1; grid-template-columns:1fr; gap:12px; }
+    .footer-brand{ grid-column:1/-1; justify-self:start; margin-top:6px; }
+    .footer-social{ grid-column:1/-1; gap:16px; }
+  }
+
+
+
+  /* ================= TEAM GRID (About page) ================= */
+
+/* If you're toggling this block open/closed */
+.is-hidden { display: none; }
+
+/* Make the description block align with your grid if it's inside .container */
+.container .description-text { grid-column: 1 / -1; }
+
+/* Responsive card sizing */
+.team-grid_inner{
+  --card-min: 11rem;     /* min card width */
+  --card-max: 15.5rem;   /* max card width */
+  color:var(--brand-blue);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min)), 1fr));
+  column-gap: 0.4rem;
+  row-gap: 1.75rem;
+  justify-items: stretch;     /* stretch cells; cards self-limit via max width */
+  margin-bottom: 50px;
+}
+
+/* Card */
+.team-grid_item{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: var(--card-max);   /* prevents overly wide cards on large screens */
+  margin-inline: auto;          /* centers the card within a wide cell */
+}
+
+/* Circular image wrapper */
+.team-grid_image-wrapper{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Optional subtle outline ring */
+.team-grid_outline{
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(0,0,0,.15);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Images fill the circle */
+.team-grid_image-wrapper img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Stack two images; fade the top one on hover */
+.team-grid_image-up,
+.team-grid_image-down{
+  position: absolute;
+  inset: 0;
+}
+.team-grid_image-up{
+  z-index: 1;
+  opacity: 1;
+  transition: opacity .18s ease-in-out;
+}
+.team-grid_image-wrapper:hover .team-grid_image-up{
+  opacity: 0;
+}
+
+/* Text */
+.team-grid_info{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.team-grid_name{
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
+  margin: 0;
+}
+.team-grid_post{
+  margin: 5px 0 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: clamp(0.9rem, 0.8rem + 0.3vw, 1rem);
+}
+
+/* Spacing for the paragraph above the grid */
+.description-text > p{
+  margin: 0 0 1rem 0;
+}
+
+/* Motion preference */
+@media (prefers-reduced-motion: reduce){
+  .team-grid_image-up{ transition: none; }
+}
+
+.team-grid{ grid-column: 1 / -1; }
+
+/* 
+  .team-grid_inner{
+    grid-column: 1 / -1;
+  }
+   */
+   /* Keep wrapper grid, but let the inner grid span all wrapper columns */
+.team-grid_inner{
+    grid-column: 1 / -1;        /* span every column of .team-grid */
+  }
+  
+  .container > .team-grid{
+    grid-column: 1 / -1;   /* span the page grid */
+    display: block;        /* override any old display:grid on this class */
+    width: 100%;
+  }
+  
+  /* 2) Make the INNER grid handle wrapping (simpler formula) */
+  .team-grid_inner{
+    --card-min: 11rem;      /* tweak as you like */
+    --card-max: 15.5rem;
+  
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
+    gap: 1.75rem .4rem;     /* row / column */
+    margin-bottom: 50px;
+  }
+  
+  /* 3) Cards — keep your look, but don't block wrapping */
+  .team-grid_item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: var(--card-max);  /* optional; centers inside wide tracks */
+    margin-inline: auto;
+  }
