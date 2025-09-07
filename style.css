@@ -22,19 +22,29 @@ body {
   font-weight: normal;
 }
 
+@font-face {
+  font-family: "Acumin-Light";
+  src: url('./fonts/Acumin Pro/Acumin\ Pro\ Light.otf') ;
+
+}
+
+@font-face {
+  font-family: "Acumin-Regular";
+  src: url('./fonts/Acumin Pro/Acumin\ Pro\ Book.otf') ;
+}
 
 .header {
-  font-family: "Headers";
+  font-family: "Acumin-Light";
   font-weight: 500;   
   background-color: #0e50c8;
   display: flex;           
   flex-wrap: wrap;        
-  gap: 1rem;   
+  gap: 4rem;   
   padding: 30px 30px;
   padding-top: 10px;
   padding-bottom: 10px;
-  font: 1.2em ;     
-  font-size: 1.5em;
+   
+  font-size: 1.1em;
   color: white;
   align-items: center;
   justify-content: space-between; 
@@ -43,13 +53,13 @@ body {
 
 }
 .button-header {
-  font-family: "Headers";
+  font-family: "Acumin-Light";
   font-weight: 500;   
   display: flex;           
   flex-wrap: wrap;        
   align-items: center;
   justify-content: center;
-  gap: 1rem; 
+  gap: 4rem; 
 }
 
 .mainbody {
@@ -188,8 +198,8 @@ img {
 
   .logo-svg {
     display: block;
-    width: auto;                  /* adjust to your real design size */
-    height: 40px;                  /* keep height fixed for stability */
+    width: auto;               
+    height: 30px;                 
     object-fit: contain;
   
   
@@ -540,7 +550,7 @@ transition-delay: var(--reveal-delay, 0ms);
 
 html { scrollbar-gutter: stable both-edges; }
 .header {  box-sizing: border-box; }
-.logo-svg { width: 160px; height: 40px; display: block; object-fit: contain; }
+.logo-svg { width: 100px; height: 25px; display: block; object-fit: contain; }
 
 #machine {
 flex: 1;            
