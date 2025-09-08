@@ -29,13 +29,13 @@ function spawnFloatingTags() {
 function drawDropZone() {
   fill(COLORS.blue); noStroke(); textAlign(CENTER, CENTER);
   textSize(14);
-  text(`DRAG UP TO ${UI.maxSelected} TAGS HERE`, dropZone.x + dropZone.w * 0.5, dropZone.y - 100);
+  text(`DRAG UP TO ${UI.maxSelected} TAGS HERE`, dropZone.x + dropZone.w * 0.5, dropZone.y + 100);
 
   noFill(); noStroke();
   rect(dropZone.x, dropZone.y, dropZone.w, dropZone.h, 10);
 
-  const cx = dropZone.x + dropZone.w * 0.5;
-  const cy = dropZone.y + dropZone.h*0.1;
+  const cx = dropZone.x + dropZone.w *0.5;
+  const cy = dropZone.y + dropZone.h*0.45;
   const r  = 28 + selected.length * 10;
   noStroke(); fill(COLORS.blueMid); 
   ellipse(cx, cy, r * 2);
