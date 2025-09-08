@@ -1,12 +1,12 @@
 // Layout controls
-let LAYOUT = 'top'; // 'top' | 'left'
+let LAYOUT = 'top'; // 'top' | 'left' | 'bottom'
 let sideBarW = 0; // width of the left panel when LAYOUT==='left'
 
 
 function computeTopBar() {
   if (isMobileViewport()) {
-  // Mobile: keep panel on TOP
-  LAYOUT = 'top';
+  // Mobile: put panel at BOTTOM
+  LAYOUT = 'bottom';
   topBarH = constrain(round(windowHeight * UI.topBarRatio), UI.topBarMin, UI.topBarMax);
   sideBarW = 0;
   } else {
