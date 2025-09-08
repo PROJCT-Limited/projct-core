@@ -71,7 +71,7 @@
       const bodyGap   = clamp(Math.round(usableW * 0.04), 18, 32);
       const ruleGap   = clamp(Math.round(usableW * 0.045), 18, 28);
       const rowH      = clamp(Math.round(usableW * 0.055), 16, 24);
-      const titleSize = clamp(Math.round(usableW * 0.095), 28, 48);
+      const titleSize = clamp(Math.round(usableW * 0.055), 20, 40);
       const bodySize  = clamp(Math.round(usableW * 0.045), 14, 20);
       return { outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize };
     }
@@ -128,7 +128,7 @@
       // Title
       textAlign(LEFT, TOP);
       setFill(THEME.white);
-      textSize(titleSize || TYPE.title);
+      textSize(titleSize|| TYPE.title);
       text(`“${title.toUpperCase()}“`, contentX, titleY, contentW, (titleSize || TYPE.title) * 2.2);
   
       // Tags
@@ -149,8 +149,9 @@
       }
   
       // Body
-      const bodyY = imgY + imageH + bodyGap;
+      const bodyY = imgY + imageH + bodyGap*2;
       textSize(bodySize || TYPE.body);
+      textAlign(LEFT);
       textLeading(Math.round((bodySize || TYPE.body) * 1.25));
       setFill(THEME.white);
       text(desc, contentX, bodyY, contentW);
