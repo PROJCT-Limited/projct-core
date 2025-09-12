@@ -1,6 +1,8 @@
 /* ui_topbar.js — styled info panel (desktop: left, mobile: bottom)
    Fully null-safe (does not read UI.* or COLORS.* directly) and avoids color() at load time. */
 
+
+
    (function () {
     // ----- SAFE LOCAL SETTINGS (do not depend on global UI/COLORS) -----
     const G = (typeof window !== "undefined") ? window : {};
@@ -63,45 +65,74 @@
   
     function metrics(usableW) {
       const outerPad  = clamp(Math.round(usableW * 0.035), 16, 28);
-      const titleY    = outerPad + 60;
+      const titleY    = outerPad + 10;
       const tagGap    = clamp(Math.round(usableW * 0.018), 8, 16);
-      const tagH      = clamp(Math.round(usableW * 0.072), 26, 44);
+      const tagH      = clamp(Math.round(usableW * 0.072), 18, 40);
       const imageW    = clamp(Math.round(usableW * 0.55), 240, 460);
       const imageH    = Math.round(imageW * 0.66); // ~3:2
       const bodyGap   = clamp(Math.round(usableW * 0.04), 18, 32);
       const ruleGap   = clamp(Math.round(usableW * 0.045), 18, 28);
       const rowH      = clamp(Math.round(usableW * 0.055), 16, 24);
-      const titleSize = clamp(Math.round(usableW * 0.055), 20, 40);
+      const titleSize = clamp(Math.round(usableW * 0.065), 24, 40);
       const bodySize  = clamp(Math.round(usableW * 0.045), 14, 20);
       return { outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize };
     }
-  
+ 
+    function useRegularFont() { if (typeof acuminRegular !== 'undefined' && acuminRegular) textFont(acuminRegular); }
+    function useLightFont()  { if (typeof acuminLight   !== 'undefined' && acuminLight)   textFont(acuminLight); }
+    
+
     // -------- MAIN DRAW (always defined) --------
     window.drawTopBar = function drawTopBar() {
       // Original panel bounds supplied by world.js
-      const panelW = (typeof sideBarW !== 'undefined' && isLeft()) ? sideBarW : width;
-      const panelH = isLeft() ? height : topBarH;
-  
-      // Margins we want: left + top + bottom (right stays flush)
-      const margin  = 24;
-      const innerW  = panelW - margin;      // subtract LEFT only → right is flush
-      const innerH  = panelH - margin * 2;  // subtract TOP + BOTTOM
-  
-      // Screen origin
-      const originX = 0;
-      const originY = isBottom() ? height - panelH : 0;
-  
-      push();
-      translate(originX, originY);
-  
-      // Draw the blue background inside margins
-      noStroke();
-      setFill(THEME.blue);
-      rect(margin, margin, innerW, innerH);
-  
-      // Move local origin to the inside of the blue panel
-      translate(margin, margin);
-  
+    
+  // Original panel bounds
+const panelW = (typeof sideBarW !== 'undefined' && LAYOUT === 'left') ? sideBarW : width+70;
+const panelH = (LAYOUT === 'left') ? height : topBarH;
+
+// Margins we want
+const margin = 24;
+
+// Measure DOM header
+function __measureHeader() {
+  try {
+    const sels = ['header', '.header', '#header', '.site-header', '.topbar', '.navbar', '.app-header', '.nav'];
+    let h = 0;
+    for (const s of sels) {
+      const el = document.querySelector(s);
+      if (el) {
+        const r = el.getBoundingClientRect();
+        h = Math.max(h, (r && (r.height || (r.bottom - r.top))) || 0);
+      }
+    }
+    return h;
+  } catch (e) { return 0; }
+}
+const domHeaderH = (typeof window.getHeaderHeight === 'function') ? window.getHeaderHeight() : __measureHeader();
+
+// Apply header offset only when the panel sits at the top edge (LEFT or TOP layouts)
+const applyHeaderOffset = (LAYOUT === 'left' || LAYOUT === 'top');
+const headerOffset = applyHeaderOffset ? domHeaderH : 0;
+
+// Final inner rect (blue area) — left + top + bottom margins; right edge flush
+const innerW = panelW+70 - margin;
+const innerH = panelH - headerOffset - margin * 2;
+
+// Screen origin (world.js may position bottom panel via originY)
+const originX = 0;
+const originY = (LAYOUT === 'bottom') ? height - panelH : 0;
+
+push();
+translate(originX, originY);
+
+// Draw blue background
+noStroke();
+setFill(THEME.blue);
+rect(margin, headerOffset + margin, innerW, innerH);
+
+// Move drawing origin into the blue panel
+translate(margin, headerOffset + margin);
+
       // Use the inner width for all layout math so content fits
       const {
         outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize
@@ -126,12 +157,15 @@
       const contentW = innerW - outerPad * 2;
   
       // Title
+      useLightFont();
       textAlign(LEFT, TOP);
       setFill(THEME.white);
       textSize(titleSize|| TYPE.title);
+      useLightFont();
       text(`“${title.toUpperCase()}“`, contentX, titleY, contentW, (titleSize || TYPE.title) * 2.2);
   
       // Tags
+      useLightFont();
       let tagX = contentX;
       const tagY = titleY + (titleSize || TYPE.title) + 22;
       for (let i = 0; i < tags.length; i++) {
@@ -141,34 +175,37 @@
       }
   
       // Image
-      const imgY = tagY + tagH + 28;
+      const imgY = tagY + tagH + 200;
       if (img && typeof img === "object") {
-        imageMode(CORNER); image(img, contentX, imgY, imageW, imageH);
+        imageMode(CORNER); 
+        image(img, contentX, imgY, imageW, imageH);
       } else {
         noFill(); setStroke(THEME.white); strokeWeight(2); rrect(contentX, imgY, imageW, imageH, 6); noStroke();
       }
   
       // Body
-      const bodyY = imgY + imageH + bodyGap*2;
-      textSize(bodySize || TYPE.body);
+      useLightFont();
+      const bodyY = imgY-150 + imageH + bodyGap*10;
+      textSize(bodySize /1.2|| TYPE.body);
       textAlign(LEFT);
       textLeading(Math.round((bodySize || TYPE.body) * 1.25));
       setFill(THEME.white);
       text(desc, contentX, bodyY, contentW);
   
       // Bottom meta block — measure against innerH (not panelH)
-      const blockTop = bodyY + Math.max(Math.round((bodySize || TYPE.body) * 3.2), 72) + ruleGap;
+      const blockTop = bodyY + Math.max(Math.round((bodySize || TYPE.body) * 10.2), 72) + ruleGap;
       const blockH   = rowH * 3 + 18;
       const blockY   = Math.min(blockTop, innerH - blockH - outerPad);
-  
+      useRegularFont();
       drawRule(contentX, blockY, contentW);
-      drawKVRow(contentX, blockY + 6,  contentW, "YEAR",      year, rowH);
+      drawKVRow(contentX, blockY + 4,  contentW, "YEAR",      year, rowH);
   
       drawRule(contentX, blockY + rowH + 6, contentW);
-      drawKVRow(contentX, blockY + rowH + 12, contentW, "CATEGORY",  cat,  rowH);
+      drawKVRow(contentX, blockY + rowH + 9, contentW, "CATEGORY",  cat,  rowH);
   
       drawRule(contentX, blockY + rowH * 2 + 12, contentW);
-      drawKVRow(contentX, blockY + rowH * 2 + 18, contentW, "TYPE",      type, rowH);
+      drawKVRow(contentX, blockY + rowH * 2 + 15, contentW, "TYPE",      type, rowH);
+      drawRule(contentX, blockY + rowH * 2 + 40, contentW);
   
       pop();
     };
