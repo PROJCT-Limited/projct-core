@@ -13,42 +13,42 @@ function placeNodeNoOverlap(newNode, others, bounds, maxTries = 250, pad = 6) {
     return false;
   }
   
-  /* === Select-mode Tag bubble === */
-  class TagNode {
-    constructor(label, x, y, tags) {
-      this.label = label;
-      this.x = x; this.y = y;
-      this.r = UI.rTag;
-      this.tags = tags;
-      this.vx = 0; this.vy = 0; this.fx = 0; this.fy = 0;
-      this.dragging = false; this.dx = 0; this.dy = 0;
-    }
-    isInside(wx, wy){ return dist(wx, wy, this.x, this.y) < this.r + 12; }
-    resetForces(){ this.fx = 0; this.fy = 0; }
-    applyRepulsion(others){
-      for (const o of others) {
-        if (o === this) continue;
-        const dx = this.x - o.x, dy = this.y - o.y;
-        const d2 = dx*dx + dy*dy + 0.1;
-        const inv = 1 / Math.sqrt(d2);
-        const f = UI.repulseTag / d2;
-        this.fx += dx * inv * f; this.fy += dy * inv * f;
-      }
-    }
-    update(){
-      if (this.dragging) return;
-      this.vx += this.fx * 0.01; this.vy += this.fy * 0.01;
-      this.vx *= 0.92; this.vy *= 0.92;
-      this.x += this.vx; this.y += this.vy;
-      this.x = constrain(this.x, this.r, baseWidth - this.r);
-      this.y = constrain(this.y, this.r, baseHeight - this.r);
-    }
-    display(){
-      noStroke(); fill(COLORS.tagFill); ellipse(this.x, this.y, this.r * 2);
-      fill(COLORS.tagFill); textSize(UI.fontNode); textAlign(CENTER, TOP);
-      text(this.label, this.x, this.y + this.r + 6);
-    }
-  }
+  // /* === Select-mode Tag bubble === */
+  // class TagNode {
+  //   constructor(label, x, y, tags) {
+  //     this.label = label;
+  //     this.x = x; this.y = y;
+  //     this.r = UI.rTag;
+  //     this.tags = tags;
+  //     this.vx = 0; this.vy = 0; this.fx = 0; this.fy = 0;
+  //     this.dragging = false; this.dx = 0; this.dy = 0;
+  //   }
+  //   isInside(wx, wy){ return dist(wx, wy, this.x, this.y) < this.r + 12; }
+  //   resetForces(){ this.fx = 0; this.fy = 0; }
+  //   applyRepulsion(others){
+  //     for (const o of others) {
+  //       if (o === this) continue;
+  //       const dx = this.x - o.x, dy = this.y - o.y;
+  //       const d2 = dx*dx + dy*dy + 0.1;
+  //       const inv = 1 / Math.sqrt(d2);
+  //       const f = UI.repulseTag / d2;
+  //       this.fx += dx * inv * f; this.fy += dy * inv * f;
+  //     }
+  //   }
+  //   update(){
+  //     if (this.dragging) return;
+  //     this.vx += this.fx * 0.01; this.vy += this.fy * 0.01;
+  //     this.vx *= 0.92; this.vy *= 0.92;
+  //     this.x += this.vx; this.y += this.vy;
+  //     this.x = constrain(this.x, this.r, baseWidth - this.r);
+  //     this.y = constrain(this.y, this.r, baseHeight - this.r);
+  //   }
+  //   display(){
+  //     noStroke(); fill(COLORS.tagFill); ellipse(this.x, this.y, this.r * 2);
+  //     fill(COLORS.tagFill); textSize(UI.fontNode); textAlign(CENTER, TOP);
+  //     text(this.label, this.x, this.y + this.r + 6);
+  //   }
+  // }
   
   /* === Graph Node with birth animation === */
   class GraphNode {
@@ -166,6 +166,17 @@ if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
     
   }
   
+  // Ensure every GraphNode can be hit-tested in WORLD coords
+if (typeof GraphNode !== "undefined" && typeof GraphNode.prototype.isPointInside !== "function") {
+  GraphNode.prototype.isPointInside = function (wx, wy) {
+    const r =
+      (typeof this.pickRadius === "function" && this.pickRadius()) ||
+      this.baseR || this.r || (UI && UI.rNode) || 16;
+    const dx = wx - this.x, dy = wy - this.y;
+    return (dx * dx + dy * dy) <= (r * r);
+  };
+}
+
   /* === Spring link === */
   class GraphLink {
     constructor(a,b){ this.a=a; this.b=b; this.restLength=UI.linkRest; this.strength=0.035; }
@@ -182,5 +193,53 @@ if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
       if (hoveredNode && (this.a === hoveredNode || this.b === hoveredNode)) stroke(0);
       line(this.a.x, this.a.y, this.b.x, this.b.y);
     }
+    
   }
   
+
+ /* === Select-mode Tag bubble (floating + hit-test) === */
+/* === Select-mode Tag bubble (smooth floating + hit-test) === */
+/* === Select-mode Tag bubble (your original float) === */
+/* === Select-mode Tag bubble (original float) === */
+class TagNode {
+  constructor(label, x, y, tags) {
+    this.label = label;
+    this.x = x; this.y = y;
+    this.r = UI.rTag;
+    // Always store an array so downstream code is safe:
+    this.tags =
+      Array.isArray(tags) ? tags.slice()
+      : (typeof tags === "string" && tags.length ? [tags]
+      : [label]);
+
+    this.vx = 0; this.vy = 0; this.fx = 0; this.fy = 0;
+    this.dragging = false; this.dx = 0; this.dy = 0;
+  }
+  isInside(wx, wy){ return dist(wx, wy, this.x, this.y) < this.r + 12; }
+  resetForces(){ this.fx = 0; this.fy = 0; }
+  applyRepulsion(others){
+    for (const o of others) {
+      if (o === this) continue;
+      const dx = this.x - o.x, dy = this.y - o.y;
+      const d2 = dx*dx + dy*dy + 0.1;
+      const inv = 1 / Math.sqrt(d2);
+      const f = UI.repulseTag / d2;
+      this.fx += dx * inv * f; this.fy += dy * inv * f;
+    }
+  }
+  update(){
+    if (this.dragging) return;
+    this.vx += this.fx * 0.01; this.vy += this.fy * 0.01;
+    this.vx *= 0.92; this.vy *= 0.92;
+    this.x += this.vx; this.y += this.vy;
+    this.x = constrain(this.x, this.r, baseWidth - this.r);
+    this.y = constrain(this.y, this.r, baseHeight - this.r);
+  }
+  display(){
+    noStroke(); fill(COLORS.tagFill); ellipse(this.x, this.y, this.r * 2);
+    fill(COLORS.tagFill); textSize(UI.fontNode); textAlign(CENTER, TOP);
+    text(this.label, this.x, this.y + this.r + 6);
+  }
+}
+// Back-compat if something still references TagBubble
+const TagBubble = TagNode;
