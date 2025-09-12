@@ -28,3 +28,13 @@ let centerNode = null;
 let draggingNode = null;
 let hoveredNode = null;
 let activeNode = null;
+
+
+
+// NEW: entry/transition flags
+let showBluePanel = false;      // false on entry; true after launch
+let entryCircleAlpha = 255;     // fades out after launch
+let entryCircleFading = false;  // start fading once we launch
+
+// Where the 0/3 circle lives (WORLD coords)
+let playCircle = { x: 0, y: 0, r: 120 };
