@@ -275,62 +275,89 @@ function focusNodeGraph(targetNode) {
   
   // Build graph from current selection
   function launchGraphFromSelection() {
+    // Flip mode/UI FIRST so draw() shows the panel no matter what
     mode = "graph";
+    showBluePanel = true;
+    entryCircleFading = true;
   
-    const selectedTags = [];
-    for (const s of selected) s.tags.forEach(t => selectedTags.push(t));
+    // Safe defaults
+    const maxSel = UI?.maxSelected ?? 3;
+    const startX = (playCircle && Number.isFinite(playCircle.x)) ? playCircle.x : baseWidth * 0.5;
+    const startY = (playCircle && Number.isFinite(playCircle.y)) ? playCircle.y : baseHeight * 0.5;
+    const ringR  = UI?.spawnRadius ?? 140;
   
-    const chosen = pickBestProject(selectedTags);
-    nodes = []; links = [];
-  
-    if (!chosen) {
-      centerNode = new GraphNode("No match", baseWidth/2, baseHeight/2, [], true, false, {
-        desc: "No project matches your selection. Try different tags.",
-        category: "Center"
-      });
-      centerNode.fixed = true; nodes.push(centerNode); activeNode = centerNode;
-      return;
+    // Build a flat list of tags from the selection
+    const selTags = [];
+    if (Array.isArray(selected)) {
+      for (const s of selected) {
+        if (!s) continue;
+        if (Array.isArray(s.tags)) selTags.push(...s.tags);
+        else if (typeof s.label === "string") selTags.push(s.label);
+      }
     }
   
-    const { cx, cy } = graphScreenCenter();
-    centerNode = new GraphNode(
-      chosen.title,
-      cx / (scaleFactor || 1),
-      cy / (scaleFactor || 1),
-      chosen.tags,
-      true, false,
-      chosen.info || {}
-    );
-    centerNode.fixed = true; nodes.push(centerNode); activeNode = centerNode;
+    // Reset graph containers
+    nodes = []; links = [];
+    centerNode = null; activeNode = null;
   
-    // const children = buildChildrenForProject(chosen, selectedTags);
-    // const N = children.length; const off = random(TWO_PI);
+    // Try to pick a focus item if a helper exists
+    let focus = null;
+    try { if (typeof pickBestProject === "function") focus = pickBestProject(selTags); } catch (e) {}
   
-    // for (let i = 0; i < N; i++) {
-    //   const a = off + (TWO_PI * i) / Math.max(1, N);
-    //   const c = children[i];
-    //   const child = new GraphNode(c.title, centerNode.x, centerNode.y, c.tags || [], false, true, {
-    //     desc: c.desc || "—",
-    //     category: c.category || "Child"
-    //   });
-    //   child.birth.parent = centerNode;
-    //   child.birth.angle  = a;
-    //   child.birth.kick   = UI.kick;
+    // Create center node no matter what
+    const centerTitle = (focus && (focus.title || focus.name)) || "Your selection";
+    const centerInfo  = (focus && focus.info) || {};
+    const centerTags  = (focus && Array.isArray(focus.tags)) ? focus.tags.slice() : selTags.slice();
   
-    //   nodes.push(child);
-    //   const L = new GraphLink(centerNode, child);
-    //   L.restLength = UI.childRest;
-    //   links.push(L);
-    // }
+    centerNode = new GraphNode(centerTitle, startX, startY, centerTags, true, false, centerInfo);
+    nodes.push(centerNode);
+    activeNode = centerNode;
   
-    // // Light cross-links among children that share a tag
-    // for (let i = 1; i < nodes.length; i++) {
-    //   for (let j = i + 1; j < nodes.length; j++) {
-    //     if (nodes[i].sharesTagWith && nodes[i].sharesTagWith(nodes[j])) {
-    //       links.push(new GraphLink(nodes[i], nodes[j]));
-    //     }
-    //   }
-    // }
+    // Collect expansion payload
+    let payload = [];
+    try {
+      if (typeof buildExpandedForFocus === "function") {
+        const ex = buildExpandedForFocus(focus || centerNode, selTags) || {};
+        if (Array.isArray(ex.children)) payload = payload.concat(ex.children);
+        if (Array.isArray(ex.related))  payload = payload.concat(ex.related);
+      } else if (focus && Array.isArray(focus.children)) {
+        payload = payload.concat(focus.children);
+      }
+    } catch (e) {
+      // fall back silently
+    }
+  
+    // Absolute fallback: if nothing to expand, use the selected tags as children
+    if (payload.length === 0 && selTags.length) {
+      payload = selTags.map((t, i) => ({ title: String(t), tags: [t], info: { category: "Tag" }}));
+    }
+  
+    // Spawn children in a ring around the circle
+    const N   = payload.length;
+    const off = Math.random() * Math.PI * 2;
+    for (let i = 0; i < N; i++) {
+      const p = payload[i] || {};
+      const a = off + (i / Math.max(1, N)) * Math.PI * 2;
+      const x = startX + Math.cos(a) * ringR;
+      const y = startY + Math.sin(a) * ringR;
+  
+      const child = new GraphNode(
+        p.title || p.name || `Node ${i + 1}`,
+        x, y,
+        Array.isArray(p.tags) ? p.tags.slice() : [],
+        false, true,
+        p.info || {}
+      );
+      child.spawned = true;
+      child.spawnT  = 0;
+  
+      nodes.push(child);
+      if (typeof GraphLink === "function") links.push(new GraphLink(centerNode, child));
+    }
+  
+    // Nudge layout & camera if helpers exist
+    try { if (typeof restartLayout === "function") restartLayout(); } catch(e){}
+    try { if (typeof centerCameraOnNode === "function") centerCameraOnNode(centerNode, false); } catch(e){}
   }
   
 
@@ -458,6 +485,9 @@ function focusNodeGraph(targetNode) {
 
 
 function runGraph() {
+  if (entryCircleFading && entryCircleAlpha > 0) {
+    entryCircleAlpha = max(0, entryCircleAlpha - 18); // ~14 frames to disappear
+  }
   // --- HOVER PICK (for the blue panel) ---
   hoveredNode = null;
   const hitR = Math.max(24, (UI.rNode || 19) * (scaleFactor || 1) * 1.25);
@@ -524,3 +554,33 @@ function centerCameraOnNode(n, instant = false) {
     cam.tx = tx; cam.ty = ty; // eased in runGraph()
   }
 }
+
+// === Header height (from the DOM) ===
+window.getHeaderHeight = function() {
+  try {
+    const sels = ['header','.header','#header','.site-header','.topbar','.navbar','.app-header','.nav'];
+    let h = 0;
+    for (const s of sels) {
+      const el = document.querySelector(s);
+      if (el) { const r = el.getBoundingClientRect(); h = Math.max(h, (r?.height || (r.bottom - r.top)) || 0); }
+    }
+    return h;
+  } catch { return 0; }
+};
+
+// === White graph area (canvas minus header and blue panel) ===
+window.getGraphViewport = function() {
+  const leftW   = (typeof LAYOUT !== "undefined" && LAYOUT === "left")   ? (sideBarW||0) : 0;
+  const topH    = (typeof LAYOUT !== "undefined" && LAYOUT === "top")    ? (topBarH||0)  : 0;
+  const bottomH = (typeof LAYOUT !== "undefined" && LAYOUT === "bottom") ? (topBarH||0)  : 0;
+  const headerH = window.getHeaderHeight ? window.getHeaderHeight() : 0;
+
+  const W = (typeof width  === "number") ? width  : 0;
+  const H = (typeof height === "number") ? height : 0;
+
+  const x = leftW;
+  const y = headerH + topH;
+  const w = Math.max(0, W - leftW);
+  const h = Math.max(0, H - headerH - (leftW ? 0 : (topH + bottomH)));
+  return { x, y, w, h };
+};
