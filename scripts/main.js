@@ -1,3 +1,12 @@
+let acuminRegular;   
+let acuminLight;    
+
+
+function preload() {
+  acuminLight = loadFont('./fonts/Acumin-Pro/Acumin-Pro-Book.otf'); 
+ acuminRegular  = loadFont('./fonts/Acumin-Pro/Acumin-Pro-Light.otf');
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   sizeToViewport();                     
@@ -49,45 +58,32 @@ function windowResized() {
 }
 
 function draw() {
-  background(COLORS.bg);
+  background(COLORS?.bg ?? 255);
 
-  drawTopBar();
-
-  // update world pointer
-  const wpt = screenToWorld(pointer.x, pointer.y);
-  pointer.worldX = wpt.x; pointer.worldY = wpt.y;
-
-  // after updating pointer.worldX/Y
-if (pointer.dragging && pointer.dragNode) {
-  const n = pointer.dragNode;
-  n.x = pointer.worldX; n.y = pointer.worldY;
-  n.vx = 0; n.vy = 0;
-}
-
-
-  if (mode === "select") {
-    // tag physics
-    for (const n of tagNodes) { n.resetForces(); n.applyRepulsion(tagNodes); }
-    for (const n of tagNodes) n.update();
-
-    // world render
-    push(); translate(worldOffsetX, worldOffsetY); scale(scaleFactor);
-    drawDropZone();
-    for (const n of tagNodes) n.display();
-    pop();
-
-    drawPlayButton();
-  } else {
-    runGraph();
+  if (entryCircleFading && entryCircleAlpha > 0) {
+    entryCircleAlpha = Math.max(0, entryCircleAlpha - 18);
+    if (entryCircleAlpha === 0) entryCircleFading = false;
   }
 
-  if (!isMobileViewport()) {
-    noCursor();
-    fill(COLORS.blue); noStroke();
-    circle(pointer.x, pointer.y, 20);
-    } else {
-    cursor(ARROW); // normal touch/drag, no custom circle cursor
+  push();
+  if (mode === "select") {
+    translate(0, 0); scale(1);
+    drawSelectScreen();
+  } else {
+    translate(worldOffsetX || 0, worldOffsetY || 0);
+    scale(scaleFactor || 1);
+
+    if (entryCircleAlpha > 0 && playCircle?.x != null) {
+      fillWithAlpha(COLORS.blue, entryCircleAlpha);
+      noStroke();
+      circle(playCircle.x, playCircle.y, (playCircle.r || 120) * 2);
     }
 
-  if (pointer.justReleased) pointer.justReleased = false;
+    if (typeof runGraph === "function") runGraph();
+  }
+  pop();
+
+  if (mode === "graph" && showBluePanel && typeof drawTopBar === "function") {
+    drawTopBar();
+  }
 }
