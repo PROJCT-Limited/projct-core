@@ -13,16 +13,27 @@ let cam = {
   easing: 0.18 // 0..1 (higher = faster)
 };
 
+// === Normalization helpers (added) ===
+const _canonTag = (typeof canonicalizeTag === "function")
+  ? canonicalizeTag
+  : (t => String(t || "").trim());
 
-// Build once after PROJECTS is loaded
+const _canonTags = (arr) => {
+  const seen = new Set(); const out = [];
+  (arr || []).forEach(t => { const k = _canonTag(t); if (k && !seen.has(k)) { seen.add(k); out.push(k); } });
+  return out;
+};
+
+
+// Build a flat registry from config.js ONLY (projects + children), tags canonicalized
 function buildTagRegistry() {
   const list = [];
 
-  for (const p of PROJECTS) {
+  for (const p of (Array.isArray(PROJECTS) ? PROJECTS : [])) {
     list.push({
       kind: "project",
       title: p.title,
-      tags: Array.isArray(p.tags) ? p.tags.slice() : [],
+      tags: _canonTags(p.tags),
       info: p.info || { category: "Project" },
       parent: null
     });
@@ -32,58 +43,66 @@ function buildTagRegistry() {
         list.push({
           kind: "child",
           title: c.title,
-          tags: Array.isArray(c.tags) ? c.tags.slice() : [],
-          info: (c.info || { category: "Subnode" }),
+          tags: _canonTags(c.tags),
+          info: c.info || { category: "Subnode" },
           parent: p.title
         });
       }
     }
   }
+
   return list;
 }
 
 const TAG_REGISTRY = buildTagRegistry();
 
 
+
+
 function tagsIntersect(a, b) {
-  if (!Array.isArray(a) || !Array.isArray(b)) return false;
-  const set = new Set(a);
-  for (const t of b) if (set.has(t)) return true;
+  const A = new Set(_canonTags(a));
+  for (const t of _canonTags(b)) if (A.has(t)) return true;
   return false;
 }
 
 
 
+// Title → definitive node (merged tags/children) from config.js only
 function buildNodeRegistry() {
   const reg = new Map();
+
   function upsert(def) {
     if (!def || !def.title) return;
     if (!reg.has(def.title)) {
       reg.set(def.title, {
         title: def.title,
-        tags: Array.isArray(def.tags) ? def.tags.slice() : [],
+        tags: _canonTags(def.tags),
         info: def.info || {},
         children: Array.isArray(def.children) ? def.children.slice() : []
       });
     } else {
       const cur = reg.get(def.title);
       const tagSet = new Set(cur.tags);
-      for (const t of (def.tags || [])) tagSet.add(t);
+      _canonTags(def.tags).forEach(t => tagSet.add(t));
       cur.tags = Array.from(tagSet);
       if (Array.isArray(def.children)) {
-        const byTitle = new Map(cur.children.map(c => [c.title, c]));
-        for (const c of def.children) if (!byTitle.has(c.title)) cur.children.push(c);
+        const have = new Set(cur.children.map(c => c.title));
+        def.children.forEach(c => { if (!have.has(c.title)) cur.children.push(c); });
       }
       if (def.info) cur.info = { ...cur.info, ...def.info };
     }
   }
-  for (const p of PROJECTS) {
+
+  for (const p of (Array.isArray(PROJECTS) ? PROJECTS : [])) {
     upsert(p);
-    if (Array.isArray(p.children)) for (const c of p.children) upsert(c);
+    (p.children || []).forEach(upsert);
   }
+
   return reg;
 }
+
 const NODE_REGISTRY = buildNodeRegistry();
+
 
 
 function getDirectRelatives(centerTitle) {
@@ -98,101 +117,118 @@ function getDirectRelatives(centerTitle) {
 
 
 function getRelativesByTags(centerNode) {
-  const centerTags = Array.isArray(centerNode.tags) ? centerNode.tags : [];
+  const centerTags = _canonTags(centerNode.tags);
   const parents = [];
   const children = [];
 
-  // First: collect parents (projects) that match center tags
+  // Parents: all projects sharing at least one tag
   for (const p of PROJECTS) {
-    const projectTagsHit = tagsIntersect(centerTags, p.tags || []);
-    const anyChildHit = Array.isArray(p.children) && p.children.some(c => tagsIntersect(centerTags, c.tags || []));
-    if (projectTagsHit || anyChildHit) {
-      // avoid considering the project as a "parent" if the center itself IS that project
-      if (centerNode.title !== p.title) {
-        parents.push({
-          kind: "project",
-          title: p.title,
-          tags: p.tags || [],
-          info: p.info || { category: "Project" },
-          parent: null
-        });
+    const pt = _canonTags(p.tags);
+    if (tagsIntersect(centerTags, pt)) {
+      parents.push({ title: p.title, tags: pt, info: p.info || { category: "Project" }, parent: null });
+    }
+  }
+
+  // Children: prefer definitional children from NODE_REGISTRY
+  const def = NODE_REGISTRY.get(centerNode.title);
+  if (def && Array.isArray(def.children)) {
+    def.children.forEach(c => {
+      children.push({ title: c.title, tags: _canonTags(c.tags), info: c.info || { category: "Subnode" } });
+    });
+  } else {
+    // Otherwise, include other defined nodes by tag match (excluding parents & center)
+    const parentTitles = new Set(parents.map(p => p.title));
+    for (const n of TAG_REGISTRY) {
+      if ((n.title || "") === centerNode.title) continue;
+      if (parentTitles.has(n.title)) continue;
+      const nt = _canonTags(n.tags);
+      if (tagsIntersect(centerTags, nt)) {
+        children.push({ title: n.title, tags: nt, info: n.info || { category: n.kind === 'project' ? 'Project' : 'Subnode' } });
       }
     }
   }
 
-  // Then: all other nodes that match by tags (excluding center + parents)
-  const parentTitles = new Set(parents.map(p => p.title));
-  for (const n of TAG_REGISTRY) {
-    if (n.title === centerNode.title) continue;
-    if (parentTitles.has(n.title)) continue;
-    if (tagsIntersect(centerTags, n.tags || [])) {
-      children.push({ ...n });
-    }
-  }
-
-  // Optional: cap the size to avoid visual overload (tweak or remove)
   const MAX_CHILDREN = 18;
   return { parents, children: children.slice(0, MAX_CHILDREN) };
 }
 
 
 
+
 // Choose best project (prefer AND; fallback to best OR)
+// Prefer AND match (all selected tags). Fallback to best OR overlap.
 function pickBestProject(selectedTags) {
-    const sel = new Set(selectedTags);
-    if (sel.size === 0) return null;
-  
-    let candidates = PROJECTS.filter(p => [...sel].every(t => p.tags.includes(t)));
-    if (candidates.length === 0) {
-      candidates = PROJECTS
-        .map(p => ({ p, overlap: p.tags.filter(t => sel.has(t)).length }))
-        .filter(x => x.overlap > 0)
-        .sort((a, b) => b.overlap - a.overlap)
-        .map(x => x.p);
-    }
-    return candidates[0] || null;
+  const sel = new Set(_canonTags(selectedTags));
+  if (sel.size === 0) return null;
+
+  // Strict AND
+  let candidates = PROJECTS.filter(p => {
+    const ptags = new Set(_canonTags(p.tags));
+    for (const t of sel) if (!ptags.has(t)) return false;
+    return true;
+  });
+
+  if (candidates.length === 0) {
+    candidates = PROJECTS
+      .map(p => {
+        const ptags = new Set(_canonTags(p.tags));
+        let overlap = 0; for (const t of sel) if (ptags.has(t)) overlap++;
+        return { p, overlap };
+      })
+      .filter(x => x.overlap > 0)
+      .sort((a, b) => (b.overlap - a.overlap) || a.p.title.localeCompare(b.p.title))
+      .map(x => x.p);
   }
+  return candidates[0] || null;
+}
+
 
   // Build an expanded subgraph for a focus node:
 // - center node
 // - its explicit .children (from PROJECTS dataset)
 // - plus "related" nodes that share at least one tag with the focus or its children.
-function buildExpandedForFocus(focusTitle) {
+// Build an expanded subgraph using only config.js
+function buildExpandedForFocus(focusInput) {
+  // accept a title string, GraphNode, or project object
+  let title = null;
+  if (typeof focusInput === "string") title = focusInput;
+  else if (focusInput && typeof focusInput.title === "string") title = focusInput.title;
+
   const byTitle = new Map(PROJECTS.map(p => [p.title, p]));
-  const focus = byTitle.get(focusTitle);
+  const focus = byTitle.get(title);
   if (!focus) return { center: null, children: [], related: [] };
 
-  const tagPool = new Set(focus.tags || []);
+  const tagPool = new Set(_canonTags(focus.tags));
 
   const explicitChildren = (focus.children || []).map(c => ({
     title: c.title,
-    tags: c.tags || [],
+    tags: _canonTags(c.tags),
     info: c.info || { category: "Subnode" }
   }));
 
-  // include children tags into the pool
+  // include children tags
   for (const c of explicitChildren) for (const t of (c.tags || [])) tagPool.add(t);
 
-  // related-by-tag from other projects (avoid duplicates and self)
+  // related = other projects sharing a tag in the pool (exclude focus)
   const related = [];
   for (const p of PROJECTS) {
     if (p.title === focus.title) continue;
-    if (!Array.isArray(p.tags) || p.tags.length === 0) continue;
-    if (p.tags.some(t => tagPool.has(t))) {
-      related.push({
-        title: p.title,
-        tags: p.tags.slice(),
-        info: (p.info || { category: "Related" })
-      });
+    const pt = _canonTags(p.tags);
+    if ([...pt].some(t => tagPool.has(t))) {
+      related.push({ title: p.title, tags: pt, info: p.info || { category: "Project" } });
     }
   }
 
-  // de-duplicate by title against explicit children
-  const childTitles = new Set(explicitChildren.map(c => c.title));
-  const relatedUnique = related.filter(r => !childTitles.has(r.title));
+  // De-dupe related by title
+  const relSeen = new Set();
+  const relatedUnique = [];
+  for (const r of related) {
+    if (!relSeen.has(r.title)) { relSeen.add(r.title); relatedUnique.push(r); }
+  }
 
   return { center: focus, children: explicitChildren, related: relatedUnique };
 }
+
 
 
 // Recenter and enlarge the given node, rebuild nodes/links around it.
@@ -523,23 +559,25 @@ pop();
 
 
 // Where is the *visible* graph center on screen, excluding the blue panel?
+// Replace your current versions with these (they have no stray logs)
+
+// Where is the *visible* graph center on screen, excluding the blue panel?
 function graphScreenCenter() {
   const sW = (typeof baseWidth  !== "undefined") ? baseWidth  : width;
   const sH = (typeof baseHeight !== "undefined") ? baseHeight : height;
- 
 
-  // Blue panel sizes you already use in ui_topbar.js
-  const panelLeft  = (typeof LAYOUT !== "undefined" && LAYOUT === "left") ? (sideBarW || 0) : 0;
-  const panelTop   = (typeof LAYOUT !== "undefined" && LAYOUT === "top")  ? (topBarH || 0)  : 0;
+  // Blue panel sizes you already use
+  const panelLeft = (typeof LAYOUT !== "undefined" && LAYOUT === "left") ? (sideBarW || 0) : 0;
+  const panelTop  = (typeof LAYOUT !== "undefined" && LAYOUT === "top")  ? (topBarH || 0)  : 0;
 
   const availW = sW - panelLeft;
   const availH = sH - panelTop;
 
-  const cx = panelLeft + availW / 2;  // middle of the usable width
-  const cy = panelTop  + availH / 2;  // middle of the usable height
+  const cx = panelLeft + availW / 2;
+  const cy = panelTop  + availH / 2;
   return { cx, cy };
 }
-console.log(cx)
+
 // Smooth camera to put a world point under the screen’s graph center
 function centerCameraOnNode(n, instant = false) {
   const s = (scaleFactor || 1);
@@ -551,9 +589,10 @@ function centerCameraOnNode(n, instant = false) {
     worldOffsetX = tx; worldOffsetY = ty;
     cam.tx = tx; cam.ty = ty;
   } else {
-    cam.tx = tx; cam.ty = ty; // eased in runGraph()
+    cam.tx = tx; cam.ty = ty; // eased each frame in runGraph()
   }
 }
+
 
 // === Header height (from the DOM) ===
 window.getHeaderHeight = function() {
