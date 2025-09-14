@@ -16,119 +16,77 @@ const TAGS = [
   { label: "Climate",    tags: ["Context"] },
 ];
 
-// Project dataset
 const PROJECTS = [
+  // ——— EXHIBIT / CLIMATE CLUSTER ———
   {
-    title: "Climate change",
-    tags: ["People","Purpose","brand repositioning","campaign","social"],
-    info: { desc: "A multi-year initiative connecting people to action on climate.",
-            category: "Project", tools: "Workshops, Social, Campaign" },
+    title: "Climate Exhibit Design",
+    tags: ["Context","Purpose","exhibit"],
+    info: { category: "Project", desc: "Designing an exhibition experience informed by climate context and clear purpose." },
     children: [
-      { title: "Campaign A",
-        tags: ["campaign"],
-        info: { category: "Subnode", desc: "Flagship campaign concept and rollout." },
-        children: [
-          { title: "Channels", tags: ["social"], info: { category: "Detail", desc: "Owned/paid social mix." } },
-          { title: "KPIs",     tags: ["measurement"], info: { category: "Detail", desc: "Reach, CTR, sign-ups." } }
-        ]
-      },
-      { title: "New York",
-        tags: ["brand"],         // was "branding" — normalize if you prefer
-        info: { category: "Subnode", desc: "Local activation in NYC." },
-        children: [
-          { title: "Partners", tags: ["People"], info: { category: "Detail", desc: "NGO + city partners." } }
-        ]
-      }
+      { title: "Experience Map", tags: ["Process","exhibit"], info: { category: "Subnode", desc: "Visitor flow & touchpoints." } },
+      { title: "Narrative Goals", tags: ["Purpose","climate"], info: { category: "Subnode", desc: "Story spine & outcomes." } }
+    ]
+  },
+  {
+    title: "Community Climate Mission",
+    tags: ["Context","People","climate"],
+    info: { category: "Project", desc: "Mobilizing communities around climate objectives." },
+    children: [
+      { title: "Partner Network", tags: ["People","climate"], info: { category: "Subnode", desc: "NGOs & local orgs." } },
+      { title: "Campaign Brief", tags: ["Purpose","campaign"], info: { category: "Subnode", desc: "Why now, who, how." } }
+    ]
+  },
+  {
+    title: "Museum Installations Program",
+    tags: ["Process","Research","exhibit"],
+    info: { category: "Project", desc: "Rapidly prototyping museum exhibits with visitors." },
+    children: [
+      { title: "Floor Tests", tags: ["prototype","exhibit"], info: { category: "Subnode", desc: "On-site quick trials." } },
+      { title: "Visitor Interviews", tags: ["Research","people"], info: { category: "Subnode", desc: "Qual insights." } }
+    ]
+  },
+  {
+    title: "Climate Story Toolkit",
+    tags: ["Purpose","Research","climate"],
+    info: { category: "Project", desc: "Evidence-backed frames for climate communication." },
+    children: [
+      { title: "Frame Library", tags: ["Purpose","climate"], info: { category: "Subnode", desc: "Reusable narratives." } },
+      { title: "Evidence Notes", tags: ["Research"], info: { category: "Subnode", desc: "Citations & signals." } }
     ]
   },
 
+  // ——— CAMPAIGN / COMMUNITY CLUSTER ———
   {
-    title: "Social housing",
-    tags: ["Research","Context","campaign","social"],
-    info: { desc: "Research-led proposals for accessible housing models.",
-            category: "Project", tools: "Research, Policy, Mapping" },
+    title: "Neighborhood Activation Campaign",
+    tags: ["Purpose","People","campaign"],
+    info: { category: "Project", desc: "Community-led activations to drive participation." },
     children: [
-      { title: "Social Drops",
-        tags: ["social"],
-        info: { category: "Subnode", desc: "Micro-stories distributed via social." },
-        children: [
-          { title: "Editorial Plan", tags: ["Process"], info: { category: "Detail", desc: "Cadence, themes." } }
-        ]
-      }
+      { title: "Street Kit", tags: ["Process","campaign"], info: { category: "Subnode", desc: "Assets & playbook." } },
+      { title: "Ambassador Roster", tags: ["People"], info: { category: "Subnode", desc: "Local champions." } }
+    ]
+  },
+  {
+    title: "Civic Feedback Loop",
+    tags: ["Process","Research","campaign"],
+    info: { category: "Project", desc: "Closing the loop between outreach and policy." },
+    children: [
+      { title: "Feedback Board", tags: ["Process","ops"], info: { category: "Subnode", desc: "Collection & routing." } },
+      { title: "Signal Review", tags: ["Research"], info: { category: "Subnode", desc: "Weekly synthesis." } }
+    ]
+  },
+  {
+    title: "Audience Narrative Study",
+    tags: ["Purpose","Research","campaign"],
+    info: { category: "Project", desc: "Purpose-led narratives validated with audiences." },
+    children: [
+      { title: "Message Test", tags: ["Research"], info: { category: "Subnode", desc: "Qual/quant validation." } },
+      { title: "Story Frames", tags: ["Purpose"], info: { category: "Subnode", desc: "Frames that travel." } }
     ]
   },
 
-  {
-    title: "Social cause",
-    tags: ["Purpose","Process"],
-    info: { desc: "Brand platform to activate a social mission at scale.",
-            category: "Project", tools: "Brand, Content" },
-    children: [
-      { title: "Retail Pilot",
-        tags: ["retail"],
-        info: { category: "Subnode", desc: "In-store pilot to validate the concept." },
-        children: [
-          { title: "POS Kit", tags: ["tools"], info: { category: "Detail", desc: "Signage & staff guide." } }
-        ]
-      }
-    ]
-  },
 
-  {
-    title: "Specific time",
-    tags: ["Process","People"],
-    info: { desc: "Rapid prototyping to validate ideas with real users.",
-            category: "Project", tools: "Prototyping, Testing" },
-    children: [
-      { title: "Prototype 1",
-        tags: ["innovation"],
-        info: { category: "Subnode", desc: "Low-fidelity workflow test." },
-        children: [
-          { title: "User Tasks", tags: ["Research"], info: { category: "Detail", desc: "Critical tasks list." } }
-        ]
-      },
-      { title: "Prototype 2",
-        tags: ["innovation"],
-        info: { category: "Subnode", desc: "Hi-fidelity UI validation." },
-        children: [
-          { title: "Findings", tags: ["Context"], info: { category: "Detail", desc: "Top issues & wins." } }
-        ]
-      }
-    ]
-  },
-
-  {
-    title: "Context",
-    tags: ["Research","Context"],
-    info: { desc: "Context analysis and market scan for opportunities.",
-            category: "Project", tools: "Research, Analysis" },
-    children: [
-      { title: "Market Scan",
-        tags: ["research"],
-        info: { category: "Subnode", desc: "Landscape of actors, gaps, and niches." },
-        children: [
-          { title: "Segments", tags: ["People"], info: { category: "Detail", desc: "Priority audiences." } }
-        ]
-      }
-    ]
-  },
-
-  {
-    title: "Stay Home",
-    tags: ["Process","Research"],
-    info: { desc: "Cultural exhibition exploring life at home.",
-            category: "Project", tools: "Exhibition, Curation" },
-    children: [
-      { title: "Exhibit",
-        tags: ["exhibition"],
-        info: { category: "Subnode", desc: "Physical/digital exhibit assets." },
-        children: [
-          { title: "Curatorial Notes", tags: ["Purpose"], info: { category: "Detail", desc: "Intent & narrative." } }
-        ]
-      }
-    ]
-  }
 ];
+
 
 
 const TAG_COLORS = {
@@ -192,3 +150,5 @@ function getUIConfig() {
     maxSelected: 3,
   };
 }
+
+ 
