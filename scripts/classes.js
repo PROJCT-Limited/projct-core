@@ -130,22 +130,40 @@ if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
     }
   
     display() {
-      // Resolve fill color directly from TAG_COLORS using this.tags
+      // Fill color from first matching tag color
       let fillCol = "#CBD5E1";
       if (Array.isArray(this.tags)) {
-        for (const t of this.tags) { if (TAG_COLORS && TAG_COLORS[t]) { fillCol = TAG_COLORS[t]; break; } }
+        for (const t of this.tags) {
+          if (typeof TAG_COLORS !== "undefined" && TAG_COLORS && TAG_COLORS[t]) { fillCol = TAG_COLORS[t]; break; }
+        }
       }
-      noStroke(); fill(fillCol);
     
-      const rr = Math.max(6, this.r || (UI.rNode || 14));
-      circle(this.x, this.y, rr * 2);
+      // Target radius: bigger if this is the centered node (Archive behaviour)
+      // Falls back to sensible defaults if UI values are missing.
+      const targetR =
+        (this === centerNode)
+          ? (typeof UI !== "undefined" && UI.rFocused ? UI.rFocused : 35)
+          : (this.isChild
+              ? ((typeof UI !== "undefined" && UI.rChild) ? UI.rChild : ((typeof UI !== "undefined" && UI.rNode) ? UI.rNode : 20))
+              : ((typeof UI !== "undefined" && UI.rNode) ? UI.rNode : 20));
     
-      // label
+      // Smoothly animate toward the target radius
+      this.r = lerp(this.r || targetR, targetR, 0.2);
+    
+      // Draw the node
+      noStroke();
+      fill(fillCol);
+      circle(this.x, this.y, Math.max(1, this.r * 2));
+    
+      // Label
       fill(40);
       textAlign(CENTER, TOP);
-      textSize((this === centerNode) ? UI.fontCenter : UI.fontNode);
-      text(this.title, this.x, this.y + rr + 6);
+      const fontCenter = (typeof UI !== "undefined" && UI.fontCenter) ? UI.fontCenter : 20;
+      const fontNode   = (typeof UI !== "undefined" && UI.fontNode)   ? UI.fontNode   : 14;
+      textSize((this === centerNode) ? fontCenter : fontNode);
+      text(this.title, this.x, this.y + this.r + 6);
     }
+    
     
     
     
