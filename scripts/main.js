@@ -1,5 +1,6 @@
 let acuminRegular;   
 let acuminLight;    
+console.log('[main] setup() running');
 
 
 function preload() {
@@ -78,8 +79,7 @@ function draw() {
     drawSelectScreen();
     pop();
   } else {
-    // GRAPH MODE: Do NOT translate/scale here; runGraph() does its own world transform.
-    // (This fixes the cursor/canvas offset / hover mismatch.)
+
     if (entryCircleAlpha > 0 && playCircle?.x != null) {
       // Draw the fading entry circle using world coordinates
       push();
