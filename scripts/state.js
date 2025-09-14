@@ -25,7 +25,7 @@ let playBtn = null;
 let nodes = [];
 let links = [];
 let centerNode = null;
-let draggingNode = null;
+
 let hoveredNode = null;
 let activeNode = null;
 
