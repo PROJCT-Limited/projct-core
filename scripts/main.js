@@ -60,30 +60,41 @@ function windowResized() {
 function draw() {
   background(COLORS?.bg ?? 255);
 
+
+  const wpt = screenToWorld(pointer.x, pointer.y);
+  pointer.worldX = wpt.x; 
+  pointer.worldY = wpt.y;
+
   if (entryCircleFading && entryCircleAlpha > 0) {
     entryCircleAlpha = Math.max(0, entryCircleAlpha - 18);
     if (entryCircleAlpha === 0) entryCircleFading = false;
   }
 
-  push();
   if (mode === "select") {
-    translate(0, 0); scale(1);
+    // Select UI draws in screen space
+    push();
+    translate(0, 0); 
+    scale(1);
     drawSelectScreen();
+    pop();
   } else {
-    translate(worldOffsetX || 0, worldOffsetY || 0);
-    scale(scaleFactor || 1);
-
+    // GRAPH MODE: Do NOT translate/scale here; runGraph() does its own world transform.
+    // (This fixes the cursor/canvas offset / hover mismatch.)
     if (entryCircleAlpha > 0 && playCircle?.x != null) {
+      // Draw the fading entry circle using world coordinates
+      push();
+      translate(worldOffsetX || 0, worldOffsetY || 0);
+      scale(scaleFactor || 1);
       fillWithAlpha(COLORS.blue, entryCircleAlpha);
       noStroke();
       circle(playCircle.x, playCircle.y, (playCircle.r || 120) * 2);
+      pop();
     }
-
     if (typeof runGraph === "function") runGraph();
   }
-  pop();
 
   if (mode === "graph" && showBluePanel && typeof drawTopBar === "function") {
     drawTopBar();
   }
 }
+
