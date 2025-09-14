@@ -39,6 +39,9 @@ function computeTopBar() {
     worldOffsetY = (LAYOUT === 'top' ? topBarH : 0) + (availH - worldH) * 0.5;
     }
 
-function screenToWorld(px, py) {
-  return { x: (px - worldOffsetX) / scaleFactor, y: (py - worldOffsetY) / scaleFactor };
-}
+    function screenToWorld(sx, sy) {
+      const sc = (typeof scaleFactor === "number" ? scaleFactor : 1);
+      const ox = (typeof worldOffsetX === "number" ? worldOffsetX : 0);
+      const oy = (typeof worldOffsetY === "number" ? worldOffsetY : 0);
+      return { x: (sx - ox) / sc, y: (sy - oy) / sc };
+    }
