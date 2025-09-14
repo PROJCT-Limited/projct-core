@@ -130,28 +130,24 @@ if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
     }
   
     display() {
-     
+      // Resolve fill color directly from TAG_COLORS using this.tags
       let fillCol = "#CBD5E1";
-      for (const t of this.tags) { if (TAG_COLORS[t]) { fillCol = TAG_COLORS[t]; break; } }
+      if (Array.isArray(this.tags)) {
+        for (const t of this.tags) { if (TAG_COLORS && TAG_COLORS[t]) { fillCol = TAG_COLORS[t]; break; } }
+      }
+      noStroke(); fill(fillCol);
     
-      // Target radius: bigger if this is the centered node
-      const targetR = (this === centerNode) ? (UI.rFocused || 35) : (UI.rNode || 20);
+      const rr = Math.max(6, this.r || (UI.rNode || 14));
+      circle(this.x, this.y, rr * 2);
     
-      // Smoothly animate radius toward target (optional). If you don't want animation,
-      // just do: this.r = targetR;
-      this.r = lerp(this.r || targetR, targetR, 0.2);
-    
-      // Draw
-      noStroke();
-      fill(fillCol);
-      ellipse(this.x, this.y, Math.max(1, this.r * 2)); // now uses this.r
-    
-      // Label
+      // label
       fill(40);
       textAlign(CENTER, TOP);
       textSize((this === centerNode) ? UI.fontCenter : UI.fontNode);
-      text(this.title, this.x, this.y + this.r + 6);
+      text(this.title, this.x, this.y + rr + 6);
     }
+    
+    
     
     isPointInside(wx, wy) {
       // Hit test matches visual size
@@ -165,7 +161,7 @@ if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
     }
     
   }
-  
+
   // Ensure every GraphNode can be hit-tested in WORLD coords
 if (typeof GraphNode !== "undefined" && typeof GraphNode.prototype.isPointInside !== "function") {
   GraphNode.prototype.isPointInside = function (wx, wy) {
