@@ -78,18 +78,30 @@ function pickGraphNodeAt(xw, yw) {
 }
 
 /* ---- select-mode add + gate ---- */
+// Helper: resolve the data tags for a given UI label via TAGS[]
+function tagsForLabel(label) {
+  const t = TAGS.find(x => x.label === label);
+  return Array.isArray(t?.tags) ? t.tags.slice() : [label]; // fallback is label if missing
+}
+
 function addSelectedTagByNode(n) {
   if (!n) return false;
   const label = n.label;
-  const tagsArr = Array.isArray(n.tags) ? n.tags.slice()
-                : (typeof n.tag === "string" && n.tag ? [n.tag] : [label]);
+
+  // 🚀 Always map UI label to data tags via TAGS (don’t trust n.tags)
+  const tagsArr = tagsForLabel(label);
+
   const maxSel = UI?.maxSelected ?? 3;
   if (selected.some(s => s.label === label)) return false;
   if (selected.length >= maxSel) return false;
+
   selected.push({ label, tags: tagsArr });
-  if (playCircle) playCircle.bump = 1.0; // pulse
+
+  // bump animation
+  playCircle.bump = 1.0;
   return true;
 }
+
 function canPlay() { return (selected?.length ?? 0) === (UI?.maxSelected ?? 3); }
 
 /* ---- shared state ---- */
