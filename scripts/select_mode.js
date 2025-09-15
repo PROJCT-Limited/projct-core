@@ -2,6 +2,8 @@ function setupSelectUI() {
   worldOffsetX = 0;
   worldOffsetY = 0;
   scaleFactor  = 1;
+
+
   // WORLD coords — center the 0/3 circle
   playCircle = {
     x: windowWidth * 0.5,
@@ -42,6 +44,7 @@ function spawnFloatingTags() {
 function drawSelectScreen(){
   // Headline
   push();
+  textFont(acuminRegular);
   textAlign(LEFT, TOP);
   fill(COLORS.blue);
   textSize(28);
@@ -49,6 +52,7 @@ function drawSelectScreen(){
   pop();
 
   // Selected tag pills under headline
+  textFont(acuminLight);
   drawPickedTagPills(28, 142);
 
   // Physics step: your original float (repulsion only, no center attraction)
@@ -85,6 +89,7 @@ function drawPickedTagPills(x0, y0){
     noStroke(); fill(237, 245, 255);
     rect(x, y, w, h, 14);
     fill(COLORS.blue);
+    textFont(acuminLight);
     text(label, x + padX, y + h / 2);
     x += w + gap;
     if (x > baseWidth - 200) { x = x0; y += h + 10; }
@@ -94,6 +99,7 @@ function drawPickedTagPills(x0, y0){
 // Add exactly one tag from a TagNode; returns true if it was added
 function addSelectedTagByNode(n) {
   if (!n) return false;
+  textFont(acuminLight);
   const label = n.label;
   const tagsArr = Array.isArray(n.tags) ? n.tags.slice()
                 : (typeof n.tag === "string" && n.tag ? [n.tag] : [label]);
