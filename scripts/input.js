@@ -8,6 +8,11 @@ function screenToWorld(sx, sy) {
   return { x: (sx - ox) / sc, y: (sy - oy) / sc };
 }
 
+/* ---- touch debug ---- */
+const DEBUG_TOUCH = true;                    // flip to false to silence logs
+function dbgTouch(...args) { if (DEBUG_TOUCH) console.log("[TOUCH]", ...args); }
+
+
 /* ---- UI passthrough helpers ---- */
 function uiWantsThisTouch(ev) {
   const t = ev && (ev.target || ev.srcElement);
@@ -53,6 +58,20 @@ function isOnPlayButton(sx, sy) { // circle OR "PRESS PLAY" text
   return inCircle || inText;
 }
 
+/* ---- touch hit helpers ---- */
+// Tunables (can also come from UI if you want)
+const TOUCH_MIN_HIT = (UI?.touchMinHit ?? 44); // screen px (Apple HIG target)
+const TOUCH_HIT_MUL = (UI?.touchHitMul ?? 1.8); // scales node radius -> touch target
+
+// Returns a *screen-pixel* radius (caller converts to world when needed)
+function touchHitRadius(n) {
+  const sc = (typeof scaleFactor === "number" ? scaleFactor : 1);
+  const baseWorld  = (n?.baseR ?? n?.r ?? UI?.rNode ?? 16);
+  const baseScreen = baseWorld * sc * TOUCH_HIT_MUL;
+  return Math.max(TOUCH_MIN_HIT, baseScreen);
+}
+
+
 /* ---- picking ---- */
 function pickTagNodeAt(xw, yw) {
   if (!Array.isArray(tagNodes)) return null;
@@ -63,19 +82,31 @@ function pickTagNodeAt(xw, yw) {
     if (d <= r && d < bestD) { best = n; bestD = d; }
   }
   return best;
+
+
 }
+
 function pickGraphNodeAt(xw, yw) {
   if (!Array.isArray(nodes)) return null;
+
   for (let i = nodes.length - 1; i >= 0; i--) {
     const n = nodes[i];
     if (!n) continue;
-    const inside = (typeof n.isPointInside === "function")
-      ? n.isPointInside(xw, yw)
-      : ((xw - n.x) ** 2 + (yw - n.y) ** 2) <= ((n.baseR || n.r || UI?.rNode || 16) ** 2);
-    if (inside) return n;
+
+    if (typeof n.isPointInside === "function") {
+      if (n.isPointInside(xw, yw)) return n;
+    } else {
+      const baseRWorld = (n.baseR || n.r || UI?.rNode || 16);
+      const hitWorld = pointer.isTouch
+        ? Math.max(baseRWorld, touchHitRadius(n) / (scaleFactor || 1)) // expand on touch
+        : baseRWorld;
+      const dx = xw - n.x, dy = yw - n.y;
+      if (dx * dx + dy * dy <= hitWorld * hitWorld) return n;
+    }
   }
   return null;
 }
+
 
 /* ---- select-mode add + gate ---- */
 // Helper: resolve the data tags for a given UI label via TAGS[]
@@ -278,12 +309,22 @@ function touchStarted(ev) {
       activeNode = draggingNode;
       if (typeof hoverNode !== "undefined") hoverNode = draggingNode;
     }
+    dbgTouch("started", {
+      x: pointer.x, y: pointer.y,
+      worldX: pointer.worldX, worldY: pointer.worldY,
+      inPanel: (typeof isInPanelScreen === "function" ? isInPanelScreen(pointer.x, pointer.y) : false),
+      mode
+    });
   }
 
   pointer.down = true;
   pointer.startX = pointer.x; pointer.startY = pointer.y;
   pointer.tapCandidate = true;
+  pointer.dragging = false;   
   return false; // prevent scroll on canvas
+
+
+  
 }
 
 function touchMoved(ev) {
@@ -298,18 +339,77 @@ function touchMoved(ev) {
   const w = screenToWorld(pointer.x, pointer.y);
   pointer.worldX = w.x; pointer.worldY = w.y;
 
+  //  promote to "dragging" only after moving past slop
+  if (!pointer.dragging) {
+    const dx = pointer.x - pointer.startX, dy = pointer.y - pointer.startY;
+    if (dx*dx + dy*dy > DRAG_SLOP*DRAG_SLOP) pointer.dragging = true;
+  }
+
   if (mode === "select" && draggingTag) {
     draggingTag.x = pointer.worldX - draggingTag.dx;
     draggingTag.y = pointer.worldY - draggingTag.dy;
     draggingTag.vx = 0; draggingTag.vy = 0;
   } else if (mode === "graph" && draggingNode) {
-    draggingNode.x = pointer.worldX - draggingNode.offsetX;
-    draggingNode.y = pointer.worldY - draggingNode.offsetY;
+    //  only move the node if we actually started dragging
+    if (pointer.dragging) {
+      draggingNode.x = pointer.worldX - draggingNode.offsetX;
+      draggingNode.y = pointer.worldY - draggingNode.offsetY;
+      draggingNode.vx = 0; draggingNode.vy = 0;
+    }
   }
+
+  dbgTouch?.("moved", { draggingNode: !!draggingNode, draggingTag: !!draggingTag, x: pointer.x, y: pointer.y }); // optional
   return false;
 }
 
+
+
+/* ---- touch double-tap on the SAME node (mobile only) ---- */
+/* ---- double-tap on the SAME node (mobile only) ---- */
+const TOUCH_DOUBLE_MS   = UI?.doubleTapWindow ?? 360; // ms
+const TOUCH_DOUBLE_SLOP = UI?.doubleTapSlop  ?? 22;   // px
+
+let __lastTap = { title: null, t: 0, x: 0, y: 0 };
+
+function isDoubleTapOnSameNode(tappedNode) {
+  const now  = Date.now(); // use Date.now() everywhere for consistency
+  const name = tappedNode ? (tappedNode.title || tappedNode.label) : null;
+
+  const dt   = now - __lastTap.t;
+  const dx   = (pointer.x ?? 0) - __lastTap.x;
+  const dy   = (pointer.y ?? 0) - __lastTap.y;
+  const dist2 = dx*dx + dy*dy;
+
+  const sameTitle = (__lastTap.title === name);
+  const timeOk    = (dt <= TOUCH_DOUBLE_MS);
+  const distOk    = (dist2 <= TOUCH_DOUBLE_SLOP * TOUCH_DOUBLE_SLOP);
+  const dbl       = !!(sameTitle && timeOk && distOk);
+
+  dbgTouch("tap", {
+    node: name,
+    dt,
+    dpx: Math.round(dx), dpy: Math.round(dy),
+    timeOk, distOk, sameTitle, dbl
+  });
+
+  // update memory for NEXT tap
+  __lastTap.t     = now;
+  __lastTap.x     = (pointer.x ?? 0);
+  __lastTap.y     = (pointer.y ?? 0);
+  __lastTap.title = name;
+
+  return dbl;
+}
+
+
+
+
 function touchEnded(ev) {
+  
+    dbgTouch?.("touchEnded fired");
+ 
+  
+  
   if (overlayIsOpen() || uiWantsThisTouch(ev)) { finishPointerGesture(); return true; }
 
   if (pointer.x != null && pointer.y != null) {
@@ -338,39 +438,73 @@ function touchEnded(ev) {
   }
 
   if (mode === "graph") {
-    // Optional: ignore taps that land on the blue panel area
+    // ignore taps that land on the blue panel
     if (typeof isInPanelScreen === "function" && isInPanelScreen(pointer.x, pointer.y)) {
+      dbgTouch?.("ended → ignored (tap on panel)");
       finishPointerGesture();
       return false;
     }
   
-    if (!draggingNode) {
-      const tapped = pickGraphNodeAt(pointer.worldX, pointer.worldY);
-      if (tapped) {
-        // 1) Refocus (prefer tags-aware refocus, fallback to plain refocus)
-        if (typeof refocusToByTags === "function") {
-          refocusToByTags(tapped);
-        } else if (typeof refocusTo === "function") {
-          refocusTo(tapped);
-        }
+    // Make sure world coords match the last finger position
+    if (pointer.x != null && pointer.y != null) {
+      const w = screenToWorld(pointer.x, pointer.y);
+      pointer.worldX = w.x; pointer.worldY = w.y;
+    }
   
-        // 2) Ensure the newly focused node drives the blue panel
-        activeNode = (typeof centerNode !== "undefined" && centerNode) ? centerNode : tapped;
+    // Case A: we started on a node (draggingNode set in touchStarted)
+    if (draggingNode) {
+      if (!pointer.dragging) {
+        // ✅ treat as a TAP on that node (not a drag)
+        const tapped = draggingNode;
+        dbgTouch?.("ended (tap on node)", tapped.title || tapped.label);
   
-        // 3) Center camera on the same node we just marked active
-        if (typeof centerCameraOnNode === "function") {
-          centerCameraOnNode(activeNode);
+        if (isDoubleTapOnSameNode(tapped)) {
+          dbgTouch?.("DOUBLE → refocus", tapped.title || tapped.label);
+          if (typeof refocusToByTags === "function") refocusToByTags(tapped);
+          else if (typeof refocusTo === "function")  refocusTo(tapped);
+          activeNode = (typeof centerNode !== "undefined" && centerNode) ? centerNode : tapped;
+          if (typeof centerCameraOnNode === "function") centerCameraOnNode(activeNode);
+          __lastTap.title = null; // prevent triple chaining
+        } else {
+          dbgTouch?.("SINGLE → highlight only", tapped.title || tapped.label);
+          activeNode = tapped;
+          if (typeof hoverNode !== "undefined") hoverNode = tapped;
         }
+      } else {
+        // real drag finished
+        dbgTouch?.("ended drag");
       }
-    } else {
-      // finish a drag
+  
       draggingNode.fixed = false;
       draggingNode = null;
+      finishPointerGesture();
+      return false;
+    }
+  
+    // Case B: we didn’t start on a node (maybe tapped one later)
+    const tapped = pickGraphNodeAt(pointer.worldX, pointer.worldY);
+    dbgTouch?.("ended", { tapped: tapped ? (tapped.title || tapped.label) : null });
+    if (tapped) {
+      if (isDoubleTapOnSameNode(tapped)) {
+        dbgTouch?.("DOUBLE → refocus", tapped.title || tapped.label);
+        if (typeof refocusToByTags === "function") refocusToByTags(tapped);
+        else if (typeof refocusTo === "function")  refocusTo(tapped);
+        activeNode = (typeof centerNode !== "undefined" && centerNode) ? centerNode : tapped;
+        if (typeof centerCameraOnNode === "function") centerCameraOnNode(activeNode);
+        __lastTap.title = null;
+      } else {
+        dbgTouch?.("SINGLE → highlight only", tapped.title || tapped.label);
+        activeNode = tapped;
+        if (typeof hoverNode !== "undefined") hoverNode = tapped;
+      }
     }
   
     finishPointerGesture();
     return false;
   }
+  
+ 
+  
 }
 
 /* ---- finish gesture ---- */
