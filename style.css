@@ -9,12 +9,39 @@ html, body {
   /* overflow: hidden; */
   overflow-y: auto;
   cursor: auto;
+  
 }
 
+:root{
+  --brand-blue:#0e50c8;
+  --ink:#0a1a2b;
+  --paper:#ffffff;
+  --muted:rgba(10,26,43,.65);
+  --highlight:#EBF21B;
+  --grid-max:1240px;
+  --gutter:20px;
+  --columns:12;
+  --page-pad: 20px; /* NEW */
+}
 
+.main{ flex:1 0 auto; }
+
+*{box-sizing:border-box}
+html,body{height:100%;}
+body{
+  min-height:100dvh;       
+  margin:0;
+  color:var(--ink);
+  background:var(--paper);
+  display:flex;                    
+  flex-direction:column;
+  line-height:1.45;
+
+}
 body {
   display: flex;
   flex-direction: column;
+  background-color: #0e50c8;
 }
 @font-face {
   font-family: "Headers";
@@ -52,8 +79,8 @@ body {
   justify-content: space-between; 
   z-index: 999999;
   /* z-index: 1; */
-
 }
+
 .button-header {
   font-family: "Acumin-Light";
   font-weight: 500;   
@@ -76,7 +103,7 @@ body {
 
 }
 .section-about-us {
-  padding-top: 10px;
+  padding-top: 60px;
   padding-bottom: 10px;
   padding: 10px 10px;
   display: flex;           
@@ -90,8 +117,9 @@ body {
 .index-outer {
   font-family: "Acumin-Light";
   display: flex; 
+  margin-top: 80px;
   padding-bottom: 10px;
-  padding: 10px 10px;          
+  padding: 10px 20px;          
   flex-wrap: wrap;        
   align-items: center;
   background-color: #0e50c8;
@@ -703,3 +731,32 @@ body.menu-open #machine * {
 .mobile-overlay { z-index: 2000; }
 .mobile-close   { z-index: 2100; }
 
+ /* Header overlays page */
+ .header{
+  position: fixed;
+  inset: 0 0 auto 0;           /* top:0;left:0;right:0 */
+  z-index: 1000;
+  padding-inline: var(--page-pad, 20px);
+  /* background: transparent;   */
+  background-color: #0e50c8;
+  transition:
+    transform .28s ease,
+    background-color .24s ease,
+    backdrop-filter .24s ease,
+    box-shadow .24s ease;
+}
+
+/* Solid/blur once you’re off the very top */
+.header.is-solid{
+  background: var(--header-bg);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+
+/* Hidden state */
+.header.is-hidden{ transform: translateY(-100%); }
+
+@media (prefers-reduced-motion: reduce){
+  .header{ transition: none; }
+  .header.is-hidden{ transform: none; }
+}
