@@ -33,6 +33,7 @@ function setup() {
   activeNode = centerNode;
 
   setupSelectUI();
+  textFont(acuminLight);
   spawnFloatingTags();
 }
 
