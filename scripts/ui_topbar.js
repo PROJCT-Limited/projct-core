@@ -81,133 +81,291 @@
     function useRegularFont() { if (typeof acuminRegular !== 'undefined' && acuminRegular) textFont(acuminRegular); }
     function useLightFont()  { if (typeof acuminLight   !== 'undefined' && acuminLight)   textFont(acuminLight); }
     
+// ~48% of the screen height for the mobile bottom panel (can be tuned via UI.mobilePanelRatio)
+const MOBILE_RATIO_DEFAULT = 0.48;
+
+// Mobile metrics (smaller paddings; image sized to a right column)
+function metricsMobile(usableW, usableH) {
+  const outerPad  = 12;
+  const titleY    = outerPad + 6;
+  const tagGap    = Math.max(6, Math.round(usableW * 0.01));
+  const tagH      = Math.max(16, Math.round(usableW * 0.05));
+  const imageW    = Math.min(Math.round(usableW * 0.40), 180);
+  const imageH    = Math.round(imageW * 0.86); // ~3:2
+  const bodyGap   = 40;
+  const ruleGap   = 80;
+  const rowH      = Math.max(14, Math.round(usableW * 0.04));
+  const titleSize = Math.max(20, Math.round(usableW * 0.05));
+  const bodySize  = Math.max(13, Math.round(usableW * 0.025));
+  const colGap    = 5;  // gap between body and image columns
+  const gapAfterTags = 5;
+  return { outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize, colGap, gapAfterTags };
+}
+
+// Draw tag pills in multiple rows using your drawPill()
+function layoutTagPillsWrapped(tags, startX, startY, maxW, tagH, gapX, gapY, padX) {
+  let x = startX, y = startY, rows = 0;
+  for (let i = 0; i < (tags?.length || 0); i++) {
+    const label = String(tags[i]).toUpperCase();
+    textSize(tagH * 0.0001);
+    const pillW = textWidth(label) + padX * 2;
+
+    if (rows === 0) rows = 1;
+    if (x + pillW > startX + maxW) { // wrap
+      rows++;
+      x = startX;
+      y += tagH + gapY;
+    }
+    const used = drawPill(x, y, label, tagH, padX);
+    x += used + gapX;
+  }
+  return { rows, nextY: rows ? (y + tagH) : startY };
+}
+
+// Measure wrapped text using current textFont/textSize settings.
+function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.15) {
+  if (!txt) return { lines: 0, lineH: Math.round(fontSize * leadingMul), height: 0 };
+  textSize(fontSize);
+  const words = String(txt).split(/\s+/);
+  const lines = [];
+  let cur = "";
+  for (const w of words) {
+    const test = cur ? cur + " " + w : w;
+    if (textWidth(test) <= maxW) {
+      cur = test;
+    } else {
+      if (cur) lines.push(cur);
+      if (textWidth(w) > maxW) { // hard-wrap very long words
+        let chunk = "";
+        for (const ch of w) {
+          const t2 = chunk + ch;
+          if (textWidth(t2) <= maxW) chunk = t2;
+          else { lines.push(chunk); chunk = ch; }
+        }
+        cur = chunk;
+      } else {
+        cur = w;
+      }
+    }
+  }
+  if (cur) lines.push(cur);
+  const lineH = Math.round(fontSize * leadingMul);
+  return { lines: lines.length, lineH, height: lines.length * lineH };
+}
+
 
     // -------- MAIN DRAW (always defined) --------
     window.drawTopBar = function drawTopBar() {
       // Original panel bounds supplied by world.js
-    
-  // Original panel bounds
-const panelW = (typeof sideBarW !== 'undefined' && LAYOUT === 'left') ? sideBarW : width+70;
-const panelH = (LAYOUT === 'left') ? height : topBarH;
+// ----- PANEL BOUNDS -----
+const isMobileBottom = (LAYOUT === 'bottom');
 
-// Margins we want
-const margin = 24;
+// Use full width and ~half height on mobile bottom; keep your old calc on desktop/left
+let panelW, panelH, margin, headerOffset = 0;
 
-// Measure DOM header
-function __measureHeader() {
-  try {
-    const sels = ['header', '.header', '#header', '.site-header', '.topbar', '.navbar', '.app-header', '.nav'];
-    let h = 0;
-    for (const s of sels) {
-      const el = document.querySelector(s);
-      if (el) {
-        const r = el.getBoundingClientRect();
-        h = Math.max(h, (r && (r.height || (r.bottom - r.top))) || 0);
+if (isMobileBottom) {
+  panelW = width;
+  panelH = Math.round(height * (G.UI?.mobilePanelRatio || MOBILE_RATIO_DEFAULT));
+  margin = 0;                // no margins from edges
+  headerOffset = 0;          // ignore DOM header on mobile bottom
+} else {
+  panelW = (typeof sideBarW !== 'undefined' && LAYOUT === 'left') ? sideBarW : width + 70;
+  panelH = (LAYOUT === 'left') ? height : topBarH;
+  margin = 24;
+
+  // Measure DOM header (your previous logic)
+  function __measureHeader() {
+    try {
+      const sels = ['header', '.header', '#header', '.site-header', '.topbar', '.navbar', '.app-header', '.nav'];
+      let h = 0;
+      for (const s of sels) {
+        const el = document.querySelector(s);
+        if (el) {
+          const r = el.getBoundingClientRect();
+          h = Math.max(h, (r && (r.height || (r.bottom - r.top))) || 0);
+        }
       }
-    }
-    return h;
-  } catch (e) { return 0; }
+      return h;
+    } catch (e) { return 0; }
+  }
+  const domHeaderH = (typeof window.getHeaderHeight === 'function') ? window.getHeaderHeight() : __measureHeader();
+  const applyHeaderOffset = (LAYOUT === 'left' || LAYOUT === 'top');
+  headerOffset = applyHeaderOffset ? domHeaderH : 0;
 }
-const domHeaderH = (typeof window.getHeaderHeight === 'function') ? window.getHeaderHeight() : __measureHeader();
 
-// Apply header offset only when the panel sits at the top edge (LEFT or TOP layouts)
-const applyHeaderOffset = (LAYOUT === 'left' || LAYOUT === 'top');
-const headerOffset = applyHeaderOffset ? domHeaderH : 0;
+// Inner rect (blue area)
+const innerW = isMobileBottom ? panelW : (panelW + 70 - margin);
+const innerH = isMobileBottom ? panelH : (panelH - headerOffset - margin * 2);
 
-// Final inner rect (blue area) — left + top + bottom margins; right edge flush
-const innerW = panelW+70 - margin;
-const innerH = panelH - headerOffset - margin * 2;
-
-// Screen origin (world.js may position bottom panel via originY)
+// Screen origin
 const originX = 0;
-const originY = (LAYOUT === 'bottom') ? height - panelH : 0;
+const originY = isMobileBottom ? (height - panelH) : 0;
 
 push();
 translate(originX, originY);
 
-// Draw blue background
+// Blue background flush to edges on mobile; with margins on desktop
 noStroke();
 setFill(THEME.blue);
-rect(margin, headerOffset + margin, innerW, innerH);
+rect(isMobileBottom ? 0 : margin, headerOffset + (isMobileBottom ? 0 : margin), innerW, innerH);
 
 // Move drawing origin into the blue panel
-translate(margin, headerOffset + margin);
+translate(isMobileBottom ? 0 : margin, headerOffset + (isMobileBottom ? 0 : margin));
 
-      // Use the inner width for all layout math so content fits
-      const {
-        outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize
-      } = metrics(innerW);
-  
-      const node = currentNode();
-  
-      let title = "PROJECT NAME";
-      let desc  = "Although fluid, we focus much energy on product, innovation, and growth with our ecosystem of clients, investors, founders.";
-      let year  = "2025", cat = "PROJECT", type = "ONE";
-      let tags  = ["TAG 1", "TAG 2", "TAG 3"];
-      let img   = null;
-  
-      if (node) {
-        const t = nodeText(node);
-        title = t.title; desc = t.desc; year = t.year; cat = t.cat; type = t.type; tags = t.tags;
-        img = nodeImage(node);
-      }
-  
-      // Content frame inside inner rect
-      const contentX = outerPad;
-      const contentW = innerW - outerPad * 2;
-  
-      // Title
-      useLightFont();
-      textAlign(LEFT, TOP);
-      setFill(THEME.white);
-      textSize(titleSize|| TYPE.title);
-      useLightFont();
-      text(`“${title.toUpperCase()}“`, contentX, titleY, contentW, (titleSize || TYPE.title) * 2.2);
-  
-      // Tags
-      useLightFont();
-      let tagX = contentX;
-      const tagY = titleY + (titleSize || TYPE.title) + 22;
-      for (let i = 0; i < tags.length; i++) {
-        const used = drawPill(tagX, tagY, tags[i].toUpperCase(), tagH, Math.max(14, Math.round(tagH * 0.6)));
-        tagX += used + tagGap;
-        if (tagX > contentX + contentW) break;
-      }
-  
-      // Image
-      const imgY = tagY + tagH + 200;
-      if (img && typeof img === "object") {
-        imageMode(CORNER); 
-        image(img, contentX, imgY, imageW, imageH);
-      } else {
-        noFill(); setStroke(THEME.white); strokeWeight(2); rrect(contentX, imgY, imageW, imageH, 6); noStroke();
-      }
-  
-      // Body
-      useLightFont();
-      const bodyY = imgY-150 + imageH + bodyGap*10;
-      textSize(bodySize /1.2|| TYPE.body);
-      textAlign(LEFT);
-      textLeading(Math.round((bodySize || TYPE.body) * 1.25));
-      setFill(THEME.white);
-      text(desc, contentX, bodyY, contentW);
-  
-      // Bottom meta block — measure against innerH (not panelH)
-      const blockTop = bodyY + Math.max(Math.round((bodySize || TYPE.body) * 10.2), 72) + ruleGap;
-      const blockH   = rowH * 3 + 18;
-      const blockY   = Math.min(blockTop, innerH - blockH - outerPad);
-      useRegularFont();
-      drawRule(contentX, blockY, contentW);
-      drawKVRow(contentX, blockY + 4,  contentW, "YEAR",      year, rowH);
-  
-      drawRule(contentX, blockY + rowH + 6, contentW);
-      drawKVRow(contentX, blockY + rowH + 9, contentW, "CATEGORY",  cat,  rowH);
-  
-      drawRule(contentX, blockY + rowH * 2 + 12, contentW);
-      drawKVRow(contentX, blockY + rowH * 2 + 15, contentW, "TYPE",      type, rowH);
-      drawRule(contentX, blockY + rowH * 2 + 40, contentW);
-  
-      pop();
+
+     // Metrics (desktop vs mobile)
+const M = isMobileBottom ? metricsMobile(innerW, innerH) : metrics(innerW);
+const {
+  outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize
+} = M;
+const colGap       = M.colGap || 16;
+const gapAfterTags = M.gapAfterTags ?? Math.max(12, Math.round((titleSize || TYPE.title) * 0.30));
+
+const node = currentNode();
+let title = "PROJECT NAME";
+let desc  = "Although fluid, we focus much energy on product, innovation, and growth with our ecosystem of clients, investors, founders.";
+let year  = "2025", cat = "PROJECT", type = "ONE";
+let tags  = ["TAG 1", "TAG 2", "TAG 3"];
+let img   = null;
+
+if (node) {
+  const t = nodeText(node);
+  title = t.title; desc = t.desc; year = t.year; cat = t.cat; type = t.type; tags = t.tags;
+  img = nodeImage(node);
+}
+
+// Content frame
+const contentX = outerPad;
+const contentW = innerW - outerPad * 2;
+
+// Title (wrap-aware)
+useLightFont();
+textAlign(LEFT, TOP);
+setFill(THEME.white);
+const _titleSize = (titleSize || TYPE.title);
+const titleStr   = `“${title.toUpperCase()}“`;
+
+textSize(_titleSize);
+const titleM = measureWrappedHeight(titleStr, contentW, _titleSize, 1.15);
+textLeading(titleM.lineH);
+text(titleStr, contentX, titleY, contentW, titleM.height + 2);
+
+// Tags (wrap to rows)
+useLightFont();
+const tagStartY = titleY + titleM.height + gapAfterTags;
+const padX = Math.max(14, Math.round(tagH * 0.6));
+const gapX = tagGap;
+const gapY = Math.round(tagH * 0.40);
+const tagLayout = layoutTagPillsWrapped(tags, contentX, tagStartY, contentW, tagH, gapX, gapY, padX);
+
+const contentTopY = tagLayout.nextY + Math.max(8, bodyGap);
+
+// ---------- IMAGE + BODY (mobile: two columns; desktop: stack as before) ----------
+let imageX, imageY, bodyX, bodyY, bodyW;
+
+// MOBILE BOTTOM: two-column when feasible; else stack
+if (isMobileBottom) {
+  const rightImgW = imageW;
+  const leftBodyW = contentW - rightImgW - colGap;
+
+  if (leftBodyW >= 220) {
+    // two columns
+    bodyX = contentX;
+    bodyY = contentTopY;
+    bodyW = leftBodyW;
+
+    imageX = contentX + leftBodyW + colGap;
+    imageY = contentTopY;
+  } else {
+    // fallback: stack image then body
+    imageX = contentX;
+    imageY = contentTopY;
+
+    bodyX = contentX;
+    bodyY = imageY + imageH + Math.max(8, bodyGap);
+    bodyW = contentW;
+  }
+} else {
+  // DESKTOP/LEFT: keep your previous stacked flow (image first, then body)
+  imageX = contentX;
+  imageY = contentTopY;
+
+  bodyX  = contentX;
+  bodyY  = imageY + imageH + Math.max(12, bodyGap);
+  bodyW  = contentW;
+}
+
+// Draw image
+if (img && typeof img === "object") {
+  imageMode(CORNER);
+  image(img, imageX, imageY, imageW, imageH);
+} else {
+  noFill(); setStroke(THEME.white); strokeWeight(2); rrect(imageX, imageY, imageW, imageH, 6); noStroke();
+}
+
+// Body (wrap-aware)
+useLightFont();
+const _bodySize = (bodySize || TYPE.body);
+textSize(_bodySize);
+const bodyM = measureWrappedHeight(desc, bodyW, _bodySize, 1.25);
+textAlign(LEFT);
+textLeading(bodyM.lineH);
+setFill(THEME.white);
+text(desc, bodyX, bodyY, bodyW);
+
+// Meta block — sits under whichever (image or body) ends lower
+const contentBottom = Math.max(imageY + imageH, bodyY + bodyM.height);
+const blockTop = contentBottom + Math.max(10, ruleGap);
+const blockH   = rowH * 3 + 18;
+const blockY   = Math.min(blockTop, innerH - blockH - outerPad);
+
+useRegularFont();
+drawRule(contentX, blockY, contentW);
+drawKVRow(contentX, blockY + 4,              contentW, "YEAR",     year, rowH);
+
+drawRule(contentX, blockY + rowH + 6,        contentW);
+drawKVRow(contentX, blockY + rowH + 9,       contentW, "CATEGORY", cat,  rowH);
+
+drawRule(contentX, blockY + rowH * 2 + 12,   contentW);
+drawKVRow(contentX, blockY + rowH * 2 + 15,  contentW, "TYPE",     type, rowH);
+drawRule(contentX, blockY + rowH * 2 + 40,   contentW);
+
+pop();
+
     };
   })();
   
+
+  // --- word-wrap measurer (uses current textFont/textSize) ---
+function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.25) {
+  if (!txt) return { lines: 0, lineH: Math.round(fontSize * leadingMul), height: 0 };
+  textSize(fontSize);
+  const words = String(txt).split(/\s+/);
+  const lines = [];
+  let cur = "";
+  for (const w of words) {
+    const test = cur ? cur + " " + w : w;
+    if (textWidth(test) <= maxW) {
+      cur = test;
+    } else {
+      if (cur) lines.push(cur);
+      // if a single word is wider than maxW, hard-wrap by characters
+      if (textWidth(w) > maxW) {
+        let chunk = "";
+        for (const ch of w) {
+          const t2 = chunk + ch;
+          if (textWidth(t2) <= maxW) chunk = t2;
+          else { lines.push(chunk); chunk = ch; }
+        }
+        cur = chunk;
+      } else {
+        cur = w;
+      }
+    }
+  }
+  if (cur) lines.push(cur);
+  const lineH = Math.round(fontSize * leadingMul);
+  return { lines: lines.length, lineH, height: lines.length * lineH };
+}
+
+
