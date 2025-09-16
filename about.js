@@ -44,3 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     update(); // set initial state
   });
+
+/////////////
+
+
+const header = document.querySelector('.header');
+const hero   = document.querySelector('.panel.hero'); // was '#hero'
+
+const io = new IntersectionObserver(([entry]) => {
+  if (!entry.isIntersecting) header.classList.add('on-white');
+  else header.classList.remove('on-white');
+}, { threshold: 0.01 });
+
+io.observe(hero);
+
