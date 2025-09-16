@@ -42,18 +42,36 @@ function spawnFloatingTags() {
 }
 
 function drawSelectScreen(){
-  // Headline
+  const msg = "Pick projects by tags and explore relations";
+
+  // --- layout for mobile vs desktop
+  const padX = 28;
+  const isMobile = (typeof LAYOUT !== "undefined" && LAYOUT === "bottom");
+  const headerH = (typeof getHeaderHeight === "function") ? getHeaderHeight() : 0;
+  const startY  = isMobile ? (headerH + 90) : 98;      // push below HTML header on mobile
+  const maxW    = width - padX * 2;                    // wrapping width
+
+  // --- Headline (wrap-aware)
   push();
   textFont(acuminRegular);
   textAlign(LEFT, TOP);
   fill(COLORS.blue);
-  textSize(28);
-  text("Pick projects by tags and explore relations", 28, 98);
+
+  const fs = isMobile ? Math.max(22, Math.round(width * 0.06)) : 28; // responsive-ish
+  textSize(fs);
+  textLeading(Math.round(fs * 1.15));
+  if (typeof textWrap === "function") textWrap(WORD);
+
+  // draw WITH a bounding width so it WRAPS
+  text(msg, padX, startY, maxW);
   pop();
 
-  // Selected tag pills under headline
+  // --- Measure to place pills just under the wrapped title
+  const titleM = measureWrappedHeight(msg, maxW, fs, 1.15);
+
+  // --- Selected tag pills under headline
   textFont(acuminLight);
-  drawPickedTagPills(28, 142);
+  drawPickedTagPills(padX, startY + titleM.height + 12);
 
   // Physics step: your original float (repulsion only, no center attraction)
   for (const n of tagNodes) n.resetForces();
