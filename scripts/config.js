@@ -130,25 +130,28 @@ function getUIConfig() {
     playRadius:  mobile ? 28 : 36,
     playY:       (h) => Math.min(h - (mobile ? 60 : 80), h * 0.86),
 
-    rCenter:     mobile ? 20 : 24,
-    rNode:       mobile ? 20 : 24,
-    rChild:      mobile ? 18 : 18,
-    rTag:        mobile ? 18 : 20,
+    rCenter:     mobile ? 16 : 24,
+    rNode:       mobile ? 14 : 24,
+    rChild:      mobile ? 14 : 18,
+    rTag:        mobile ? 14 : 20,
 
-    repulseGraph: mobile ? 52000 : 60000,
-    repulseTag:   mobile ? 32000 : 38000,
-    damping:      mobile ? 0.88   : 0.86,
-    linkRest:     mobile ? 430    : 350,
-    childRest:    mobile ? 400    : 320,
-    kick:         mobile ? 1.8    : 2.2,
+    repulseGraph: mobile ? 30000 : 60000,
+    repulseTag:   mobile ? 10000 : 38000,
+    damping:      mobile ? 0.5   : 0.86,
+    linkRest:     mobile ? 200    : 350,
+    childRest:    mobile ? 200    : 320,
+    kick:         mobile ? 1.5    : 2.2,
 
     fontTitle:   mobile ? 22 : 24,
     fontBody:    mobile ? 12 : 13,
-    fontNode:    mobile ? 20 : 20,
+    fontNode:    mobile ? 14 : 20,
     fontCenter:  mobile ? 20 : 20,
 
     maxSelected: 3,
   };
 }
+
+
+
 
  
