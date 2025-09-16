@@ -234,6 +234,7 @@ function buildExpandedForFocus(focusTitle) {
 
 // Recenter and enlarge the given node, rebuild nodes/links around it.
 function focusNodeGraph(targetNode) {
+  if (typeof applyMobileSpacing === "function") applyMobileSpacing();
   if (!targetNode || !targetNode.title) return;
 
   // Recompute subgraph content
@@ -285,6 +286,7 @@ activeNode = null;
         L.restLength = UI.childRest;
         L.strength   = 0.018;
         links.push(L);
+        if (LAYOUT === "bottom") enforceMinOrbit(centerNode, nodes);
       }
     }
   }
@@ -314,6 +316,7 @@ activeNode = null;
   
   // Build graph from current selection
   function launchGraphFromSelection() {
+    if (typeof applyMobileSpacing === "function") applyMobileSpacing();
     mode = "graph";
   
     const selectedTags = [];
@@ -486,6 +489,7 @@ activeNode = null;
   
     // Smoothly center camera on the clicked node (accounts for blue panel offset)
     centerCameraOnNode(centerNode, false);
+    if (LAYOUT === "bottom") enforceMinOrbit(centerNode, nodes);
   }
   
 
@@ -513,6 +517,8 @@ for (const n of nodes) n.resetForces();
 for (const n of nodes) n.applyRepulsion(nodes);
 for (const l of links) l.applyAttraction();
 for (const n of nodes) n.updateInGraph();
+
+for (const n of nodes) clampNodeToPlayableRect(n);
 
 // --- CAMERA EASING (do this every frame) ---
 worldOffsetX = lerp(worldOffsetX, cam.tx, cam.easing);
@@ -562,5 +568,49 @@ function centerCameraOnNode(n, instant = false) {
     cam.tx = tx; cam.ty = ty;
   } else {
     cam.tx = tx; cam.ty = ty; // eased in runGraph()
+  }
+}
+
+
+// Faster spread: push siblings beyond the minimum orbit and give them a small outward velocity.
+// Call right after you spawn nodes/links.
+function enforceMinOrbit(center, allNodes, opts = {}) {
+  if (!center) return;
+
+  // ---- tunables (override via opts or UI) ----
+  const isMobile        = (typeof LAYOUT !== "undefined" && LAYOUT === "bottom");
+  const baseOrbit       = (UI?.spawnRadius || 180);
+  const orbitMul        = opts.orbitMul ?? (isMobile ? (UI?.orbitMulMobile ?? 1.35) : 1.10); // >1 = farther than spawnRadius
+  const overshoot       = opts.overshoot ?? (isMobile ? (UI?.orbitOvershoot ?? 1.12) : 1.0); // >1 = push past target, settle back
+  const velocityKick    = opts.kick ?? (isMobile ? (UI?.orbitKick ?? 5.0) : 0.0);             // outward vx/vy
+  const zeroVelOnSnap   = opts.zeroVelOnSnap ?? false; // set true if you *don’t* want the kick when snapping
+
+  // target radius (min) and overshoot target
+  const minOrbit    = baseOrbit * orbitMul;
+  const snapTarget  = minOrbit * overshoot;
+
+  for (const n of allNodes) {
+    if (n === center) continue;
+
+    const dx = n.x - center.x;
+    const dy = n.y - center.y;
+    let d = Math.hypot(dx, dy) || 0.0001;
+
+    if (d < snapTarget) {
+      // place directly on the overshoot circle — fast visual spread
+      const s = snapTarget / d;
+      n.x = center.x + dx * s;
+      n.y = center.y + dy * s;
+
+      // velocity: either zero (hard snap) or a small outward kick
+      if (zeroVelOnSnap) {
+        n.vx = 0; n.vy = 0;
+      } else if (velocityKick > 0) {
+        const ux = dx / (d * s); // unit vector at the *new* position
+        const uy = dy / (d * s);
+        n.vx = (n.vx || 0) + ux * velocityKick;
+        n.vy = (n.vy || 0) + uy * velocityKick;
+      }
+    }
   }
 }
