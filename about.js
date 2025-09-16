@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 const header = document.querySelector('.header');
+
 const hero   = document.querySelector('.panel.hero'); // was '#hero'
 
 const io = new IntersectionObserver(([entry]) => {
