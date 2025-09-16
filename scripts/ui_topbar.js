@@ -288,10 +288,10 @@ if (isMobileBottom) {
 } else {
   // DESKTOP/LEFT: keep your previous stacked flow (image first, then body)
   imageX = contentX;
-  imageY = contentTopY;
+  imageY = contentTopY+150;
 
   bodyX  = contentX;
-  bodyY  = imageY + imageH + Math.max(12, bodyGap);
+  bodyY  = imageY + 50+imageH + Math.max(12, bodyGap);
   bodyW  = contentW;
 }
 
