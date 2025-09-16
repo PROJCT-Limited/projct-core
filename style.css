@@ -698,9 +698,9 @@ display: block;
 
 /* Close button sits on top of overlay */
 .mobile-close {
-  position: fixed; top:12px; right:30px; z-index:2100;
-  padding-right: 30px;
-  background:transparent; border:0; padding:8px; cursor:pointer;
+  position: fixed; top:12px; right:25px; z-index:2100;
+  padding-right: 0px;
+  background:transparent; border:0; padding-top:8px; cursor:pointer;
 }
 
 /* Hamburger visible/clickable on mobile when overlay is closed */
@@ -760,3 +760,5 @@ body.menu-open #machine * {
   .header{ transition: none; }
   .header.is-hidden{ transform: none; }
 }
+
+
