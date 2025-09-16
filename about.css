@@ -116,8 +116,8 @@
   .venn img{
     align-items: center;
     align-content: center;
-    width: 70%;           /* fill the container */
-    height: auto;          /* keep aspect ratio */
+    width: 70%;           
+    height: auto;         
     display: block;
     margin-inline: auto;  
     margin-top: 100px;
@@ -163,7 +163,10 @@ hr {
   /* Space */
   .address{justify-self:start;margin:0}
   .space-grid{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .space-grid img{object-fit:cover;
+  .space-grid img{
+    position: static;      
+    display: block;
+    object-fit:cover;
     width:100%;
     height:clamp(600px,55vh,920px)}
   
@@ -184,7 +187,8 @@ hr {
     display:flex;
     gap:80px;
     margin-top:50px;
-    flex-wrap:wrap}
+    flex-wrap:wrap
+  }
   .btn{    
     font-family: "Acumin-Light";
     padding:10px 14px;
@@ -207,10 +211,41 @@ hr {
   @media (max-width:640px){
     .hero .aside{grid-column:1/-1}
     .team-grid{grid-template-columns:repeat(2,1fr)}
+    .hero .headline{margin-top: 0px};
+  }
+  @media (max-width:640px){
+    .kicker,
+    .section-copy,
+    .objective-copy,
+    .team-intro,
+    .address,
+    .quote,
+    .ctas,
+    hr{
+      margin-top: 20px;
+      grid-column: 1 / -1;
+      gap:40px;
+    }
+    .quote{margin-bottom: 30px;}
   }
   
 
-
+  @media (max-width:640px){
+    /* Put the kicker on its own full-width row */
+    .kicker{
+      grid-column: 1 / -1;
+      margin-bottom: .5rem; /* small gap before the text */
+    }
+  
+    /* Make the copy follow underneath, also full width */
+    .section-copy,
+    .objective-copy,
+    .team-intro,
+    .address{
+      grid-column: 1 / -1;
+    }
+  }
+  
 
 
   /* Header overlays page */
@@ -227,13 +262,7 @@ hr {
       box-shadow .24s ease;
   }
   
-  /* Solid/blur once you’re off the very top */
-  .header.is-solid{
-    background: var(--header-bg);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 6px 20px rgba(0,0,0,.08);
-  }
-  
+
   /* Hidden state */
   .header.is-hidden{ transform: translateY(-100%); }
   
@@ -241,7 +270,37 @@ hr {
     .header{ transition: none; }
     .header.is-hidden{ transform: none; }
   }
-  
+
+/* Default header text & icons on hero (blue background) */
+.header { color: #fff; }
+.mobile-overlay { color: #fff; }
+
+/* When scrolled onto white background */
+.header.on-white { color: var(--brand-blue); }
+
+/* Hamburger lines follow text color */
+.hamburger path {
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* 1) Make the button inherit the header's color */
+.header .mobile { 
+  color: inherit;            /* <- crucial */
+}
+
+/* 2) Ensure the SVG resolves currentColor from the button */
+.header .mobile .hamburger { 
+  color: inherit; 
+}
+
+/* 3) Actually draw the lines in that color */
+.hamburger path {
+  stroke: currentColor !important;
+  stroke-width: 2;
+  fill: none;
+}
+
 
   /* LAST PANEL: 3 rows = quote / spacer (CTAs at bottom) / footer */
   .site-footer{
@@ -419,3 +478,5 @@ hr {
     max-width: var(--card-max);  /* optional; centers inside wide tracks */
     margin-inline: auto;
   }
+
+  .mobile-overlay a { display:inline-block; padding:12px 8px; color:#fff; text-decoration:none; }
