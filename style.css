@@ -385,6 +385,7 @@ canvas { display:block; }
 
 /* Fullscreen mobile overlay: CLOSED state */
 .mobile-overlay {
+font-family: 'Acumin-Light';
 position: fixed;
 inset: 0;                      /* left:0; top:0; right:0; bottom:0 */
 background: #0e50c8;
