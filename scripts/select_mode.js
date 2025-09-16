@@ -126,6 +126,7 @@ function drawPlayCircle() {
 
   if (typeof playCircle.r !== "number") playCircle.r = baseR;
   if (typeof playCircle.bump !== "number") playCircle.bump = 0;
+  
 
   const targetR = baseR + grow * Math.min(selected.length, maxSel);
   playCircle.r += (targetR - playCircle.r) * 0.2;
