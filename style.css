@@ -420,9 +420,15 @@ transform: translateY(0);
 transition: opacity 260ms ease, transform 260ms ease; /* visibility shows immediately */
 
 /* Debug: make it more visible when open */
-border: 2px solid yellow;
+/* border: 2px solid yellow; */
 }
 
+.mobile-overlay .nav-svg-mobile {
+  width: 28px;
+  height: 28px;
+  display: inline-block;    /* or leave as-is; flex will also work */
+  flex: 0 0 auto;
+}
 .mobile-overlay .overlay-inner {
 display: flex;
 flex-direction: column;
@@ -765,3 +771,6 @@ body.menu-open #machine * {
 }
 
 
+/* Optional hover */
+.header a:hover,
+.header a:focus { text-decoration: underline; }
