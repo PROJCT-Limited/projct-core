@@ -208,12 +208,15 @@ function mouseDragged() {
     draggingTag.vx = 0; draggingTag.vy = 0;
     return;
   }
-
   if (mode === "graph" && draggingNode && pointer.dragging) {
-    draggingNode.x = pointer.worldX - draggingNode.offsetX;
-    draggingNode.y = pointer.worldY - draggingNode.offsetY; // <- worldY
+    let nx = pointer.worldX - draggingNode.offsetX;
+    let ny = pointer.worldY - draggingNode.offsetY;
+    const rWorld = (draggingNode.baseR || draggingNode.r || UI?.rNode || 16);
+    const p = clampPointWorld(nx, ny, rWorld);     // ✅ keep inside viewport
+    draggingNode.x = p.x; draggingNode.y = p.y;
     draggingNode.vx = 0; draggingNode.vy = 0;
   }
+  
 }
 
 function mouseReleased() {
@@ -350,13 +353,16 @@ function touchMoved(ev) {
     draggingTag.y = pointer.worldY - draggingTag.dy;
     draggingTag.vx = 0; draggingTag.vy = 0;
   } else if (mode === "graph" && draggingNode) {
-    //  only move the node if we actually started dragging
     if (pointer.dragging) {
-      draggingNode.x = pointer.worldX - draggingNode.offsetX;
-      draggingNode.y = pointer.worldY - draggingNode.offsetY;
+      let nx = pointer.worldX - draggingNode.offsetX;
+      let ny = pointer.worldY - draggingNode.offsetY;
+      const rWorld = (draggingNode.baseR || draggingNode.r || UI?.rNode || 16);
+      const p = clampPointWorld(nx, ny, rWorld);   // ✅ keep inside viewport
+      draggingNode.x = p.x; draggingNode.y = p.y;
       draggingNode.vx = 0; draggingNode.vy = 0;
     }
   }
+  
 
   dbgTouch?.("moved", { draggingNode: !!draggingNode, draggingTag: !!draggingTag, x: pointer.x, y: pointer.y }); // optional
   return false;
