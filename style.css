@@ -349,7 +349,10 @@ hr {
   opacity: 1;
 }
 
-.header, .button-header { color: #fff; }
+/* .header, .button-header { color: #fff; } */
+/* style.css (replace the old rule) */
+.header .button-header { color: inherit; }
+
 
 /* Make the links inherit that white and remove underline */
 .button-header a,
