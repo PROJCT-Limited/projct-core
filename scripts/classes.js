@@ -139,13 +139,20 @@ if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
       }
     
       // Target radius: bigger if this is the centered node (Archive behaviour)
-      // Falls back to sensible defaults if UI values are missing.
-      const targetR =
-        (this === centerNode)
-          ? (typeof UI !== "undefined" && UI.rFocused ? UI.rFocused : 35)
-          : (this.isChild
-              ? ((typeof UI !== "undefined" && UI.rChild) ? UI.rChild : ((typeof UI !== "undefined" && UI.rNode) ? UI.rNode : 20))
-              : ((typeof UI !== "undefined" && UI.rNode) ? UI.rNode : 20));
+
+// --- pick base radius (desktop vs mobile for the focused node) ---
+const isMobile = (typeof LAYOUT !== "undefined" && LAYOUT === "bottom");
+
+const rFocusedDesktop = (UI?.rFocused ?? 30);
+const rFocusedMobile  = (UI?.rFocusedMobile ?? Math.max(14, Math.round(rFocusedDesktop * 0.72)));
+
+let targetR =
+  (this === centerNode)
+    ? (isMobile ? rFocusedMobile : rFocusedDesktop)
+    : (this.isChild
+        ? (UI?.rChild ?? UI?.rNode ?? 20)
+        : (UI?.rNode  ?? 20));
+
     
       // Smoothly animate toward the target radius
       this.r = lerp(this.r || targetR, targetR, 0.2);
