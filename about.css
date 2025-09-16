@@ -9,7 +9,13 @@
     src: url('./fonts/Acumin-Pro/Acumin-Pro-Book.otf') ;
   
   }
-
+  canvas, #sketch, .p5Canvas {
+    touch-action: none;          /* prevent browser gestures */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
 :root{
     --brand-blue:#0e50c8;
     --ink:#0a1a2b;
@@ -66,7 +72,7 @@
     grid-column:1/-1;
     padding-top: 0;
     line-height: 104.5%;
-    font-size:clamp(70px,5.55vw,170px);
+    font-size:clamp(50px,5.55vw,120px);
     font-weight:500}
   .hero .headline .hl{
     background:var(--highlight);
