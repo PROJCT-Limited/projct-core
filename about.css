@@ -480,3 +480,25 @@ hr {
   }
 
   .mobile-overlay a { display:inline-block; padding:12px 8px; color:#fff; text-decoration:none; }
+
+/* Make all header nav text follow the header's color */
+.header a,
+.header .button-header a,
+.header .nav-text a,
+.header .nav-arrow a {
+  color: inherit !important;      /* override any older hard-coded colors */
+  text-decoration: none;
+}
+
+/* Optional hover */
+.header a:hover,
+.header a:focus { text-decoration: underline; }
+
+/* Ensure the hamburger lines follow the color too */
+.header .hamburger path { stroke: currentColor; }
+
+/* (If you had any old hard-coded white…) neutralize them */
+.button_header1 a,
+.nav-text a,
+.nav-arrow a { color: inherit !important; }
+
