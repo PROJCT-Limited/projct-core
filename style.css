@@ -828,3 +828,114 @@ body.menu-open #machine * {
     aspect-ratio: 16 / 11;
   }
 }
+
+
+
+/* --- Base modal scaffold --- */
+.tip-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .24s ease, visibility 0s linear .24s;
+  z-index: 9999;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+.tip-modal.is-open {
+  pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .24s ease;
+}
+
+.tip-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+}
+
+/* --- Panel --- */
+.tip-panel {
+  font-family: 'Acumin-Light';
+  position: relative;
+  width: min(60vw, 980px);
+  background: #124fc7;          /* brand blue */
+  color: #fff;
+  border-radius: 16px;
+  padding: clamp(18px, 3vw, 28px);
+  box-shadow: 0 14px 50px rgba(0,0,0,.28);
+  transform: translateY(8px) scale(.985);
+  opacity: 0;
+  transition: transform .24s ease, opacity .24s ease;
+}
+.tip-modal.is-open .tip-panel {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* --- Shared content styles --- */
+.tip-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 3vw, 20px);
+  text-align: center;
+}
+
+.tip-num {
+  font-weight: 300;
+  font-size: clamp(30px, 4.8vw, 50px);
+  line-height: 1;
+  margin: 6px 0 10px;
+  opacity: .98;
+}
+
+.tip-col p {
+  margin: 0;
+  font-size: clamp(12px, 2.1vw, 20px);
+  line-height: 1.35;
+}
+.tip-col p strong { font-weight: 700; }
+
+.tip-foot {
+  grid-column: 1 / -1;
+  margin: clamp(10px, 2.1vw, 18px) 0 0;
+  font-size: clamp(12px, 1.7vw, 18px);
+  opacity: .95;
+}
+
+/* --- Button --- */
+.tip-btn {
+
+  display: block;        /* lets margin auto work */
+  margin: 24px auto 0; 
+  margin: clamp(14px, 3vw, 26px) auto 6px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #cee000;           /* brand lime */
+  color: #124fc7;                /* brand blue */
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* --- Desktop/Mobile copy swap --- */
+.tip-desktop { display: none; }
+.tip-mobile  { display: grid; }
+
+@media (min-width: 860px) {
+  .tip-desktop { display: grid; }
+  .tip-mobile  { display: none; }
+}
+
+/* Stack columns on very narrow screens */
+@media (max-width: 540px) {
+  .tip-content { grid-template-columns: 1fr; }
+}
+
+/* Motion-reduced */
+@media (prefers-reduced-motion: reduce) {
+  .tip-modal, .tip-panel { transition: none; }
+}
