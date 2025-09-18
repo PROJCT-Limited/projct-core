@@ -422,7 +422,7 @@ transition: opacity 260ms ease, transform 260ms ease; /* visibility shows immedi
 .mobile-overlay .nav-svg-mobile {
   width: 28px;
   height: 28px;
-  display: inline-block;    /* or leave as-is; flex will also work */
+  display: inline-block;    
   flex: 0 0 auto;
 }
 .mobile-overlay .overlay-inner {
@@ -665,6 +665,7 @@ object-fit: cover;
 display: block;
 }
   .team-grid_info {
+    font-family: 'Acumin-Light';
     flex-flow: column;
     justify-content: center;
     align-items: center;
