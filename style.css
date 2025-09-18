@@ -43,11 +43,6 @@ body {
   flex-direction: column;
   background-color: #0e50c8;
 }
-@font-face {
-  font-family: "Headers";
-  src: url('./fonts/PPNeueMachina-InktrapLight.otf') ;
-  font-weight: normal;
-}
 
 @font-face {
   font-family: "Acumin-Light";
