@@ -1,30 +1,26 @@
-.button-header {
-    text-transform: uppercase;
-   font-size: 0.8em; 
-   max-height: 110px;
-
-}
-.header {
-    min-height: 76px;
-}
 
 html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden; /* optional, if you want no scroll at all */
+    overflow: hidden;
     cursor: none; 
   }
   @font-face {
-    font-family: 'PPNeueMachina';         
-    src:   url('./fonts/PPNeueMachina-InktrapLight.otf') format('opentype');
-    font-weight: 300;                        /* Light */
-    font-style: normal;
-    font-display: swap;
+    font-family: "Acumin-Light";
+    src: url('./fonts/Acumin-Pro/Acumin-Pro-Light.otf') ;
+  
+  }
+  
+  @font-face {
+    font-family: "Acumin-Regular";
+    src: url('./fonts/Acumin-Pro/Acumin-Pro-Book.otf') ;
+  
   }
   body {
-    font-family: PPNeueMachina, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    font-weight: 300;
-  
+    font-family: 'Acumin-Light';
+    background-color: white;
+
+
   }
 
   .cursor {
@@ -39,3 +35,41 @@ html, body {
     background: url("./images/1x/cursor-1.png") center/contain no-repeat;
   }
   
+/* make header a flex row */
+.header {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+}
+
+/* right cluster */
+.nav-right {
+  margin-left: auto;          /* push to the right */
+  margin-right: 20px;         /* 20px from the edge */
+  display: inline-flex;
+  align-items: center;
+}
+
+/* layout for the button content */
+.button-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;                   /* space between svg and text */
+  text-transform: uppercase;
+  font-size: 1em;
+  max-height: 110px;
+}
+
+/* tidy up text + link */
+.nav-arrow p { margin: 0; }
+.nav-arrow a { text-decoration: none; color: inherit; }
+
+/* optional: size the icon */
+.nav-svg { width: 18px; height: 18px; flex: 0 0 auto; }
+
+/* hide text+svg on mobile */
+@media (max-width: 768px) {
+  .nav-right { display: none; }
+  .cursor { display: none; }
+
+}
