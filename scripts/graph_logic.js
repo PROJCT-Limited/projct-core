@@ -1,5 +1,33 @@
-// graph_logic.js (near top)
+// expose for debugging
+window.openGraphTip  = openGraphTip;
+window.closeGraphTip = closeGraphTip;
 
+function openGraphTip() {
+  const m = document.getElementById('graphTip');
+  if (!m) { console.warn('[graphTip] element not found'); return; }
+  m.classList.add('is-open');
+  document.body.classList.add('mode-graph');
+
+  // wire close once
+  const btn = m.querySelector('#graphTipClose');
+  const bg  = m.querySelector('.tip-backdrop');
+
+  if (btn && !btn.__bound) { btn.__bound = true; btn.addEventListener('click', () => closeGraphTip(true)); }
+  if (bg  && !bg.__bound)  { bg.__bound  = true;  bg.addEventListener('click', () => closeGraphTip(true)); }
+
+  // ESC to close
+  function onEsc(e){ if (e.key === 'Escape') { closeGraphTip(false); document.removeEventListener('keydown', onEsc); } }
+  document.addEventListener('keydown', onEsc);
+}
+
+function closeGraphTip(markSeen) {
+  const m = document.getElementById('graphTip');
+  if (m) m.classList.remove('is-open');
+  document.body.classList.add('graphTip-dismissed');
+  if (markSeen) {
+    try { localStorage.setItem('graphTipSeen', '1'); } catch {}
+  }
+}
 
 const LIMITS = {
   focusChildren:     UI?.maxChildrenFocus     ?? 3, // center's explicit children
@@ -339,6 +367,12 @@ const off = random(TWO_PI);
     const chosen = pickBestProject(selectedTags);
     nodes = []; links = [];centerNode = null;
     activeNode = null;
+    if (!localStorage.getItem('graphTipSeen')) {
+      openGraphTip();
+    } else {
+      // they've seen it before—still mark we're in graph mode for CSS if you want
+      document.body.classList.add('mode-graph', 'graphTip-dismissed');
+    }
   
     if (!chosen) {
       centerNode = new GraphNode("No match", baseWidth/2, baseHeight/2, [], true, false, {
