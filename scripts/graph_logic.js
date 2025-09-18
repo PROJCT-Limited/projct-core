@@ -1,6 +1,14 @@
 // graph_logic.js (near top)
 
 
+const LIMITS = {
+  focusChildren:     UI?.maxChildrenFocus     ?? 3, // center's explicit children
+  focusRelated:      UI?.maxRelatedFocus      ?? 2, // related projects around a focus
+  tagParents:        UI?.maxParents           ?? 1, // parents shown in tag-refocus
+  tagChildren:       UI?.maxChildrenByTags    ?? 3  // children in tag-refocus
+};
+
+
 
 // current camera offset in world space
 worldOffsetX = 0;
@@ -130,9 +138,10 @@ function getRelativesByTags(centerNode) {
     }
   }
 
-  // Optional: cap the size to avoid visual overload (tweak or remove)
-  const MAX_CHILDREN = 5;
-  return { parents, children: children.slice(0, MAX_CHILDREN) };
+// Optional: cap the size to avoid visual overload
+const MAX_CHILDREN = LIMITS.tagChildren; 
+return { parents, children: children.slice(0, MAX_CHILDREN) };
+
 }
 
 
@@ -178,9 +187,9 @@ function buildExpandedForFocus(focusTitle) {
 
   // ── Levers to control fan-out ────────────────────────────────────────────
   const MIN_SHARED = 2;        // require ≥ 2 shared tags to count as related
-  const MAX_RELATED = 5;       // cap the number of related projects
-  // ─────────────────────────────────────────────────────────────────────────
 
+  // ─────────────────────────────────────────────────────────────────────────
+  const MAX_RELATED = LIMITS.focusRelated;  // <-- use global cap here
   // Score related projects by # of shared tags with the tagPool
   const relatedScored = [];
   for (const p of PROJECTS) {
@@ -220,20 +229,21 @@ function buildExpandedForFocus(focusTitle) {
     return out;
   };
 
+  let childrenList = dedup(children);
+  childrenList = childrenList.slice(0, LIMITS.focusChildren);   // <-- cap children here
+
+  let relatedList  = dedup(related).slice(0, LIMITS.focusRelated); // <-- already capped
   return {
-    center: {
-      title: focus.title,
-      tags: (focus.tags || []).slice(),
-      info: focus.info || { category: "Project" }
-    },
-    children: dedup(children),
-    related: dedup(related)
+    center: { title: focus.title, tags: (focus.tags || []).slice(), info: focus.info || { category: "Project" } },
+    children: childrenList,
+    related:  relatedList
   };
 }
 
 
 // Recenter and enlarge the given node, rebuild nodes/links around it.
 function focusNodeGraph(targetNode) {
+  
   if (typeof applyMobileSpacing === "function") applyMobileSpacing();
   if (!targetNode || !targetNode.title) return;
 
@@ -258,9 +268,13 @@ activeNode = null;
   activeNode = centerNode;
 
   // Place children + related around
-  const payload = [...sub.children, ...sub.related];
-  const N = payload.length;
-  const off = random(TWO_PI);
+// Place children + related around
+const kids = (sub.children || []).slice(0, LIMITS.focusChildren);
+const rels = (sub.related  || []).slice(0, LIMITS.focusRelated);
+const payload = [...kids, ...rels];
+const N = payload.length;
+const off = random(TWO_PI);
+
 
   for (let i = 0; i < N; i++) {
     const a = off + (TWO_PI * i) / Math.max(1, N);
@@ -389,9 +403,14 @@ activeNode = null;
     };
   
     const { parents, children } = getRelativesByTags(center);
-  
-    // Keep set: center + all relatives (by title label only; titles are labels, tags drive relationships)
-    const keep = new Set([center.title, ...parents.map(p => p.title), ...children.map(c => c.title)]);
+
+    // apply global caps
+    const parentsLim  = (parents  || []).slice(0, LIMITS.tagParents);
+    const childrenLim = (children || []).slice(0, LIMITS.tagChildren);
+    
+    // Keep set (use the limited lists!)
+    const keep = new Set([center.title, ...parentsLim.map(p => p.title), ...childrenLim.map(c => c.title)]);
+ 
   
     // Prune nodes
     nodes = nodes.filter(n => keep.has(n.title || n.label));
@@ -418,8 +437,10 @@ activeNode = null;
     // Spawn parents around the center (inner ring)
     const Rpar = UI.spawnRadiusParent || (UI.spawnRadius ? UI.spawnRadius * 0.65 : 120);
     const offP = random(TWO_PI);
-    for (let i = 0; i < parents.length; i++) {
-      const p = parents[i];
+
+    for (let i = 0; i < parentsLim.length; i++) {
+      const p = parentsLim[i];
+
       let par = byTitle.get(p.title);
       if (!par) {
         const a = offP + (TWO_PI * i) / Math.max(1, parents.length);
@@ -446,8 +467,8 @@ activeNode = null;
     // Spawn tag-related children (outer ring)
     const Rchild = UI.spawnRadius || 180;
     const offC   = random(TWO_PI);
-    for (let i = 0; i < children.length; i++) {
-      const c = children[i];
+    for (let i = 0; i < childrenLim.length; i++) {
+      const c = childrenLim[i];
       let child = byTitle.get(c.title);
       if (!child) {
         const a = offC + (TWO_PI * i) / Math.max(1, children.length);
@@ -470,6 +491,7 @@ activeNode = null;
         links.push(L2);
       }
     }
+    
   
     // Optional cross-links among non-center nodes by tag overlap
     for (let i = 0; i < nodes.length; i++) {
