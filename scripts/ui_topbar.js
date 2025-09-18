@@ -318,7 +318,7 @@ useLightFont();
 const _bodySize = (bodySize / 1.2 || TYPE.body);
 
 // two-column on mobile when there’s enough width; otherwise stack
-const twoColumnOK = (LAYOUT === 'bottom') && (contentW >= 360);
+const twoColumnOK = (LAYOUT === 'bottom') && (contentW <= 550);
 
 if (twoColumnOK) {
   // ----- TWO-COLUMN MOBILE -----
@@ -383,14 +383,14 @@ if (twoColumnOK) {
   // draw image
   if (img && typeof img === 'object') {
     imageMode(CORNER);
-    image(img, contentX, contentY, drawImgW, drawImgH);
+    image(img, contentX, contentY+200, drawImgW, drawImgH);
   } else {
     noFill(); setStroke(THEME.white); strokeWeight(2);
-    rrect(contentX, contentY, drawImgW, drawImgH, 6); noStroke();
+    rrect(contentX, contentY+200, drawImgW, drawImgH, 6); noStroke();
   }
 
   // draw body
-  const bodyY = contentY + drawImgH + SAFE_GAP;
+  const bodyY = contentY + drawImgH + SAFE_GAP +200;
   textSize(_bodySize);
   textAlign(LEFT, TOP);
   textLeading(bodyMeasure.lineH);
