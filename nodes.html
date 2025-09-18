@@ -67,6 +67,23 @@
         <a class="overlay-link" href="index.html">Index</a>
       </div>
   </nav>
+<!-- keep the same IDs/classes -->
+<div id="graphTip" class="tip-modal" role="dialog" aria-modal="true">
+  <div class="tip-backdrop"></div>
+  <div class="tip-panel">
+    <div class="tip-content tip-desktop">
+      <div class="tip-col"><div class="tip-num">1</div><p><strong>Hover a node</strong> to preview details in the blue panel.</p></div>
+      <div class="tip-col"><div class="tip-num">2</div><p><strong>Click a node</strong> to center it and show its connections.</p></div>
+      <p class="tip-foot">Tip: You can drag nodes to rearrange them.</p>
+    </div>
+    <div class="tip-content tip-mobile">
+      <div class="tip-col"><div class="tip-num">1</div><p><strong>Tap a node</strong> to preview its details.</p></div>
+      <div class="tip-col"><div class="tip-num">2</div><p><strong>Double-tap a node</strong> to center it and see its connections.</p></div>
+      <p class="tip-foot">Tip: You can drag nodes to rearrange them.</p>
+    </div>
+    <button id="graphTipClose" class="tip-btn" aria-label="Close">Got it</button>
+  </div>
+</div>
 
   <!-- p5 container -->
   <div id="machine"></div>
@@ -105,12 +122,6 @@
 <script src="./scripts/main.js"></script>
 
   <script src="./interaction.js" defer></script>
-  <script>
-    window.addEventListener('error', function (e) {
-      console.error('Global error:', e.message, 'at', e.filename + ':' + e.lineno);
-      // uncomment during debugging if the console is hidden:
-      // alert('Error: ' + e.message + '\n' + e.filename + ':' + e.lineno);
-    });
-  </script>
+ 
 </body>
 </html>
