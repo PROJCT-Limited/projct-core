@@ -52,13 +52,25 @@ class SpectrumSynth {
     for (let i = 0; i < this.bins; i++){
       const u = i / (this.bins - 1);
       const env = bellTaper(u, 0.2, 2.0) * centerBoost;
-      const base = maxv > 0 ? target[i] / maxv : 0;
+    
+      // 0..1
+      const base01 = maxv > 0 ? target[i] / maxv : 0;
+    
+      // make it signed -1..1
+      const baseSigned = (base01 - 0.5) * 2;
+    
+      // signed jitter too
       const grain = (noise(this.seed*100 + i*0.07 + this.t*0.8) - 0.5) * 2.0 * jitter;
-      const v = constrain((base + grain) * env, 0, 1);
-      // time-based smoothing
-      this.y[i] = lerp(this.y[i], v, 1.0 - Math.pow(1.0 - smooth, 60 * (deltaTime/1000)));
+    
+      // final signed value, shaped by the envelope
+      const vSigned = constrain((baseSigned + grain) * env, -1, 1);
+    
+      // time smoothing
+      const k = 1.0 - Math.pow(1.0 - smooth, 60 * (deltaTime/1000));
+      this.y[i] = lerp(this.y[i], vSigned, k);
     }
-    return this.y;
+    return this.y; // now in [-1, 1]
+    
   }
 }
 function mousePressed(){ pressAt(mouseX, mouseY); }
@@ -91,6 +103,13 @@ function bellTaper(u, minAmp = 0.18, sharpness = 1.9){
 }
 
 
+
+const BOTTOM_MARGIN_DESK   = 140;
+const BOTTOM_MARGIN_MOB    = 100;
+const BAND_H_DESK          = 260;
+const BAND_H_MOB           = 200;
+const GAP_UNDER_KNOBS_DESK = 24;
+const GAP_UNDER_KNOBS_MOB  = 12;
 
 
 
@@ -262,7 +281,9 @@ for (let i = 0; i < 3; i++){
   for (let b = 0; b < bins; b++){
     const u  = b / (bins - 1);
     const x  = wx + u * ww;
-    const y  = bandMidY - vals[b] * bandMax * bandScale;
+    // vals[b] is now in [-1, 1]
+const y = bandMidY - vals[b] * bandMax * bandScale;
+
     curveVertex(x, y);
   }
 
