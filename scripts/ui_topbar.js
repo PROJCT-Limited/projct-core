@@ -261,7 +261,7 @@ const tagLayout = layoutTagPillsWrapped(tags, contentX, tagStartY, contentW, tag
 const contentTopY = tagLayout.nextY + Math.max(8, bodyGap);
 
 // ---------- IMAGE + BODY (mobile: two columns; desktop: stack as before) ----------
-let imageX, imageY, bodyX, bodyY, bodyW;
+let imageX, imageY, bodyX, bodyW;
 
 // MOBILE BOTTOM: two-column when feasible; else stack
 if (isMobileBottom) {
@@ -288,47 +288,131 @@ if (isMobileBottom) {
 } else {
   // DESKTOP/LEFT: keep your previous stacked flow (image first, then body)
   imageX = contentX;
-  imageY = contentTopY+150;
+  imageY = contentTopY+450;
 
   bodyX  = contentX;
   bodyY  = imageY + 50+imageH + Math.max(12, bodyGap);
   bodyW  = contentW;
 }
 
-// Draw image
-if (img && typeof img === "object") {
-  imageMode(CORNER);
-  image(img, imageX, imageY, imageW, imageH);
+// --- after you finish laying out the title + tag pills ---
+// ===== After tags are laid out =====
+const tagsBottomY = tagLayout.nextY;
+
+// constant meta height
+const blockH = rowH * 3 + 18;
+
+// consistent section spacing
+const SAFE_GAP = Math.max(12, Math.round((bodySize || TYPE.body) * 0.6));
+
+// where the content area (image + body) starts
+const contentY = tagsBottomY + SAFE_GAP;
+
+// meta rows are always docked to the bottom inside padding
+const metaY = innerH - blockH - outerPad;
+
+// total vertical budget for image/body (so they never overlap meta)
+const availForContent = Math.max(0, metaY - SAFE_GAP - contentY);
+
+useLightFont();
+const _bodySize = (bodySize / 1.2 || TYPE.body);
+
+// two-column on mobile when there’s enough width; otherwise stack
+const twoColumnOK = (LAYOUT === 'bottom') && (contentW >= 360);
+
+if (twoColumnOK) {
+  // ----- TWO-COLUMN MOBILE -----
+  const colGap = M.colGap || 16;
+  const rightImgW = Math.min(imageW, Math.round(contentW * 0.42));
+  const leftBodyW = Math.max(120, contentW - rightImgW - colGap);
+
+  const imgX  = contentX + leftBodyW + colGap;
+  const bodyX = contentX;
+  const maxColH = availForContent;
+
+  // image scaled to fit the column box
+  let drawImgW = rightImgW;
+  let drawImgH = Math.round((imageH * rightImgW) / Math.max(1, imageW));
+  if (drawImgH > maxColH) {
+    const s = maxColH / drawImgH;
+    drawImgH = Math.round(drawImgH * s);
+    drawImgW = Math.round(drawImgW * s);
+  }
+  drawImgH = Math.max(120, Math.min(drawImgH, maxColH)); // keep something visible
+
+  // body measured + clipped to column height
+  const bodyMeasure = measureWrappedHeight(desc, leftBodyW, _bodySize, 1.25);
+  const bodyH = Math.min(bodyMeasure.height, maxColH);
+
+  // draw image
+  if (img && typeof img === 'object') {
+    imageMode(CORNER);
+    image(img, imgX, contentY, drawImgW, drawImgH);
+  } else {
+    noFill(); setStroke(THEME.white); strokeWeight(2);
+    rrect(imgX, contentY, drawImgW, drawImgH, 6); noStroke();
+  }
+
+  // draw body
+  textSize(_bodySize);
+  textAlign(LEFT, TOP);
+  textLeading(bodyMeasure.lineH);
+  setFill(THEME.white);
+  if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
+  text(desc, bodyX, contentY, leftBodyW, bodyH);
+
 } else {
-  noFill(); setStroke(THEME.white); strokeWeight(2); rrect(imageX, imageY, imageW, imageH, 6); noStroke();
+  // ----- STACKED (desktop / narrow mobile) -----
+  // start with original image size
+  let drawImgW = imageW, drawImgH = imageH;
+
+  // measure full body
+  const bodyMeasure = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
+  const bodyFullH   = bodyMeasure.height;
+
+  // if image + gap + full text won’t fit, shrink image first
+  if (drawImgH + SAFE_GAP + bodyFullH > availForContent) {
+    drawImgH = Math.max(120, availForContent - SAFE_GAP - bodyFullH);
+    const s = drawImgH / Math.max(1, imageH);
+    drawImgW = Math.min(contentW, Math.max(1, Math.round(imageW * s)));
+  }
+
+  // remaining text budget after image
+  const maxBodyH = Math.max(0, availForContent - drawImgH - SAFE_GAP);
+
+  // draw image
+  if (img && typeof img === 'object') {
+    imageMode(CORNER);
+    image(img, contentX, contentY, drawImgW, drawImgH);
+  } else {
+    noFill(); setStroke(THEME.white); strokeWeight(2);
+    rrect(contentX, contentY, drawImgW, drawImgH, 6); noStroke();
+  }
+
+  // draw body
+  const bodyY = contentY + drawImgH + SAFE_GAP;
+  textSize(_bodySize);
+  textAlign(LEFT, TOP);
+  textLeading(bodyMeasure.lineH);
+  setFill(THEME.white);
+  if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
+  text(desc, contentX, bodyY, contentW, maxBodyH);
 }
 
-// Body (wrap-aware)
-useLightFont();
-const _bodySize = (bodySize || TYPE.body);
-textSize(_bodySize);
-const bodyM = measureWrappedHeight(desc, bodyW, _bodySize, 1.25);
-textAlign(LEFT);
-textLeading(bodyM.lineH);
-setFill(THEME.white);
-text(desc, bodyX, bodyY, bodyW);
-
-// Meta block — sits under whichever (image or body) ends lower
-const contentBottom = Math.max(imageY + imageH, bodyY + bodyM.height);
-const blockTop = contentBottom + Math.max(10, ruleGap);
-const blockH   = rowH * 3 + 18;
-const blockY   = Math.min(blockTop, innerH - blockH - outerPad);
-
+// ----- META rows pinned at the bottom -----
 useRegularFont();
-drawRule(contentX, blockY, contentW);
-drawKVRow(contentX, blockY + 4,              contentW, "YEAR",     year, rowH);
+drawRule(contentX, metaY, contentW);
+drawKVRow(contentX, metaY + 4,  contentW, 'YEAR',     year, rowH);
 
-drawRule(contentX, blockY + rowH + 6,        contentW);
-drawKVRow(contentX, blockY + rowH + 9,       contentW, "CATEGORY", cat,  rowH);
+drawRule(contentX, metaY + rowH + 6, contentW);
+drawKVRow(contentX, metaY + rowH + 9, contentW, 'CATEGORY', cat,  rowH);
 
-drawRule(contentX, blockY + rowH * 2 + 12,   contentW);
-drawKVRow(contentX, blockY + rowH * 2 + 15,  contentW, "TYPE",     type, rowH);
-drawRule(contentX, blockY + rowH * 2 + 40,   contentW);
+drawRule(contentX, metaY + rowH * 2 + 12, contentW);
+drawKVRow(contentX, metaY + rowH * 2 + 15, contentW, 'TYPE',     type, rowH);
+
+drawRule(contentX, metaY + rowH * 2 + 40, contentW);
+
+
 
 pop();
 
