@@ -1,15 +1,98 @@
 // invitation.js
 const PI = Math.PI, TWO_PI = Math.PI * 2;
 let cnv;
+// nice easing so it only gets *really* calm near the end
+function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+
+function initSpectra() {
+  spectra = [
+    new SpectrumSynth(256, 0.13),
+    new SpectrumSynth(256, 0.57),
+    new SpectrumSynth(256, 0.91),
+  ];
+}
+
+class SpectrumSynth {
+  constructor(bins = 256, seed = 0){
+    this.bins = bins;
+    this.y    = new Array(bins).fill(0);
+    this.seed = seed;
+    this.t    = 0;
+  }
+  update(dt, opts = {}){
+    const {
+      peaks = 6,
+      drift = 0.12,
+      amp   = 1.0,
+      width = 0.08,
+      jitter = 0.12,
+      smooth = 0.25,
+      centerBoost = 1.0,
+    } = opts;
+
+    this.t += dt;
+
+    const target = new Array(this.bins).fill(0);
+    for (let p = 0; p < peaks; p++){
+      const kOff = this.seed*10 + p*37.17;
+      const c = noise(kOff + this.t * drift) * 0.85 + 0.075;
+      const w = width * (0.6 + 0.8 * noise(kOff + 100 + this.t * drift * 0.7));
+      const h = amp * (0.6 + 0.8 * noise(kOff + 200 + this.t * drift * 1.3));
+      for (let i = 0; i < this.bins; i++){
+        const u = i / (this.bins - 1);
+        const g = Math.exp(-0.5 * Math.pow((u - c) / (w + 1e-4), 2));
+        target[i] += h * g;
+      }
+    }
+
+    let maxv = 0;
+    for (let i = 0; i < this.bins; i++) maxv = Math.max(maxv, target[i]);
+
+    for (let i = 0; i < this.bins; i++){
+      const u = i / (this.bins - 1);
+      const env = bellTaper(u, 0.2, 2.0) * centerBoost;
+      const base = maxv > 0 ? target[i] / maxv : 0;
+      const grain = (noise(this.seed*100 + i*0.07 + this.t*0.8) - 0.5) * 2.0 * jitter;
+      const v = constrain((base + grain) * env, 0, 1);
+      // time-based smoothing
+      this.y[i] = lerp(this.y[i], v, 1.0 - Math.pow(1.0 - smooth, 60 * (deltaTime/1000)));
+    }
+    return this.y;
+  }
+}
+function mousePressed(){ pressAt(mouseX, mouseY); }
+function mouseDragged(){ dragAt(mouseX, mouseY); }
+function mouseReleased(){ selectedKnob = null; }
+
+// p5 touch callbacks — returning false prevents page scroll
+function touchStarted(){ const t = touches[0]; if (t) pressAt(t.x, t.y); return false; }
+function touchMoved(){  const t = touches[0]; if (t) dragAt(t.x, t.y);  return false; }
+function touchEnded(){ selectedKnob = null; return false; }
+
 
 const TARGET = -PI / 2;  // straight up
-const EPS = 0.25;        // lock tolerance (~14°)
+const EPS = 0.2;        // lock tolerance (~14°)
+let spectra = [];
 
 let myFont;
 function preload() {
   myFont = loadFont('./fonts/PPNeueMachina-InktrapLight.otf');
   
 }
+function smoothstep(a, b, x){
+  let t = constrain((x - a) / (b - a), 0, 1);
+  return t * t * (3 - 2 * t);
+}
+function bellTaper(u, minAmp = 0.18, sharpness = 1.9){
+  const d = Math.abs(u - 0.5) / 0.5;        // 0 center..1 edges
+  const s = 1.0 - smoothstep(0.0, 1.0, d);  // 1 center..0 edges
+  return minAmp + (1.0 - minAmp) * Math.pow(s, sharpness);
+}
+
+
+
+
 
 // Wave settings
 const WAVE_SPEED   = 0.18;    
@@ -19,7 +102,7 @@ const WAVE_PAD     = 10;
 
 // ---- fbm with variable octaves ----
 function fbm(n, octaves = WAVE_OCTAVES) {
-  let total = 0, amp = 0.5, freq = 1, norm = 0;
+  let total = 0, amp = 1, freq = 1, norm = 0;
   for (let i = 0; i < octaves; i++) {
     total += amp * noise(n * freq);
     norm  += amp;
@@ -43,8 +126,58 @@ const LINE_COLORS = ['#ff5a5f', '#00a699', '#4a90e2']; // line/knob/label colors
 let knobs = [];
 let selectedKnob = null;
 let triggered = false;
+const X_STEP = 2;
+
+// Per line: static multi-peak base, plus per-x modulation phase/rate (no lateral drift)
+let baseShapes = [[], [], []];
+let modPhase   = [[], [], []];
+let modRate    = [[], [], []];
+let spanPx     = 0;
+
+function rebuildBaseAndMod(ww){
+  spanPx = ww;
+  const seeds = [0.73, 1.91, 3.41];   // per-line flavor
+
+  for (let i = 0; i < 3; i++) {
+    const arrBase = [], arrPhase = [], arrRate = [];
+
+    // —— static many-peak base (harmonic bank, no time term) ——
+    const K = 8;                                          // harmonics
+    const baseCycles = 10 + Math.floor(noise(seeds[i]) * 22); // ~24..34 cycles
+    const weights = [], phases = [];
+    for (let k = 1; k <= K; k++) {
+      const w = 1 / (k * 1.15) * map(noise(seeds[i] + k*2.11),0,1,0.8,1.25);
+      weights.push(w);
+      phases.push(map(noise(seeds[i] + k*4.31),0,1,0,TWO_PI));
+    }
+
+    for (let x = 0; x <= ww; x += X_STEP) {
+      const u = x / ww;
+
+      // base (stationary, lots of peaks)
+      let s = 0;
+      for (let k = 1; k <= K; k++) s += weights[k-1] * Math.sin(TWO_PI * (baseCycles*k) * u + phases[k-1]);
+      arrBase.push(s / (1.0 + 0.58 * (K - 1))); // normalize-ish to -1..1
+
+      // per-x modulation maps (smooth over x via noise → neighbors feel related)
+      const n1 = noise(x*0.004 + seeds[i]*7.3);   // 0..1
+      const n2 = noise(x*0.003 + seeds[i]*9.7);   // 0..1
+      arrPhase.push(n1 * TWO_PI * 2.0);           // diverse phases (0..~4π)
+      arrRate.push( map(n2, 0,1, 0.45, 1.25) );   // cycles/sec base rate, per-x
+    }
+
+    baseShapes[i] = arrBase;
+    modPhase[i]   = arrPhase;
+    modRate[i]    = arrRate;
+  }
+}
+
+
+
 
 function setup() {
+  initSpectra(); 
+  rebuildBaseAndMod(width);
   const headerEl = document.querySelector('.header');
   const headerH = headerEl ? headerEl.offsetHeight : 0;
 
@@ -60,6 +193,12 @@ function setup() {
   for (let i = 0; i < 3; i++) {
     knobs.push(new Knob(xs[i], height * 0.85, 48, labels[i], LINE_COLORS[i]));
   }
+  cnv.elt.style.touchAction = 'none'; // prevent page scroll when dragging knobs
+applyResponsiveLayout();
+
+  
+  
+  
 }
 
 function draw() {
@@ -68,67 +207,77 @@ function draw() {
   // Draw knobs first (so lines sit "behind" labels visually)
   for (const k of knobs) k.display();
 
-  // Screen frame + waveform band
-  const wx = 0, wy = 80, ww = width, wh = 260;
 
-  noFill();
-  noStroke();
-  strokeWeight(2);
-  rect(wx, wy, ww, wh, 12);
+// —— WAVES: multi-peak, center-energized, no lateral travel ——
+// —— WAVES: many stationary peaks, each peak breathes independently ——
+// —— SPECTRUM-STYLE LINES (no audio input) ——
+noFill();
+strokeWeight(2.5);
+strokeJoin(ROUND);
+strokeCap(ROUND);
 
-  const t = millis() * 0.001;
+const now = millis() * 0.001;
+const dt  = deltaTime / 1000.0;
 
-  //WAVES: each tied to one knob
-  noFill();
-  strokeWeight(2.5);
-  strokeJoin(ROUND);
-  strokeCap(ROUND);
-
-  for (let i = 0; i < 3; i++) {
-    const k = knobs[i];
-    const prog = constrain(k.progressToTarget(), 0, 1); // 0..1 (closer to 1 = closer to target)
-
-    // Roughness/detail shrinks as knob aligns (smoother curve when prog→1)
-    const roughMult = map(1 - prog, 0, 1, 0.7, 2.2); // small→smooth, big→rough
-    const detail = WAVE_DETAIL * roughMult;
-
-    // More octaves when rough; fewer when aligned (cleaner)
-    const octaves = Math.round(lerp(2, 6, 1 - prog));
-
-    // Phase offset collapses toward 0 as knob aligns → curves "almost" match
-    const baseOffset = (i + 1) * 7.123;           // unique per line
-    const offset = baseOffset * lerp(0.05, 1.0, 1 - prog);
-
-    // Draw line
-    stroke(k.color);
-    beginShape();
-    curveVertex(wx - 20, wy + wh * 0.6); // padding vertex
-
-    for (let x = 0; x <= ww; x += 2) {
-      const nx = (x * detail) + (t * WAVE_SPEED) + offset;
-
-      // core noise (centered -1..1)
-      const n = (fbm(nx, octaves) - 0.5) * 2.0;
-
-      // subtle envelope to avoid hitting top/bottom edges
-      const env = map(fbm(nx * 0.25 + 100.0, 3), 0, 1, 0.88, 1.0);
-
-      // amplitude — consistent across lines so they share a band
-      const amp = (wh * 0.9 - WAVE_PAD) * env;
-
-      // all three lines share the same vertical center ("aligned in height")
-      const y = wy + wh * 0.6 + n * amp;
-      curveVertex(wx + x, y);
-    }
-
-    curveVertex(wx + ww + 20, wy + wh * 0.6); // padding vertex
-    endShape();
+// band geometry
+const wx = 0, wy = height/2-200, ww = width, wh = 260;
+const bandMidY = wy + wh * 0.6;
+const bandMax  = (wh * 0.95 - WAVE_PAD);  // taller band? bump 0.95
+for (let i = 0; i < 3; i++){
+  const k    = knobs[i];
+  const prog = constrain(k.progressToTarget(), 0, 1); // 0..1
+  const bins = 1024;
+  if (!spectra || spectra.length !== 3 || spectra[0].bins !== bins) {
+    spectra = [ new SpectrumSynth(bins, 0.13),
+                new SpectrumSynth(bins, 0.57),
+                new SpectrumSynth(bins, 0.91) ];
   }
+
+  // stronger calming only near alignment
+  const calm = easeOutCubic(prog);       // 0 (free) → 1 (aligned)
+  const vis  = 1 - calm;                 // use for alpha & amplitude
+
+  // spectrum “feel” params (free → aligned)
+  const peaks     = Math.round(lerp(18, 8, calm));        // fewer lobes
+  const drift     = lerp(0.22, 0.02, calm);               // much slower
+  const amp       = lerp(1.10, 0.10, calm);               // almost flat
+  const widthNorm = lerp(0.035, 0.10, calm);              // slightly wider
+  const jitter    = lerp(0.18, 0.00, calm);               // remove grain
+  const smooth    = lerp(0.12, 0.85, calm);               // heavy smoothing
+  const cBoost    = lerp(1.05, 1.00, calm);
+
+  const vals = spectra[i].update(dt, {
+    peaks, drift, amp, width: widthNorm, jitter, smooth, centerBoost: cBoost
+  });
+
+
+  let col = color(knobs[i].color);
+  stroke(col);
+
+  beginShape();
+  curveVertex(wx - 20, bandMidY);
+
+  // scale the vertical band by vis so it compresses toward the midline
+  const bandScale = lerp(1.0, 0.12, calm); // 12% of height at green
+  for (let b = 0; b < bins; b++){
+    const u  = b / (bins - 1);
+    const x  = wx + u * ww;
+    const y  = bandMidY - vals[b] * bandMax * bandScale;
+    curveVertex(x, y);
+  }
+
+  curveVertex(wx + ww + 20, bandMidY);
+  endShape();
+}
+
+
+
+ 
 
   // Trigger when all aligned
   if (!triggered && knobs.every(k => k.isAligned())) {
     triggered = true;
-    setTimeout(() => window.location.replace("nodes.html"), 2000);
+    setTimeout(() => window.location.replace("nodes.html"), 6000);
   }
 }
 
@@ -224,6 +373,10 @@ class Knob {
 }
 
 function windowResized() {
+  rebuildBaseAndMod(width);
+
+applyResponsiveLayout();
+
   const headerEl = document.querySelector('.header');
   const headerH = headerEl ? headerEl.offsetHeight : 0;
 
@@ -247,3 +400,28 @@ window.addEventListener('mousemove', (e) => {
 window.addEventListener('mouseleave', () => {
   cursor.style.opacity = '0';
 });
+
+const MOBILE_BREAK = 768; // px
+const isMobile = () => windowWidth <= MOBILE_BREAK;
+
+// unify press/drag logic for mouse & touch
+function pressAt(px, py){
+  selectedKnob = null;
+  for (const k of knobs) { if (k.contains(px, py)) { selectedKnob = k; break; } }
+}
+function dragAt(px, py){
+  if (!selectedKnob) return;
+  const dx = px - selectedKnob.x, dy = py - selectedKnob.y;
+  selectedKnob.angle = Math.atan2(dy, dx) + PI/2;
+}
+
+// responsive knob layout (size + positions)
+function applyResponsiveLayout(){
+  const xsDesktop = [width/4, width/2, (3*width)/4];
+  const xsMobile  = [width*0.18, width*0.5, width*0.82];
+  const xs = isMobile() ? xsMobile : xsDesktop;
+  const r = isMobile() ? 28 : 48;             
+  const y = height * (isMobile() ? 0.80 : 0.85);
+
+  knobs.forEach((k, i) => { k.x = xs[i]; k.y = y; k.r = r; });
+}
