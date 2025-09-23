@@ -348,7 +348,7 @@ hr {
 
 /* Responsive card sizing */
 .team-grid_inner{
-  --card-min: 11rem;     /* min card width */
+  --card-min: 15rem;     /* min card width */
   --card-max: 15.5rem;   /* max card width */
   color:var(--brand-blue);
   display: grid;
@@ -364,7 +364,7 @@ hr {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  gap: 10rem;
   width: 100%;
   max-width: var(--card-max);   /* prevents overly wide cards on large screens */
   margin-inline: auto;          /* centers the card within a wide cell */
@@ -464,8 +464,8 @@ hr {
   
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
-    gap: 1.75rem .4rem;     /* row / column */
-    margin-bottom: 50px;
+    gap: 1.75rem 7rem;     /* row / column */
+    margin-bottom: 20px;
   }
   
   /* 3) Cards — keep your look, but don't block wrapping */
@@ -473,7 +473,7 @@ hr {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1.5rem 1.5rem;
     width: 100%;
     max-width: var(--card-max);  /* optional; centers inside wide tracks */
     margin-inline: auto;
