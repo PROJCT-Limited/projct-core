@@ -53,11 +53,19 @@
       (typeof activeNode   !== "undefined" && activeNode) || null;
   
     function nodeText(n) {
+      // in ui_topbar.js, inside nodeText(n)
+let info = n?.info || {};
+if ( (!info.year || !info.type) && window.NODE_REGISTRY ) {
+  const reg = window.NODE_REGISTRY.get(n.title);
+  if (reg && reg.info) info = { ...info, ...reg.info };
+}
+const year = info.year || "—";
+const type = info.type || "—";
+
       const title = n?.title || n?.label || "PROJECT NAME";
       const desc  = n?.info?.desc || "Although fluid, we focus much energy on product, innovation, and growth with our ecosystem of clients, investors, founders.";
-      const year  = n?.info?.year || "2025";
-      const cat   = n?.info?.category || "PROJECT";
-      const type  = n?.info?.type || "ONE";
+      const cat   = n?.info?.category || n?.category || "PROJECT";
+  
       const tags  = (n?.tags && n.tags.length) ? n.tags : ["TAG 1", "TAG 2", "TAG 3"];
       return { title, desc, year, cat, type, tags };
     }
@@ -350,7 +358,7 @@ if (twoColumnOK) {
     image(img, imgX, contentY, drawImgW, drawImgH);
   } else {
     noFill(); setStroke(THEME.white); strokeWeight(2);
-    rrect(imgX, contentY, drawImgW, drawImgH, 6); noStroke();
+    rect(imgX, contentY, drawImgW, drawImgH, 6); noStroke();
   }
 
   // draw body
