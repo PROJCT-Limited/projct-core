@@ -78,8 +78,8 @@ function buildTagRegistry() {
   return list;
 }
 
-const TAG_REGISTRY = buildTagRegistry();
-
+// const TAG_REGISTRY = buildTagRegistry();
+let TAG_REGISTRY = [];
 
 function tagsIntersect(a, b) {
   if (!Array.isArray(a) || !Array.isArray(b)) return false;
@@ -119,7 +119,13 @@ function buildNodeRegistry() {
   }
   return reg;
 }
-const NODE_REGISTRY = buildNodeRegistry();
+// const NODE_REGISTRY = buildNodeRegistry();
+let NODE_REGISTRY = [];
+
+function rebuildRegistries() {
+  TAG_REGISTRY  = buildTagRegistry();
+  NODE_REGISTRY = buildNodeRegistry();
+}
 
 
 function getDirectRelatives(centerTitle) {
