@@ -61,9 +61,12 @@ function placeNodeNoOverlap(newNode, others, bounds, maxTries = 250, pad = 6) {
   
       this.vx = 0; this.vy = 0; this.fx = 0; this.fy = 0; this.fixed = false;
       this.spawned = false;
-      this.info = { desc: info.desc || (isCenter ? "Pick projects by tags and explore relations." : "—"),
-                    category: info.category || (isCenter ? "Center" : "Node"),
-                    tools: info.tools || "" };
+      const defaultDesc = isCenter ? "Pick projects by tags and explore relations." : "—";
+      this.info = { ...info }; 
+      if (!this.info.desc)      this.info.desc      = defaultDesc;
+      if (!this.info.category)  this.info.category  = isCenter ? "Center" : "Node";
+      if (!this.info.tools)     this.info.tools     = "";
+      
   
       this.birth = { active: !isCenter, t: 0, duration: 42, angle: 0, kick: UI.kick, parent: null };
     }
