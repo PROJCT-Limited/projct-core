@@ -9,6 +9,8 @@ function preload() {
 }
 
 function setup() {
+  loadProjectsFromSheet(GOOGLE_SHEET_CSV)
+  .catch(err => console.warn('Sheet load failed, keeping embedded PROJECTS', err));
   createCanvas(windowWidth, windowHeight);
   sizeToViewport();                     
   textFont('monospace');
