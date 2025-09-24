@@ -4,26 +4,47 @@ const GOOGLE_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSusQj
 
 window.PROJECTS = window.PROJECTS || [];
 
+// --- add once, near your loader ---
+function val(v) { return v == null ? "" : String(v).trim(); }
 
-function parseTags(str) {
-  if (!str) return [];
-  return String(str)
-    .split(/[;,]/g)
-    .map(s => s.trim())
-    .filter(Boolean);
+// Case-insensitive getter with alias list
+function getAny(row, keys) {
+  // build a lowercase index once per row
+  if (!row.__lc) {
+    const lc = {};
+    for (const [k, v] of Object.entries(row)) lc[k.toLowerCase().trim()] = v;
+    row.__lc = lc;
+  }
+  for (const k of keys) {
+    const v = row.__lc[k.toLowerCase().trim()];
+    if (v != null && String(v).trim() !== "") return String(v).trim();
+  }
+  return "";
 }
 
-// build PROJECTS[] from combined rows
+// Accept comma/semicolon/pipe or JSON array
+function parseTagsFlexible(x) {
+  const s = val(x);
+  if (!s) return [];
+  if ((s.startsWith("[") && s.endsWith("]")) || (s.startsWith("{") && s.endsWith("}"))) {
+    try {
+      const arr = JSON.parse(s);
+      if (Array.isArray(arr)) return arr.map(t => String(t).trim()).filter(Boolean);
+    } catch(_) {}
+  }
+  return s.split(/[,\|;]+/).map(t => t.trim()).filter(Boolean);
+}
+
+// --- REPLACE your rowsToProjects with this version ---
 function rowsToProjects(rows) {
   const map = new Map(); // title -> project
-
 
   function ensureProject(title) {
     if (!map.has(title)) {
       map.set(title, {
         title,
         tags: [],
-        info: { category: 'Project' },
+        info: { category: "Project" },
         children: []
       });
     }
@@ -31,56 +52,64 @@ function rowsToProjects(rows) {
   }
 
   for (const r of rows) {
-    const kind         = (r.kind || '').toLowerCase().trim();   // 'project' | 'child'
-    const parentTitle  = (r.parent_title || '').trim();
-    const title        = (r.title || '').trim();
+    const title = getAny(r, ["title", "node_title", "project_title"]);
     if (!title) continue;
 
-    const tags = parseTags(r.tags);
+    // explicit kind OR infer from presence of parent
+    const kindRaw = getAny(r, ["kind", "node_kind", "row_kind"]).toLowerCase();
+    const parent  = getAny(r, ["parent_title", "parent", "project_parent"]);
+    const kind    = kindRaw || (parent ? "child" : "project");
+
+    // tags + info (accept many header variants)
+    const tags = parseTagsFlexible(getAny(r, ["tags", "node_tags", "project_tags", "child_tags"]));
+
     const info = {
-      category: r.category || (kind === 'child' ? 'Subnode' : 'Project'),
-      desc: (r.desc || '').trim(),
-      year: (r.year || '').trim(),
-      type: (r.type || '').trim(),
-      image: (r.image || '').trim()
+      category: getAny(r, ["category", "node_category", "project_category"]) || (kind === "child" ? "Subnode" : "Project"),
+      desc:  getAny(r, ["desc", "node_desc", "project_desc"]),
+      year:  getAny(r, ["year", "project_year"]),
+      type:  getAny(r, ["type", "project_type", "node_type"]),
+      image: getAny(r, ["image", "project_image", "node_image"]),
     };
 
-    if (kind === 'project' || !kind) {
+    if (kind === "project") {
       const p = ensureProject(title);
 
-      // merge tags
+      // union tags
       const set = new Set(p.tags);
-      tags.forEach(t => set.add(t));
+      for (const t of tags) set.add(t);
       p.tags = Array.from(set);
 
-      // merge info (sheet wins if provided)
-      p.info = { ...p.info, ...Object.fromEntries(
-        Object.entries(info).filter(([_,v]) => v !== '')
-      ) };
-    } else if (kind === 'child') {
-      if (!parentTitle) continue;
-      const parent = ensureProject(parentTitle);
+      // merge non-empty info fields (sheet wins)
+      for (const [k, v] of Object.entries(info)) if (v !== "") p.info[k] = v;
 
-      // avoid duplicate children by title
-      if (!parent.children.some(c => c.title === title)) {
-        parent.children.push({
+    } else { // child
+      if (!parent) continue;
+      const p = ensureProject(parent);
+      if (!p.children.some(c => c.title === title)) {
+        p.children.push({
           title,
           tags,
           info: {
-            category: info.category || 'Subnode',
-            desc: info.desc || '',
-            year: info.year || '',
-            type: info.type || '',
-            image: info.image || ''
+            category: info.category || "Subnode",
+            desc: info.desc || "",
+            year: info.year || "",
+            type: info.type || "",
+            image: info.image || ""
           }
         });
       }
     }
   }
 
-  // flatten to array
-  return Array.from(map.values());
+  const projects = Array.from(map.values());
+
+  // Debug: verify a couple of rows actually have year/type
+  const dbg = projects.slice(0, 3).map(p => ({ title: p.title, year: p.info.year, type: p.info.type }));
+  console.log("[rowsToProjects] sample:", dbg);
+
+  return projects;
 }
+
 
 function parseCsv(text) {
   if (window.Papa && typeof Papa.parse === 'function') {
@@ -113,3 +142,26 @@ async function loadProjectsFromSheet(url) {
 
   console.log('[Sheet] Loaded projects:', projects.length);
 }
+
+async function loadProjectsFromSheet(url) {
+    const res  = await fetch(url, { cache: 'no-store' });
+    const csv  = await res.text();
+    const rows = parseCsv(csv);
+    const projects = rowsToProjects(rows);
+  
+    window.PROJECTS = projects;
+  
+    if (typeof rebuildRegistries === "function") rebuildRegistries();
+  
+    // If already in graph mode, re-center so the blue panel picks up new info
+    if (typeof mode !== "undefined" && mode === "graph" && typeof centerNode !== "undefined" && centerNode) {
+      if (typeof focusNodeGraph === "function") {
+        focusNodeGraph(centerNode);
+      } else if (typeof centerCameraOnNode === "function") {
+        centerCameraOnNode(centerNode, false);
+      }
+    }
+  
+    console.log("[Sheet] Loaded projects:", projects.length);
+  }
+  
