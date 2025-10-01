@@ -26,6 +26,31 @@
             </div>
       </div>
   <div class="cursor"></div>
+  <div class="mode-switcher">
+    <button id="mouseControl" class="switch active" type="button">Mouse Control</button>
+    <button id="handControl"  class="switch"          type="button">Hand Control</button>
+  </div>
+  <script>
+    // H = Hand on/off, M = Mouse on/off, K = kill overlay (for testing)
+    window.addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      if (k === 'h') window.enableHandKnobControl?.();
+      if (k === 'm') window.disableHandKnobControl?.();
+      if (k === 'k') {
+        const ov = document.getElementById('hand-overlay');
+        if (ov) ov.style.display = 'none';
+      }
+    });
+  
+    // Ensure the mode switcher isn’t trapped in a stacking context
+    document.addEventListener('DOMContentLoaded', () => {
+      const ms = document.querySelector('.mode-switcher');
+      if (ms && ms.parentElement !== document.body) {
+        document.body.appendChild(ms); // lift it to the top level
+      }
+    });
+  </script>
+  
 </body>
 <script
     src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -33,4 +58,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
     <script src="./invitation.js"></script>
     <script src="./interaction.js"></script>
+    <script src="./hand-knob-control.js" defer></script>
+
 </html>
