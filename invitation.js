@@ -196,12 +196,14 @@ function rebuildBaseAndMod(ww){
 
 function setup() {
   initSpectra(); 
-  rebuildBaseAndMod(width);
+ 
   const headerEl = document.querySelector('.header');
   const headerH = headerEl ? headerEl.offsetHeight : 0;
 
   cnv = createCanvas(windowWidth, windowHeight - headerH);
+  window.cnv = cnv;
   cnv.position(0, headerH);
+  rebuildBaseAndMod(width);
   textSize(16);
 
   // Initial knob layout based on canvas size
@@ -212,13 +214,19 @@ function setup() {
   for (let i = 0; i < 3; i++) {
     knobs.push(new Knob(xs[i], height * 0.85, 48, labels[i], LINE_COLORS[i]));
   }
+  window.knobs = knobs;
   cnv.elt.style.touchAction = 'none'; // prevent page scroll when dragging knobs
 applyResponsiveLayout();
+
+
 
   
   
   
 }
+
+
+
 
 function draw() {
   clear();
