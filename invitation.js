@@ -306,7 +306,7 @@ const y = bandMidY - vals[b] * bandMax * bandScale;
   // Trigger when all aligned
   if (!triggered && knobs.every(k => k.isAligned())) {
     triggered = true;
-    setTimeout(() => window.location.replace("nodes.html"), 6000);
+    setTimeout(() => window.location.replace("nodes.html"), 1000);
   }
 }
 
