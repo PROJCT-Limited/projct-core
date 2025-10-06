@@ -148,8 +148,10 @@ function getUIConfig() {
     fontCenter:  mobile ? 20 : 20,
 
     maxSelected: 3,
-    zoneBottomDesktop: 5,   // try 80–110 on desktop
-zoneBottomMobile:  5,  
+    zoneBottomDesktop: 0,   // try 80–110 on desktop
+zoneBottomMobile:  0,  
+imageFrameMode: 'horizontal',
+
   };
 }
 
