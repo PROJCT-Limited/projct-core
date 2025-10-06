@@ -4,6 +4,16 @@
 // --- image cache so sheet URLs become p5.Image objects ---
 const IMAGE_CACHE = new Map(); // url -> {img, status:'loading'|'ready'|'error'}
 
+// 'horizontal' -> ~3:2, 'vertical' -> ~4:5 (portrait-ish)
+const IMAGE_FRAME_MODE  = (window.UI?.imageFrameMode || 'horizontal'); // 'horizontal' | 'vertical'
+const IMAGE_RATIO_H     = 2 / 3;  // h/w for ~3:2 (your current)
+const IMAGE_RATIO_V     = 5 / 4;  // h/w for ~4:5 (taller)
+
+function pickImageH(w) {
+  const r = (IMAGE_FRAME_MODE === 'vertical') ? IMAGE_RATIO_V : IMAGE_RATIO_H;
+  return Math.round(w * r);
+}
+
 function normalizeImgSrc(src) {
   if (!src) return "";
   let s = String(src).trim();
@@ -127,12 +137,18 @@ const type = info.type || "—";
     
   
     function metrics(usableW) {
+      // desktop metrics()
+const imageW = clamp(Math.round(usableW * 0.55), 240, 460);
+const imageH = pickImageH(imageW);
+
+
+
       const outerPad  = clamp(Math.round(usableW * 0.035), 16, 28);
       const titleY    = outerPad + 10;
       const tagGap    = clamp(Math.round(usableW * 0.018), 8, 16);
       const tagH      = clamp(Math.round(usableW * 0.072), 18, 40);
-      const imageW    = clamp(Math.round(usableW * 0.55), 240, 460);
-      const imageH    = Math.round(imageW * 0.66); // ~3:2
+      // const imageW    = clamp(Math.round(usableW * 0.55), 240, 460);
+      // const imageH    = Math.round(imageW * 0.66); // ~3:2
       const bodyGap   = clamp(Math.round(usableW * 0.04), 18, 32);
       const ruleGap   = clamp(Math.round(usableW * 0.045), 18, 28);
       const rowH      = clamp(Math.round(usableW * 0.055), 16, 24);
@@ -149,12 +165,14 @@ const MOBILE_RATIO_DEFAULT = 0.48;
 
 // Mobile metrics (smaller paddings; image sized to a right column)
 function metricsMobile(usableW, usableH) {
+  const imageW = Math.min(Math.round(usableW * 0.40), 180);
+const imageH = pickImageH(imageW);
   const outerPad  = 12;
   const titleY    = outerPad + 6;
   const tagGap    = Math.max(6, Math.round(usableW * 0.01));
   const tagH      = Math.max(16, Math.round(usableW * 0.05));
-  const imageW    = Math.min(Math.round(usableW * 0.40), 180);
-  const imageH    = Math.round(imageW * 0.86); // ~3:2
+  // const imageW    = Math.min(Math.round(usableW * 0.40), 180);
+  // const imageH    = Math.round(imageW * 0.86); // ~3:2
   const bodyGap   = 40;
   const ruleGap   = 80;
   const rowH      = Math.max(14, Math.round(usableW * 0.04));
@@ -351,7 +369,7 @@ if (isMobileBottom) {
 } else {
   // DESKTOP/LEFT: keep your previous stacked flow (image first, then body)
   imageX = contentX;
-  imageY = contentTopY+450;
+  imageY = contentTopY+400;
 
   bodyX  = contentX;
   bodyY  = imageY + 50+imageH + Math.max(12, bodyGap);
@@ -403,17 +421,20 @@ if (twoColumnOK) {
   }
   drawImgH = Math.max(120, Math.min(drawImgH, maxColH)); // keep something visible
 
-  // body measured + clipped to column height
-  const bodyMeasure = measureWrappedHeight(desc, leftBodyW, _bodySize, 1.25);
+
   const bodyH = Math.min(bodyMeasure.height, maxColH);
 
-  // draw image
   if (img && typeof img === 'object') {
-    imageMode(CORNER);
-    image(img, imgX, contentY, drawImgW, drawImgH);
+   
+    drawImageCover(
+      img,
+      imgX, contentY,
+      drawImgW, drawImgH,
+      (IMAGE_FRAME_MODE === 'vertical') ? 'vertical' : 'horizontal'
+    );
   } else {
-    noFill(); setStroke(THEME.white); strokeWeight(2);
-    rect(imgX, contentY, drawImgW, drawImgH, 6); noStroke();
+    noFill(); setStroke(THEME.white);  noStroke();
+    rect(imgX, contentY, drawImgW, drawImgH, 6); 
   }
 
   // draw body
@@ -445,11 +466,15 @@ if (twoColumnOK) {
 
   // draw image
   if (img && typeof img === 'object') {
-    imageMode(CORNER);
-    image(img, contentX, contentY+200, drawImgW, drawImgH);
+    drawImageCover(
+      img,
+      contentX, contentY + 200,
+      drawImgW, drawImgH,
+      (IMAGE_FRAME_MODE === 'vertical') ? 'vertical' : 'horizontal'
+    );
   } else {
-    noFill(); setStroke(THEME.white); strokeWeight(2);
-    rrect(contentX, contentY+200, drawImgW, drawImgH, 6); noStroke();
+    noFill(); setStroke(THEME.white); noStroke();
+    rect(contentX, contentY+200, drawImgW, drawImgH, 6); 
   }
 
   // draw body
@@ -516,3 +541,30 @@ function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.25) {
 }
 
 
+
+// Draw img cropped to fill dest box (like CSS object-fit: cover)
+// bias: 'horizontal' (crop more vertically), 'vertical' (crop more horizontally), or 'auto'
+function drawImageCover(img, dx, dy, dW, dH, bias = 'auto', alignX = 0.5, alignY = 0.5) {
+  if (!img || !img.width || !img.height) return;
+
+  const sW = img.width, sH = img.height;
+  // scale so the destination box is fully covered
+  const scale = Math.max(dW / sW, dH / sH);
+  const tW = Math.round(dW / scale); // source width to sample
+  const tH = Math.round(dH / scale); // source height to sample
+
+  // bias just affects where we crop from (centers by default)
+  // alignX/alignY are 0..1 (0 = left/top, 1 = right/bottom)
+  // For 'horizontal', we keep more width (crop top/bottom), so Y-alignment matters more.
+  // For 'vertical', we keep more height (crop left/right), so X-alignment matters more.
+  let ax = alignX, ay = alignY;
+  if (bias === 'horizontal') { ax = 0.5; /* center horizontally */ }
+  if (bias === 'vertical')   { ay = 0.5; /* center vertically   */ }
+
+  const sx = Math.max(0, Math.min(sW - tW, Math.round((sW - tW) * ax)));
+  const sy = Math.max(0, Math.min(sH - tH, Math.round((sH - tH) * ay)));
+
+  // draw cropped
+  imageMode(CORNER);
+  image(img, dx, dy, dW, dH, sx, sy, tW, tH);
+}
