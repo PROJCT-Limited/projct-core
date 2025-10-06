@@ -348,13 +348,13 @@ hr {
 
 /* Responsive card sizing */
 .team-grid_inner{
-  --card-min: 15rem;     /* min card width */
+  --card-min: 12rem;     /* min card width */
   --card-max: 15.5rem;   /* max card width */
   color:var(--brand-blue);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min)), 1fr));
   column-gap: 0.4rem;
-  row-gap: 1.75rem;
+  row-gap: 1.65rem;
   justify-items: stretch;     /* stretch cells; cards self-limit via max width */
   margin-bottom: 50px;
 }
@@ -503,3 +503,23 @@ hr {
 .nav-arrow a { color: inherit !important; }
 
 
+@media (max-width: 640px){
+  /* force two columns */
+  .team-grid_inner{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;            /* tighter spacing so two fit comfortably */
+    --card-min: 8rem;     /* optional: allow smaller cards */
+    --card-max: none;     /* optional: don't cap width per card */
+  }
+
+  /* let each card stretch to its column */
+  .team-grid_item{
+    max-width: none;      /* remove the 15.5rem cap on mobile */
+    width: 100%;
+  }
+
+  /* ensure the circular image fills its column */
+  .team-grid_image-wrapper{
+    width: 100%;
+  }
+}
