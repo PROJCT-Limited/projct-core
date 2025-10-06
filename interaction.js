@@ -150,3 +150,41 @@ document.addEventListener('swup:contentReplaced', () => {
   document.querySelectorAll('.index-item-images.slider').forEach(initSlider);
 })();
 
+
+
+  (function(){
+    const tip   = document.getElementById('hand-tip');
+    const btnH  = document.getElementById('btn-hand');
+    const btnM  = document.getElementById('btn-mouse');
+
+    function openTip(){ tip.classList.add('is-open'); tip.setAttribute('aria-hidden','false'); }
+    function closeTip(){ tip.classList.remove('is-open'); tip.setAttribute('aria-hidden','true'); }
+
+    // Clicking the hand button: enable hand control + show quick guide the first time
+    let shownOnce = false;
+    btnH?.addEventListener('click', async () => {
+      btnH.classList.add('is-active'); btnM?.classList.remove('is-active');
+      window.enableHandKnobControl?.();
+      if (!shownOnce){ openTip(); shownOnce = true; }
+    });
+
+    // Mouse button: disable hand mode
+    btnM?.addEventListener('click', () => {
+      btnM.classList.add('is-active'); btnH?.classList.remove('is-active');
+      window.disableHandKnobControl?.();
+    });
+
+    // Close actions (backdrop + button)
+    tip?.addEventListener('click', (e) => { if (e.target.hasAttribute('data-close')) closeTip(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTip(); });
+
+    // Optional: pick initial active state (mouse on)
+    btnM?.classList.add('is-active');
+
+    // Safety: keep modal above any stacking contexts
+    document.addEventListener('DOMContentLoaded', () => {
+      tip && (tip.style.zIndex = '99999');
+    });
+  })();
+
+
