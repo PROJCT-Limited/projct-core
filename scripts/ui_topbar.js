@@ -386,14 +386,22 @@ const blockH = rowH * 3 + 18;
 // consistent section spacing
 const SAFE_GAP = Math.max(12, Math.round((bodySize || TYPE.body) * 0.6));
 
+// consistent section spacing
+const GAP_ABOVE_CONTENT = 20;  // between tags and image/text block
+const GAP_BELOW_CONTENT = 20;  // exact gap to meta rows
+
 // where the content area (image + body) starts
-const contentY = tagsBottomY + SAFE_GAP;
+const contentY = tagsBottomY + GAP_ABOVE_CONTENT;
 
 // meta rows are always docked to the bottom inside padding
 const metaY = innerH - blockH - outerPad;
 
-// total vertical budget for image/body (so they never overlap meta)
-const availForContent = Math.max(0, metaY - SAFE_GAP - contentY);
+// the *target* bottom of the content block (exactly 20px above meta)
+const contentBottom = metaY - GAP_BELOW_CONTENT;
+
+// total vertical budget for image + (gap) + text, ending exactly at contentBottom
+const availForContent = Math.max(0, contentBottom - contentY);
+
 
 useLightFont();
 const _bodySize = (bodySize / 1.2 || TYPE.body);
@@ -409,32 +417,40 @@ if (twoColumnOK) {
 
   const imgX  = contentX + leftBodyW + colGap;
   const bodyX = contentX;
-  const maxColH = availForContent;
-
-  // image scaled to fit the column box
-  let drawImgW = rightImgW;
-  let drawImgH = Math.round((imageH * rightImgW) / Math.max(1, imageW));
-  if (drawImgH > maxColH) {
-    const s = maxColH / drawImgH;
-    drawImgH = Math.round(drawImgH * s);
-    drawImgW = Math.round(drawImgW * s);
-  }
-  drawImgH = Math.max(120, Math.min(drawImgH, maxColH)); // keep something visible
+  const columnH = availForContent;
 
 
-  const bodyH = Math.min(bodyMeasure.height, maxColH);
+
+
+// column height is the whole budget so the block ends at contentBottom
+
+
+// image frame
+let drawImgW = rightImgW;
+let desiredFrameH = img ? frameHeightForImage(img, drawImgW)
+                        : Math.round((imageH * rightImgW) / Math.max(1, imageW));
+                        let drawImgH = Math.min(Math.max(120, desiredFrameH), columnH);
+
+// text height fills the rest (or just uses the whole column)
+const bodyMeasure = measureWrappedHeight(desc, leftBodyW, _bodySize, 1.25);
+const bodyH = Math.min(bodyMeasure.height, columnH); 
+
+// draw image at (imgX, contentY) with drawImgH
+// draw text at (bodyX, contentY) with bodyH
+// => the lower of image/text ends at contentY + maxColH === contentBottom
+
+
 
   if (img && typeof img === 'object') {
-   
     drawImageCover(
       img,
       imgX, contentY,
       drawImgW, drawImgH,
-      (IMAGE_FRAME_MODE === 'vertical') ? 'vertical' : 'horizontal'
+      biasForImage(img)
     );
   } else {
-    noFill(); setStroke(THEME.white);  noStroke();
-    rect(imgX, contentY, drawImgW, drawImgH, 6); 
+    noFill();   noStroke();
+    rrect(imgX, contentY, drawImgW, drawImgH, 6)
   }
 
   // draw body
@@ -443,48 +459,62 @@ if (twoColumnOK) {
   textLeading(bodyMeasure.lineH);
   setFill(THEME.white);
   if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
-  text(desc, bodyX, contentY, leftBodyW, bodyH);
+  text(desc, bodyX, contentY, leftBodyW, columnH);
 
 } else {
-  // ----- STACKED (desktop / narrow mobile) -----
-  // start with original image size
-  let drawImgW = imageW, drawImgH = imageH;
 
-  // measure full body
-  const bodyMeasure = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
-  const bodyFullH   = bodyMeasure.height;
+ 
 
-  // if image + gap + full text won’t fit, shrink image first
-  if (drawImgH + SAFE_GAP + bodyFullH > availForContent) {
-    drawImgH = Math.max(120, availForContent - SAFE_GAP - bodyFullH);
-    const s = drawImgH / Math.max(1, imageH);
-    drawImgW = Math.min(contentW, Math.max(1, Math.round(imageW * s)));
-  }
+// ----- STACKED (desktop / narrow mobile) -----
+let drawImgW = imageW;
+let drawImgH = imageH;
 
-  // remaining text budget after image
-  const maxBodyH = Math.max(0, availForContent - drawImgH - SAFE_GAP);
+// measure full body
+const bodyMeasure = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
+const bodyFullH   = bodyMeasure.height;
 
-  // draw image
-  if (img && typeof img === 'object') {
-    drawImageCover(
-      img,
-      contentX, contentY + 200,
-      drawImgW, drawImgH,
-      (IMAGE_FRAME_MODE === 'vertical') ? 'vertical' : 'horizontal'
-    );
-  } else {
-    noFill(); setStroke(THEME.white); noStroke();
-    rect(contentX, contentY+200, drawImgW, drawImgH, 6); 
-  }
+// ensure image + gap + text fits within availForContent
+if (drawImgH + GAP_ABOVE_CONTENT + bodyFullH > availForContent) {
+  drawImgH = Math.max(120, availForContent - GAP_ABOVE_CONTENT - bodyFullH);
+  const s = drawImgH / Math.max(1, imageH);
+  drawImgW = Math.min(contentW, Math.max(1, Math.round(imageW * s)));
+}
 
-  // draw body
-  const bodyY = contentY + drawImgH + SAFE_GAP +200;
-  textSize(_bodySize);
-  textAlign(LEFT, TOP);
-  textLeading(bodyMeasure.lineH);
-  setFill(THEME.white);
-  if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
-  text(desc, contentX, bodyY, contentW, maxBodyH);
+// compute text height so that the stack ends exactly at contentBottom
+const bodyH = Math.max(0, availForContent - drawImgH - GAP_ABOVE_CONTENT);
+
+// BOTTOM-ALIGN: total stack = drawImgH + GAP_ABOVE_CONTENT + bodyH
+const blockH = drawImgH + GAP_ABOVE_CONTENT + bodyH;
+const startY = Math.max(contentY, contentBottom - blockH);
+
+// (optional) nudge portrait images up to keep faces higher, without breaking bottom align
+const portraitNudge = (isPortraitImage(img) ? Math.round(Math.min(drawImgH * 0.25, startY - contentY)) : 0);
+
+// final positions
+const imgY  = startY - portraitNudge +100;
+const bodyY = imgY + drawImgH + GAP_ABOVE_CONTENT;
+
+// draw image
+if (img && typeof img === 'object') {
+  drawImageCover(
+    img,
+    contentX, imgY,
+    drawImgW, drawImgH,
+    biasForImage(img)
+  );
+} else {
+  noFill();  noStroke();
+  rrect(contentX, imgY, drawImgW, drawImgH, 6);
+
+}
+
+// draw body (clips inside bodyH, so bottom = contentBottom)
+textSize(_bodySize);
+textAlign(LEFT, TOP);
+textLeading(bodyMeasure.lineH);
+setFill(THEME.white);
+if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
+text(desc, contentX, bodyY, contentW, bodyH);
 }
 
 // ----- META rows pinned at the bottom -----
@@ -567,4 +597,22 @@ function drawImageCover(img, dx, dy, dW, dH, bias = 'auto', alignX = 0.5, alignY
   // draw cropped
   imageMode(CORNER);
   image(img, dx, dy, dW, dH, sx, sy, tW, tH);
+}
+
+
+
+// choose the target frame height for a given dest width, per-image
+function frameHeightForImage(img, destW) {
+  const portrait = isPortraitImage(img);
+  const ratio = portrait ? IMAGE_RATIO_V : IMAGE_RATIO_H; // h/w
+  return Math.round(destW * ratio);
+}
+
+// convert portrait/landscape into a drawImageCover bias
+function biasForImage(img) {
+  return isPortraitImage(img) ? 'vertical' : 'horizontal';
+}
+
+function isPortraitImage(img, tolerance = 0.05) {
+  return !!(img && img.width && img.height && (img.height / img.width) > (1 + tolerance));
 }
