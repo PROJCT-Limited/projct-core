@@ -174,13 +174,13 @@
         // index tip
         octx.beginPath();
         octx.arc(pi.x, pi.y, DOT_R, 0, Math.PI*2);
-        octx.fillStyle = 'rgba(5,5,255)';
+        octx.fillStyle = 'rgba(14,80,200)';
         octx.fill();
   
         // thumb tip
         octx.beginPath();
         octx.arc(pt.x, pt.y, DOT_R*0.9, 0, Math.PI*2);
-        octx.fillStyle = 'rgba(5,5,5)';
+        octx.fillStyle = 'rgba(14,80,200)';
         octx.fill();
   
         // leash + grab ring if holding
@@ -189,7 +189,7 @@
         if (g && g.knob){
           const c = pinchMidpointCanvas(I.x, I.y, T.x, T.y);
           octx.setLineDash([6,6]);
-          octx.lineWidth = 1.5;
+          octx.lineWidth = 1;
           octx.strokeStyle = 'rgba(5,5,5)';
           octx.beginPath();
           octx.moveTo(g.knob.x, g.knob.y);
@@ -375,3 +375,55 @@
     }
   });
   
+
+
+  // --- image_cache.js ---
+const IMAGE_CACHE = new Map(); // url -> {img, status:'loading'|'ready'|'error'}
+
+function normalizeImgSrc(src) {
+  if (!src) return "";
+  let s = String(src).trim();
+
+  // If they put just "foo.jpg" in the sheet, assume it lives in /images/
+  if (!/^https?:\/\//i.test(s) && !s.startsWith("/")) s = `images/${s}`;
+
+  // Fix common typos like "/.images/foo.png" -> "images/foo.png"
+  s = s.replace(/^\/\./, "/").replace(/^\/?images\//, "images/");
+
+  // Convert Google Drive "file/d/<ID>/view" to a direct view link
+  if (/drive\.google\.com\/file\/d\//.test(s)) {
+    const m = s.match(/\/file\/d\/([^/]+)/);
+    if (m) s = `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  }
+  return s;
+}
+
+function requestImage(src) {
+  const url = normalizeImgSrc(src);
+  if (!url) return null;
+
+  // Already requested?
+  const existing = IMAGE_CACHE.get(url);
+  if (existing) return existing;
+
+  const entry = { img: null, status: "loading" };
+  IMAGE_CACHE.set(url, entry);
+
+  // p5 async load
+  loadImage(
+    url,
+    (p5img) => { entry.img = p5img; entry.status = "ready"; },
+    (err)    => { console.warn("[image] failed:", url, err); entry.status = "error"; }
+  );
+  return entry;
+}
+
+// Optional: warm cache for all images in PROJECTS after you load the sheet
+function warmImageCacheFromProjects(projects) {
+  const urls = new Set();
+  for (const p of projects) {
+    if (p.info?.image) urls.add(p.info.image);
+    for (const c of (p.children || [])) if (c.info?.image) urls.add(c.info.image);
+  }
+  urls.forEach(requestImage);
+}
