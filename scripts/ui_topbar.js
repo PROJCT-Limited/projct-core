@@ -1,6 +1,45 @@
 /* ui_topbar.js — styled info panel (desktop: left, mobile: bottom)
    Fully null-safe (does not read UI.* or COLORS.* directly) and avoids color() at load time. */
 
+// --- image cache so sheet URLs become p5.Image objects ---
+const IMAGE_CACHE = new Map(); // url -> {img, status:'loading'|'ready'|'error'}
+
+function normalizeImgSrc(src) {
+  if (!src) return "";
+  let s = String(src).trim();
+
+  // If they put just "foo.png" in the sheet, assume /images/foo.png
+  if (!/^https?:\/\//i.test(s) && !s.startsWith("/")) s = `images/${s}`;
+
+  // Fix common typos like "/.images/foo.png" -> "images/foo.png"
+  s = s.replace(/^\/\./, "/").replace(/^\/?images\//, "images/");
+
+  // Convert Google Drive file links to direct view
+  if (/drive\.google\.com\/file\/d\//.test(s)) {
+    const m = s.match(/\/file\/d\/([^/]+)/);
+    if (m) s = `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  }
+  return s;
+}
+
+function requestImage(src) {
+  const url = normalizeImgSrc(src);
+  if (!url) return null;
+
+  const existing = IMAGE_CACHE.get(url);
+  if (existing) return existing;
+
+  const entry = { img: null, status: "loading" };
+  IMAGE_CACHE.set(url, entry);
+
+  // p5 async loader
+  loadImage(
+    url,
+    (p5img) => { entry.img = p5img; entry.status = "ready"; },
+    (err)    => { console.warn("[image] failed:", url, err); entry.status = "error"; }
+  );
+  return entry;
+}
 
 
    (function () {
@@ -51,6 +90,7 @@
     const currentNode = () =>
       (typeof hoveredNode !== "undefined" && hoveredNode) ||
       (typeof activeNode   !== "undefined" && activeNode) || null;
+      
   
     function nodeText(n) {
       // in ui_topbar.js, inside nodeText(n)
@@ -69,7 +109,13 @@ const type = info.type || "—";
       const tags  = (n?.tags && n.tags.length) ? n.tags : ["TAG 1", "TAG 2", "TAG 3"];
       return { title, desc, year, cat, type, tags };
     }
-    const nodeImage = (n) => (n?.image || n?.img || n?.info?.image || null);
+    function nodeImage(n) {
+      const src =
+        n?.image || n?.img || n?.info?.image || "";
+      const entry = requestImage(src);
+      return (entry && entry.status === "ready") ? entry.img : null; // return p5.Image when ready
+    }
+    
   
     function metrics(usableW) {
       const outerPad  = clamp(Math.round(usableW * 0.035), 16, 28);
