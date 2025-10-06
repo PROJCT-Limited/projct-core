@@ -206,6 +206,7 @@ function mouseDragged() {
     draggingTag.x = pointer.worldX - draggingTag.dx;
     draggingTag.y = pointer.worldY - draggingTag.dy;
     draggingTag.vx = 0; draggingTag.vy = 0;
+    clampTagToRect(draggingTag, selectPlayableWorldRect(12)); 
     return;
   }
   if (mode === "graph" && draggingNode && pointer.dragging) {
@@ -215,6 +216,7 @@ function mouseDragged() {
     const p = clampPointWorld(nx, ny, rWorld);     // ✅ keep inside viewport
     draggingNode.x = p.x; draggingNode.y = p.y;
     draggingNode.vx = 0; draggingNode.vy = 0;
+    
   }
   
 }
@@ -352,12 +354,13 @@ function touchMoved(ev) {
     draggingTag.x = pointer.worldX - draggingTag.dx;
     draggingTag.y = pointer.worldY - draggingTag.dy;
     draggingTag.vx = 0; draggingTag.vy = 0;
+    clampTagToRect(draggingTag, selectPlayableWorldRect(12)); 
   } else if (mode === "graph" && draggingNode) {
     if (pointer.dragging) {
       let nx = pointer.worldX - draggingNode.offsetX;
       let ny = pointer.worldY - draggingNode.offsetY;
       const rWorld = (draggingNode.baseR || draggingNode.r || UI?.rNode || 16);
-      const p = clampPointWorld(nx, ny, rWorld);   // ✅ keep inside viewport
+      const p = clampPointWorld(nx, ny, rWorld);  
       draggingNode.x = p.x; draggingNode.y = p.y;
       draggingNode.vx = 0; draggingNode.vy = 0;
     }
