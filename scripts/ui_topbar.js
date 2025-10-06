@@ -8,19 +8,28 @@ function normalizeImgSrc(src) {
   if (!src) return "";
   let s = String(src).trim();
 
-  // If they put just "foo.png" in the sheet, assume /images/foo.png
-  if (!/^https?:\/\//i.test(s) && !s.startsWith("/")) s = `images/${s}`;
+  // If it's an absolute URL, just return it.
+  if (/^https?:\/\//i.test(s)) return s;
 
-  // Fix common typos like "/.images/foo.png" -> "images/foo.png"
-  s = s.replace(/^\/\./, "/").replace(/^\/?images\//, "images/");
-
-  // Convert Google Drive file links to direct view
-  if (/drive\.google\.com\/file\/d\//.test(s)) {
-    const m = s.match(/\/file\/d\/([^/]+)/);
-    if (m) s = `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  // Keep rooted and dot-relative paths as-is (/, ./, ../)
+  if (s.startsWith("/") || s.startsWith("./") || s.startsWith("../")) {
+    // Clean up a leading "/." (rare typo)
+    s = s.replace(/^\/\./, "/");
+    return s;
   }
+
+  // If it's a bare filename or "images/..." add our images/ prefix once
+  // e.g. "foo.png" -> "images/foo.png"
+  //      "images/foo.png" -> "images/foo.png" (idempotent)
+  s = s.replace(/^\.?\/*/, "");            // strip any accidental leading ./ or /
+  if (!/^images\//i.test(s)) s = `images/${s}`;
+
+  // final tidy: collapse any accidental double slashes (except protocol)
+  s = s.replace(/([^:]\/)\/+/g, "$1");
+
   return s;
 }
+
 
 function requestImage(src) {
   const url = normalizeImgSrc(src);
@@ -349,7 +358,7 @@ if (isMobileBottom) {
   bodyW  = contentW;
 }
 
-// --- after you finish laying out the title + tag pills ---
+
 // ===== After tags are laid out =====
 const tagsBottomY = tagLayout.nextY;
 
