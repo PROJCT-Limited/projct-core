@@ -728,7 +728,7 @@ body.menu-open #machine * {
 .mobile-overlay { z-index: 2000; }
 .mobile-close   { z-index: 2100; }
 
- /* Header overlays page */
+
  .header{
   position: fixed;
   inset: 0 0 auto 0;           /* top:0;left:0;right:0 */
@@ -743,7 +743,7 @@ body.menu-open #machine * {
     box-shadow .24s ease;
 }
 
-/* Solid/blur once you’re off the very top */
+
 .header.is-solid{
   background: var(--header-bg);
   backdrop-filter: blur(6px);
@@ -833,7 +833,8 @@ body.menu-open #machine * {
   opacity: 0;
   transition: opacity .24s ease, visibility 0s linear .24s;
   z-index: 9999;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Acumin-Light";
+  font-weight: 500;  
 }
 .tip-modal.is-open {
   pointer-events: auto;
@@ -855,9 +856,9 @@ body.menu-open #machine * {
   width: min(60vw, 980px);
   background: #124fc7;          /* brand blue */
   color: #fff;
-  border-radius: 16px;
+  /* border-radius: 16px; */
   padding: clamp(18px, 3vw, 28px);
-  box-shadow: 0 14px 50px rgba(0,0,0,.28);
+  box-shadow: 0 14px 50px rgba(0,0,0,.18);
   transform: translateY(8px) scale(.985);
   opacity: 0;
   transition: transform .24s ease, opacity .24s ease;
