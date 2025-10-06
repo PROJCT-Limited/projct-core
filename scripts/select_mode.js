@@ -64,27 +64,27 @@ function selectScreenBoundsRect() {
   const sW = width;
   const sH = height;
 
+  // Measure any header that exists and give us a clean 10px breathing room
   const headerH = __measureHeader();
-  const padX    = (UI?.zonePadX ?? 2);
-  const padTop  = Math.max(headerH + 8, (UI?.zonePadY ?? 2));
-
-  // ⬇️ Replace your old padBot line with this block:
+  const padX    = (UI?.zonePadX ?? 10);                   // 10px left/right
+  const padTop  = Math.max(headerH + 10, UI?.zonePadY ?? 10); // header + 10px (or at least 10px)
   const baseBot = (LAYOUT === 'bottom')
-    ? (UI?.zoneBottomMobile  ?? 6)   // mobile/bottom panel
-    : (UI?.zoneBottomDesktop ?? 6);  // desktop/left
+    ? (UI?.zoneBottomMobile  ?? 1)
+    : (UI?.zoneBottomDesktop ?? 1);
 
-  // keep it reasonable on very short screens
-  const padBot  = Math.min(baseBot, Math.round(sH * 0.18));
+  // Ensure we never go below 10px bottom margin
+  const padBot  = Math.max(1, Math.min(baseBot, Math.round(sH * 0.1)));
 
   const x = padX;
   const y = padTop;
-  const w = Math.max(0, sW - 1 * padX);
+  const w = Math.max(0, sW - padX * 2);
   const h = Math.max(0, sH - padTop - padBot);
   return { x, y, w, h };
 }
 
 
-function selectPlayableWorldRect(extraMargin = 1) {
+
+function selectPlayableWorldRect(extraMargin = 5) {
   const r  = selectScreenBoundsRect();
   const tl = screenToWorld(r.x + extraMargin,       r.y + extraMargin);
   const br = screenToWorld(r.x + r.w - extraMargin, r.y + r.h - extraMargin);
