@@ -33,12 +33,71 @@ function spawnFloatingTags() {
   selected = [];
   tagNodes = [];
 
-  const bounds = { minX: 24, maxX: baseWidth - 24, minY: 24, maxY: baseHeight - 24 };
+  const wr = selectPlayableWorldRect(12);
+  const bounds = { minX: wr.left, maxX: wr.right, minY: wr.top, maxY: wr.bottom };
+
   for (const t of TAGS) {
     const n = new TagBubble(t.label, t.tags);
     placeNodeNoOverlap(n, tagNodes, bounds, 250, 6);
+    clampTagToRect(n, wr);  // ensure inside after placement
     tagNodes.push(n);
   }
+}
+
+function __measureHeader() {
+  try {
+    const sels = ['header', '.header', '#header', '.site-header', '.topbar', '.navbar', '.app-header', '.nav'];
+    let h = 0;
+    for (const s of sels) {
+      const el = document.querySelector(s);
+      if (el) {
+        const r = el.getBoundingClientRect();
+        h = Math.max(h, (r && (r.height || (r.bottom - r.top))) || 0);
+      }
+    }
+    return h;
+  } catch { return 0; }
+}
+
+
+function selectScreenBoundsRect() {
+  const sW = width;
+  const sH = height;
+
+  const headerH = __measureHeader();
+  const padX    = (UI?.zonePadX ?? 2);
+  const padTop  = Math.max(headerH + 8, (UI?.zonePadY ?? 2));
+
+  // ⬇️ Replace your old padBot line with this block:
+  const baseBot = (LAYOUT === 'bottom')
+    ? (UI?.zoneBottomMobile  ?? 6)   // mobile/bottom panel
+    : (UI?.zoneBottomDesktop ?? 6);  // desktop/left
+
+  // keep it reasonable on very short screens
+  const padBot  = Math.min(baseBot, Math.round(sH * 0.18));
+
+  const x = padX;
+  const y = padTop;
+  const w = Math.max(0, sW - 1 * padX);
+  const h = Math.max(0, sH - padTop - padBot);
+  return { x, y, w, h };
+}
+
+
+function selectPlayableWorldRect(extraMargin = 1) {
+  const r  = selectScreenBoundsRect();
+  const tl = screenToWorld(r.x + extraMargin,       r.y + extraMargin);
+  const br = screenToWorld(r.x + r.w - extraMargin, r.y + r.h - extraMargin);
+  return { left: tl.x, top: tl.y, right: br.x, bottom: br.y };
+}
+
+
+
+function clampTagToRect(n, rect) {
+  if (!n || !rect) return;
+  const rr = (n.r || UI?.rTag || 1) + 4;
+  n.x = Math.max(rect.left  + rr, Math.min(rect.right  - rr, n.x));
+  n.y = Math.max(rect.top   + rr, Math.min(rect.bottom - rr, n.y));
 }
 
 function drawSelectScreen(){
@@ -72,11 +131,15 @@ function drawSelectScreen(){
   // --- Selected tag pills under headline
   textFont(acuminLight);
   drawPickedTagPills(padX, startY + titleM.height + 12);
+  const rect = selectPlayableWorldRect(12);
 
   // Physics step: your original float (repulsion only, no center attraction)
   for (const n of tagNodes) n.resetForces();
   for (const n of tagNodes) n.applyRepulsion(tagNodes);
-  for (const n of tagNodes) n.update();
+  for (const n of tagNodes) {
+    n.update();
+    clampTagToRect(n, rect);
+  }
   for (const n of tagNodes) n.display();
 
   // 0/3 circle (drop target)
