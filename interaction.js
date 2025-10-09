@@ -25,10 +25,19 @@ function wirePageToggles() {
 
   on(document, 'click', '.list-projects1', function () {
     const next = this.nextElementSibling;
-    if (next && next.classList.contains('index-item')) next.classList.toggle('is-hidden');
-    const arrow = this.querySelector('.nav-svg1');
-    if (arrow) arrow.classList.toggle('rotated');
+    if (!next || !next.classList.contains('index-item')) return;
+  
+    const isOpening = next.classList.contains('is-hidden'); // current state before toggle
+  
+    // Close ALL other items
+    document.querySelectorAll('.index-item:not(.is-hidden)').forEach(openItem => {
+      if (openItem !== next) openItem.classList.add('is-hidden');
+    });
+  
+    // Toggle the clicked one (open if it was closed; close if it was open)
+    next.classList.toggle('is-hidden', !isOpening);
   });
+  
 
   on(document, 'click', '.nav-svg2', (e) => {
     const el = document.querySelector('.search-filter');
@@ -188,3 +197,35 @@ document.addEventListener('swup:contentReplaced', () => {
   })();
 
 
+  function applyNoImageMode() {
+    document.querySelectorAll('.index-item').forEach(item => {
+      const wrapper = item.querySelector('.index-item-images');
+      if (!wrapper) {
+        item.classList.add('no-images');
+        return;
+      }
+      const imgs = wrapper.querySelectorAll('.slides img');
+      const hasRealImage = Array.from(imgs).some(img => {
+        const s = (img.getAttribute('src') || '').trim();
+        return s && !s.startsWith('#');
+      });
+  
+      if (!hasRealImage) {
+        // Hide arrows and image wrapper, expand text
+        item.classList.add('no-images');
+        // optional: remove slider arrows entirely
+        wrapper.querySelectorAll('.slider-arrow').forEach(b => b.remove());
+      } else {
+        item.classList.remove('no-images');
+      }
+    });
+  }
+  function boot() {
+    wirePageToggles();
+    initMobileMenu();
+    applyNoImageMode();   // <— add this line
+  }
+  document.addEventListener('swup:contentReplaced', () => {
+    boot();               // apply again after Swup swaps content
+  });
+  
