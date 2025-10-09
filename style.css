@@ -162,7 +162,7 @@ opacity: 0;
 .index-item-text {
   flex: 1;           
   max-width: 70%; 
-  font-size: 0.55em;
+  font-size: 0.75em;
   padding-left: 10px;
   padding-top: 100px;
   padding-right: 60px;
@@ -932,3 +932,25 @@ body.menu-open #machine * {
   .tip-modal, .tip-panel { transition: none; }
 }
 
+.highlighted-text {
+font-size: 1.25em;
+font-family: 'Acumin-Light';
+}
+/* When an index item has no images, hide the image column and let text fill */
+.index-item.no-images .index-item-images {
+  display: none;
+}
+
+.index-item.no-images .index-item-text {
+  max-width: 100%;
+  padding-right: 20px; /* keep some breathing room, tweak as you like */
+}
+
+/* Optional: if you want a subtle background panel even without images,
+   comment out display:none above and use this instead:
+.index-item.no-images .index-item-images {
+  background: transparent;
+  padding: 0;
+  min-height: 0;
+}
+*/
