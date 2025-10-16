@@ -6,7 +6,9 @@
   <title>PROJCT structure</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="style2.css">
-
+  <link rel="stylesheet" href="button.css">
+  <script src="button.js" defer></script>
+  
 
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/p5.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/addons/p5.sound.min.js"></script>
@@ -94,6 +96,49 @@
       <p class="tip-foot">Tip: You can drag nodes to rearrange them.</p>
     </div>
     <button id="graphTipClose" class="tip-btn" aria-label="Close">Got it</button>
+  </div>
+</div>
+
+
+
+<div id="suggestion-fab" aria-live="polite">
+  <button id="fabBtn" class="fab" type="button" aria-label="Have a suggestion?">
+    <div class="fab-content">
+      <span class="fab-label">Have a suggestion?</span>
+    </div>
+    <!-- single icon made with CSS (no SVGs) -->
+    <span class="chip" aria-hidden="true">
+      <span class="glyph"></span>
+    </span>
+  </button>
+</div>
+
+<!-- Modal -->
+<div id="suggestionModal" class="modal-root" role="dialog" aria-modal="true" aria-label="Suggestion form">
+  <div class="backdrop" data-close></div>
+  <div class="card" role="document">
+    <div class="card-header">
+      <p class="card-title">Share your suggestion</p>
+      <button class="icon-btn" type="button" aria-label="Close dialog" data-close>✕</button>
+    </div>
+
+    <form id="suggestionForm" class="card-body" novalidate>
+      <div class="grid">
+        <div class="field">
+          <label for="title">Title *</label>
+          <input id="title" name="title" placeholder="Short summary" required />
+        </div>
+        <div class="field span-2">
+          <label for="description">Description *</label>
+          <textarea id="description" name="description" placeholder="Type here..." required></textarea>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button class="btn" type="button" data-close>Cancel</button>
+        <button id="sendBtn" class="btn btn-primary" type="submit" disabled>Send</button>
+      </div>
+    </form>
   </div>
 </div>
 
