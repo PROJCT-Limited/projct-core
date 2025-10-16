@@ -1,6 +1,6 @@
 let acuminRegular;   
 let acuminLight;    
-console.log('[main] setup() running');
+
 
 
 function preload() {
