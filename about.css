@@ -15,14 +15,17 @@
     -webkit-user-select: none;
     user-select: none;
   }
+
+ 
   
 :root{
+  --grid-max: 2080px;
     --brand-blue:#0e50c8;
     --ink:#0a1a2b;
     --paper:#ffffff;
     --muted:rgba(10,26,43,.65);
     --highlight:#EBF21B;
-    --grid-max:1240px;
+  
     --gutter:20px;
     --columns:12;
     --page-pad: 20px; /* NEW */
@@ -458,15 +461,15 @@ hr {
   }
   
   /* 2) Make the INNER grid handle wrapping (simpler formula) */
-  .team-grid_inner{
-    --card-min: 11rem;      /* tweak as you like */
+  .team-grid_inner {
+    --card-min: 8rem;
     --card-max: 15.5rem;
-  
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
-    gap: 1.75rem 7rem;     /* row / column */
+    gap: 1rem 10rem;
     margin-bottom: 20px;
-  }
+    margin-top: 50px;
+    }
   
   /* 3) Cards — keep your look, but don't block wrapping */
   .team-grid_item{
@@ -522,4 +525,121 @@ hr {
   .team-grid_image-wrapper{
     width: 100%;
   }
+}
+
+/* existing kept; only changing max values via a desktop-specific bump */
+@media (min-width: 1366px){
+  .hero .headline{
+    /* was clamp(50px, 5.55vw, 120px) */
+    font-size: clamp(50px, 5.55vw, 150px);
+  }
+  .hero .aside{
+    /* was clamp(24px, 1.3vw, 40px) */
+    font-size: clamp(24px, 1.4vw, 48px);
+  }
+  .section-copy{
+    /* was clamp(24px, 1.3vw, 40px) */
+    font-size: clamp(22px, 1.25vw, 44px);
+  }
+  .kicker{
+    /* subtle lift so it doesn’t look tiny next to larger headline */
+    font-size: clamp(18px, 1.1vw, 28px);
+  }
+}
+
+@media (min-width: 1700px){
+  .hero .headline{ font-size: clamp(60px, 5.2vw, 180px); }
+  .hero .aside{    font-size: clamp(26px, 1.5vw, 70px); }
+  .section-copy{   font-size: clamp(24px, 1.2vw, 50px); }
+}
+
+
+
+
+
+@media (min-width: 1366px){
+  body .container .panel.hero .headline{
+    font-size: clamp(50px, 5.4vw, 150px) !important;
+  }
+  body .container .panel.hero .aside{
+    font-size: clamp(24px, 1.35vw, 48px) !important;
+  }
+  body .container .section-copy{
+    font-size: clamp(22px, 1.2vw, 44px) !important;
+  }
+}
+
+/* ===== FINAL OVERRIDES: place LAST in your CSS ===== */
+
+/* 0) Fix the grid ceiling: keep the big one */
+:root{
+  --grid-max: 2080px;              /* keep the larger cap */
+  --card-min: 12rem;               /* sensible defaults */
+  --card-max: 22rem;               /* base desktop card size */
+  --avatar-max: clamp(14rem, 22vw, 22rem);
+}
+
+/* Make the main grid actually use the big cap if you center anywhere */
+@media (min-width: 1200px){
+  .container{
+    max-width: var(--grid-max);
+    margin-inline: auto;
+  }
+}
+
+/* ==== TEAM GRID SIZING BY VIEWPORT RANGE (place LAST) ==== */
+
+/* Base: compact (phones/tablets/smaller laptops) */
+.team-grid_item{ gap: 1.5rem !important; }
+.team-grid_inner{
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-min, 14rem), 1fr)) !important;
+  column-gap: 1rem !important;
+  row-gap: 1.5rem !important;
+  --card-min: 14rem;                 /* base compact card */
+}
+.team-grid_item{
+  max-width: none !important;        /* let the grid track set the width */
+  width: 100% !important;
+}
+.team-grid_image-wrapper{
+  width: 100% !important;
+  max-width: clamp(12rem, 22vw, 18rem) !important; /* compact avatar */
+}
+
+/* ≤ 1440px (typical 14″): stay compact */
+@media (max-width: 1600px){
+  .team-grid_inner{
+    --card-min: 7.5rem !important;  /* small bump, still compact */
+    column-gap: 9.25rem !important;
+    row-gap: 1.75rem !important;
+  }
+  .team-grid_image-wrapper{
+    max-width: clamp(12rem, 20vw, 18rem) !important;
+  }
+}
+
+/* 1441–1599px: medium */
+@media (min-width: 1600px) and (max-width: 1800px){
+  .team-grid_inner{
+    --card-min: 18rem !important;    /* fewer columns => wider cards */
+    column-gap: 1.5rem !important;
+    row-gap: 2rem !important;
+  }
+  .team-grid_image-wrapper{
+    max-width: clamp(14rem, 21vw, 22rem) !important;
+  }
+}
+
+/* ≥ 1600px (27″ etc.): large */
+@media (min-width: 1600px){
+  .team-grid_inner{
+    --card-min: 16rem !important;    /* big cards */
+    column-gap: 10rem !important;
+    row-gap: 2.25rem !important;
+  }
+  .team-grid_image-wrapper{
+    max-width: clamp(18rem, 20vw, 28rem) !important;
+  }
+  .team-grid_name{ font-size: clamp(1.1rem, 0.9rem + 0.6vw, 1.5rem) !important; }
+  .team-grid_post{ font-size: clamp(1rem, 0.8rem + 0.4vw, 1.2rem) !important; }
 }
