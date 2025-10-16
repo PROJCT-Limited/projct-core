@@ -221,6 +221,30 @@ function mouseDragged() {
   
 }
 
+// --- delayed launch helpers ---
+let launchTimeoutId = null;
+
+function scheduleGraphLaunch(delayMs = 4000) {
+  if (launchTimeoutId) clearTimeout(launchTimeoutId);
+  entryCircleFading = true;
+  showBluePanel = true;
+  launchTimeoutId = setTimeout(() => {
+    launchTimeoutId = null;
+    launchGraphFromSelection();
+  }, delayMs);
+}
+
+function cancelScheduledLaunch() {
+  if (launchTimeoutId) {
+    clearTimeout(launchTimeoutId);
+    launchTimeoutId = null;
+  }
+}
+
+
+
+
+
 function mouseReleased() {
   pointer.x = mouseX; pointer.y = mouseY;
   pointer.down = false; pointer.justReleased = true;
@@ -230,14 +254,21 @@ function mouseReleased() {
   // ----- SELECT mode -----
   if (mode === "select") {
     let added = false;
-
+  
     if (draggingTag) {
       const t = draggingTag; draggingTag = null; t.dragging = false;
-      if (inDrop(pointer.worldX, pointer.worldY)) added = addSelectedTagByNode(t);
+      if (inDrop(pointer.worldX, pointer.worldY)) {
+        added = addSelectedTagByNode(t);
+     
+        if (added) {
+          const idx = tagNodes.indexOf(t);
+          if (idx !== -1) tagNodes.splice(idx, 1);
+        }
+      }
     }
-
+  
     if (added && canPlay()) { // auto-launch on 3rd drop
-      entryCircleFading = true; showBluePanel = true; launchGraphFromSelection();
+      scheduleGraphLaunch(3000); 
       return;
     }
 
@@ -430,11 +461,18 @@ function touchEnded(ev) {
     let added = false;
     if (draggingTag) {
       const t = draggingTag; draggingTag = null; t.dragging = false;
-      if (inDrop(pointer.worldX, pointer.worldY)) added = addSelectedTagByNode(t);
-    }
+      if (inDrop(pointer.worldX, pointer.worldY)) {
+        added = addSelectedTagByNode(t);
 
+        if (added) {
+          const idx = tagNodes.indexOf(t);
+          if (idx !== -1) tagNodes.splice(idx, 1);
+        }
+      }
+    }
+  
     if (added && canPlay()) {
-      entryCircleFading = true; showBluePanel = true; launchGraphFromSelection();
+      scheduleGraphLaunch(3000); 
       finishPointerGesture(); return false;
     }
 
