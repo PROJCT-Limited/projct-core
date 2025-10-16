@@ -101,7 +101,7 @@ function clampTagToRect(n, rect) {
 }
 
 function drawSelectScreen(){
-  const msg = "Pick projects by tags and explore relations";
+  const msg = "Combine 3 tags and start exploring";
 
   // --- layout for mobile vs desktop
   const padX = 28;
@@ -146,7 +146,7 @@ function drawSelectScreen(){
   drawPlayCircle();
 
   // "PRESS PLAY" text (store bbox so clicks work)
-  const label = "PRESS PLAY";
+  const label = " ";
   textSize(14);
   const tw = textWidth(label);
   const tx = playCircle.x - tw / 2;
