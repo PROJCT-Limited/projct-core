@@ -116,4 +116,70 @@
   .btn:hover{background:#f8fafc}
   .btn-primary{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
   .btn-primary:disabled{opacity:.55;cursor:not-allowed}
-  
+  /* Make sure the FAB sits above header and canvases */
+#suggestion-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;                 /* default desktop spot */
+  z-index: 2500;                 /* > header (1000..999999), > canvases */
+  pointer-events: auto;          /* ensure it can be tapped */
+}
+
+/* On mobile: move it under the header by ~20px (respect safe-area) */
+@media (max-width: 500px) {
+  #suggestion-fab {
+    top: calc(var(--header-height, 72px) + 15px + env(safe-area-inset-top, 0px));
+    bottom: auto;                /* important: unset bottom */
+    right: 16px;
+  }
+
+  /* Optional: slightly smaller width when expanded on tiny screens */
+  .fab.expanded { width: 240px; }
+}
+
+/* Ensure nothing invisible steals taps above the FAB */
+.mobile-overlay.open { z-index: 2000; }  
+#suggestionModal.modal-root { z-index: 1000002; }
+#suggestion-fab            { z-index: 1000001; }
+/* allow normal tap behavior on the modal tree */
+#suggestionModal,
+#suggestionModal * {
+  touch-action: auto;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* sometimes iOS needs this to ensure the tap is treated like a click */
+#suggestionModal input,
+#suggestionModal textarea,
+#suggestionModal button {
+  touch-action: manipulation;
+}
+/* Prevent background scroll on mobile when modal is open */
+body.modal-open {
+  overflow: hidden;
+
+}
+#suggestionModal,
+#suggestionModal * {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default !important;
+  touch-action: auto !important; /* harmless now that body isn’t using touch-action:none */
+}
+
+/* Inputs occasionally need this nudge on iOS when inside animated containers */
+#suggestionModal .card {
+  transform: none !important; /* after opening animation finishes */
+}/* default: overlay is inert */
+.mobile-overlay {
+  display: none;               /* or: pointer-events: none; opacity: 0; */
+}
+
+/* when open: it’s interactive */
+.mobile-overlay.open {
+  display: block;              /* or: pointer-events: auto; opacity: 1; */
+  z-index: 2000;
+}
+#suggestionModal.modal-root { z-index: 1000002; }
+#suggestion-fab            { z-index: 1000001; }
