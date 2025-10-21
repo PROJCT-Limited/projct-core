@@ -1,7 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100svh;
   width: 100%;
   cursor:url(myBall.cur),auto;
   /* cursor: none; */
@@ -73,6 +73,7 @@ body {
   align-items: center;
   justify-content: space-between; 
   z-index: 999999;
+  
   /* z-index: 1; */
 }
 
@@ -491,7 +492,7 @@ stroke: white;
 .cursor-circle { pointer-events: none; }
 
 
-body.menu-open { overflow: hidden; }
+
 
 #container {
 background: #0e50c8;   /* blue behind the white lines */
@@ -765,6 +766,7 @@ body.menu-open #machine * {
   min-height: 360px;
   aspect-ratio: 16 / 10;
   margin-left: 10px;
+  margin-right: 10px;
 }
 
 /* Slider track */
@@ -951,3 +953,28 @@ font-family: 'Acumin-Light';
   min-height: 0;
 }
 */
+
+.index-item-images .slides { touch-action: pan-y; }
+
+ html, body { -webkit-overflow-scrolling: touch; } 
+
+
+/* .list-projects,
+.index-item,
+.description-text { 
+  display: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 260ms ease, transform 260ms ease;
+  overflow: visible;       
+  max-height: none;       
+}
+
+.list-projects:not(.is-hidden1),
+.index-item:not(.is-hidden),
+.description-text:not(.is-hidden) {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+ */
