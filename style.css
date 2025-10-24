@@ -969,6 +969,31 @@ font-family: 'Acumin-Light';
   .description-text:not(.is-hidden),
   .list-projects:not(.is-hidden1) {
     max-height: 100000px; 
-    overflow: visible;    
+
   }
+}
+/* Base: animate max-height only; keep content clipped to container */
+.index-item,
+.description-text,
+.list-projects {
+  transition: max-height 0.5s ease, opacity 0.3s ease, transform 0.3s ease;
+  overflow: hidden;            /* IMPORTANT: prevents bleeding into next section */
+  will-change: max-height;
+}
+
+/* Closed state */
+.index-item.is-hidden,
+.description-text.is-hidden,
+.list-projects.is-hidden1 {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.index-item:not(.is-hidden),
+.description-text:not(.is-hidden),
+.list-projects:not(.is-hidden1) {
+  max-height: 9999px;         
+  opacity: 1;
+  transform: none;
 }
