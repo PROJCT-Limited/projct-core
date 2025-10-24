@@ -156,7 +156,7 @@ body {
 opacity: 0;
 }
 .index-item:not(.is-hidden) {
-  max-height: 2000px;            
+         
   opacity: 1;
 }
 
@@ -320,8 +320,19 @@ hr {
 }
 
 .description-text:not(.is-hidden) {
-  max-height: 2000px;           
+         
   opacity: 1;
+}
+.index-item:not(.is-hidden),
+.description-text:not(.is-hidden) {
+  max-height: 100vh; /* ensures visible animation */
+  overflow: visible; /* allow content beyond viewport */
+}
+@media (max-width: 768px) {
+  .index-item:not(.is-hidden),
+  .description-text:not(.is-hidden) {
+    max-height: none; /* allow full scroll on mobile */
+  }
 }
 
 /* .header, .button-header { color: #fff; } */
@@ -935,46 +946,29 @@ body.menu-open #machine * {
 font-size: 1.25em;
 font-family: 'Acumin-Light';
 }
-/* When an index item has no images, hide the image column and let text fill */
+
 .index-item.no-images .index-item-images {
   display: none;
 }
 
 .index-item.no-images .index-item-text {
   max-width: 100%;
-  padding-right: 20px; /* keep some breathing room, tweak as you like */
+  padding-right: 20px; 
 }
 
-/* Optional: if you want a subtle background panel even without images,
-   comment out display:none above and use this instead:
-.index-item.no-images .index-item-images {
-  background: transparent;
-  padding: 0;
-  min-height: 0;
-}
-*/
+
 
 .index-item-images .slides { touch-action: pan-y; }
 
  html, body { -webkit-overflow-scrolling: touch; } 
 
 
-/* .list-projects,
-.index-item,
-.description-text { 
-  display: none;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 260ms ease, transform 260ms ease;
-  overflow: visible;       
-  max-height: none;       
-}
 
-.list-projects:not(.is-hidden1),
-.index-item:not(.is-hidden),
-.description-text:not(.is-hidden) {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
+@media (max-width: 768px) {
+  .index-item:not(.is-hidden),
+  .description-text:not(.is-hidden),
+  .list-projects:not(.is-hidden1) {
+    max-height: 100000px; 
+    overflow: visible;    
+  }
 }
- */
