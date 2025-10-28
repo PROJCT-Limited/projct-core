@@ -261,5 +261,5 @@ body.modal-open {
   }
   .suggestion-body { text-align: center; }
 
-.suggestion-text { text-align: center; line-height: 1.4;}
+.suggestion-text {  line-height: 1.4;}
 }
