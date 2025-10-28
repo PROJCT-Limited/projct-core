@@ -289,11 +289,22 @@
       <p>GF, 176 Queens Road West<br>Sai Ying Pun, Hong Kong</p>
       <p>General inquiries<br><a href="mailto:project@line.co">hi@projct.co</a></p>
       <p>Office number<br>+852 5727 1122</p>
+      <p ><a href="https://www.projct.co/policies/">Privacy Policy </a></p>
     </div>
 
     <div class="footer-brand">
       <img src="SVG/logo-white.svg" alt="PROJCT" class="footer-logo">
     </div>
+  
+    <!-- NEW: newsletter as a sibling so it can span wider -->
+    <form class="footer-newsletter newsletter" action="#" method="post" onsubmit="event.preventDefault();">
+      <h3 class="newsletter-title">Get the newsletter</h3>
+      <label class="newsletter-row">
+        <input type="email" name="email" placeholder="Your email address" required aria-label="Email address">
+        <button type="submit" class="newsletter-submit" aria-label="Subscribe">→ Subscribe</button>
+      </label>
+    </form>
+  
 
     <nav class="footer-social" aria-label="Social">
       <a  target="_blank" rel="noopener">Are.na</a>
@@ -302,8 +313,12 @@
 
     </nav>
   </footer>
+  <div class="footer-legal">
+    <a href="https://www.projct.co/policies/">Privacy Policy</a>
+    <span>© PROJCT 2025</span>
+  </div>
 </div>
-  <!-- ===== FOOTER (use your site footer if you have one) ===== -->
+
  
 
 
