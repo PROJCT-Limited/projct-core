@@ -997,3 +997,100 @@ font-family: 'Acumin-Light';
   opacity: 1;
   transform: none;
 }
+
+
+.search-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  align-items: center;
+
+  margin: 10px 10px;
+}
+
+.filter-item {
+  --text: #ffffff;
+  --text-active: #ffffff;         
+  --chip-bg-hover: rgba(255,255,255,0.12);
+  font-family: 'Acumin-Light';
+  font-weight: 300;           
+  font-size: 1rem;              
+  letter-spacing: .02em;
+
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .35rem .7rem;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 9999px;
+  display:inline-flex;
+  align-items:center; 
+  line-height: 1;    
+  transition: background-color .18s ease, color .18s ease;
+}
+
+.filter-item .square{
+  transform: translateY(-1px); /* try -1px or -2px to taste */
+}
+.filter-item .label{ line-height: 1;}
+
+.filter-item .square {
+  width: 18px;
+  align-self:center;
+  height: 18px;
+  border: 1.5px solid rgba(255,255,255,.7);
+  background: transparent;
+  border-radius: 3px;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+
+/* Hover: chip gets subtle bg, square turns white, text flips to dark */
+.filter-item:hover {
+  background: var(--chip-bg-hover);
+  color: var(--text-active);
+}
+.filter-item:hover .square {
+  background: #fff;
+  border-color: #fff;
+}
+
+/* Active (selected) state */
+.filter-item.active {
+  background: var(--chip-bg-hover);
+  color: var(--text-active);
+}
+.filter-item.active .square {
+  background: #fff;
+  border-color: #fff;
+}
+
+/* Project cards demo (optional) */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.project-card {
+  padding: 1rem;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 10px;
+}
+.project-card.is-hidden { display: none; }
+
+
+/* keep your existing hover */
+.list-projects1:hover {
+  background-color: var(--highlight); /* #EBF21B */
+  color: var(--brand-blue);           /* #0e50c8 */
+}
+
+/* persistent highlight applied by the filter */
+.list-projects1.is-highlight {
+  background-color: var(--highlight);
+  color: var(--brand-blue);
+  transition: background-color .2s ease, color .2s ease;
+}
