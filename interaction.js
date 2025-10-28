@@ -229,3 +229,64 @@ document.addEventListener('swup:contentReplaced', () => {
     boot();               // apply again after Swup swaps content
   });
   
+
+
+
+
+
+  // Utility: check if a project's data-tags contains the clicked tag
+  function projectMatchesTag(projectEl, tag) {
+    if (tag === "All") return true;
+    const tags = (projectEl.getAttribute("data-tags") || "")
+      .split(",")
+      .map(t => t.trim().toLowerCase());
+    return tags.includes(tag.toLowerCase());
+  }
+
+
+   // Get tags straight from each header row
+   function headerTags(h) {
+    const raw = h?.dataset?.tag || "";
+    return raw.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
+  }
+
+  (function initTagFilter() {
+    const bar      = document.getElementById("searchFilter");
+    if (!bar) return;
+
+    const buttons  = Array.from(bar.querySelectorAll(".filter-item"));
+    const headers  = Array.from(document.querySelectorAll(".list-projects1"));
+
+    function clearHighlight() {
+      headers.forEach(h => h.classList.remove("is-highlight"));
+      buttons.forEach(b => b.classList.remove("active"));
+    }
+
+    function applyHighlight(tag) {
+      const needle = (tag || "").toLowerCase();
+
+      // If "All", highlight everything; if empty/unknown, clear all.
+      if (!needle) { clearHighlight(); return; }
+
+      const highlightAll = needle === "all";
+
+      headers.forEach(h => {
+        const match = highlightAll || headerTags(h).includes(needle);
+        h.classList.toggle("is-highlight", match);
+      });
+    }
+
+    // ⛔️ No default selection on load:
+    clearHighlight();
+
+    // Click => set active, apply highlight
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        // single-select appearance
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        applyHighlight(btn.dataset.tag);
+      });
+    });
+  })();
