@@ -930,11 +930,17 @@ body.menu-open #machine * {
 @media (min-width: 860px) {
   .tip-desktop { display: grid; }
   .tip-mobile  { display: none; }
+  .search-filter {      gap: 0.65rem 1rem;
+  }
 }
 
 /* Stack columns on very narrow screens */
 @media (max-width: 540px) {
   .tip-content { grid-template-columns: 1fr; }
+  .filter-item .label{
+    font-size: 0.8rem;   
+}
+.search-filter {    gap: 0.05rem 0.5rem;}
 }
 
 /* Motion-reduced */
@@ -1002,7 +1008,7 @@ font-family: 'Acumin-Light';
 .search-filter {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem 1rem;
+  /* gap: 0.65rem 1rem; */
   align-items: center;
 
   margin: 10px 10px;
