@@ -91,16 +91,34 @@
         INDEX</div>  <img src = "SVG/search-icon.svg" alt="search-icon" class = "nav-svg2"/>
     </div>
 
-    <div class="search-filter is-hidden">
-        <div class="square"></div>
-        <p>FEATURED</p>
-        <div class="square"></div>
-        <p>CASE STUDIES</p>
-        <div class="square"></div>
-        <p>ARTICLES</p>
-        <div class="square"></div>
-        <p>RESEARCH</p>
-    </div>
+   <!-- FILTER BAR -->
+<div class="search-filter" id="searchFilter">
+  <button class="filter-item" data-tag="Featured">
+    <span class="label">FEATURED</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+
+  <button class="filter-item" data-tag="Case-studies">
+    <span class="label">CASE STUDIES</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+
+  <button class="filter-item" data-tag="Articles">
+    <span class="label">ARTICLES</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+
+  <button class="filter-item" data-tag="Research">
+    <span class="label">RESEARCH</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+
+  <button class="filter-item" data-tag="Practice">
+    <span class="label">PRACTICE</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+</div>
+
 
 
    
@@ -109,7 +127,7 @@
 
     <div class="list-projects">
         <hr>
-    <p class="list-projects1">Lightbox Gallery</p> 
+    <p class="list-projects1" data-tag="Case-studies">Lightbox Gallery</p> 
     <div class="index-item is-hidden">
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
@@ -142,7 +160,7 @@
         
     </div>
     <hr>
-    <p class="list-projects1">Chubb Life 'Last wishes'</p>
+    <p class="list-projects1" data-tag="Case-studies">Chubb Life 'Last wishes'</p>
     
 
     <div class="index-item is-hidden">
@@ -196,7 +214,7 @@
    
     </div>
     <hr>
-    <p class="list-projects1">Straatos</p>
+    <p class="list-projects1" data-tag="Case-studies">Straatos</p>
     
 
     <div class="index-item is-hidden">
