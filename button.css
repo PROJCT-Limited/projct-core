@@ -103,14 +103,15 @@
   .grid{display:grid;gap:14px;grid-template-columns:1fr}
   @media(min-width:700px){.grid{grid-template-columns:1fr 1fr}}
   .grid .span-2{grid-column:1 / -1}
-  label{font-size:13px;font-weight:600;color:#374151}
+  label{font-size:13px;font-weight:300;color:#ffffff}
   input,textarea{
     width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font:inherit;
     outline:none;transition:box-shadow .15s ease,border-color .15s ease
   }
   input:focus,textarea:focus{border-color:var(--brand);box-shadow:0 0 0 4px var(--ring)}
-  textarea{min-height:120px;resize:vertical}
-  
+  textarea{resize:vertical}
+  /* textarea{min-height:120px;resize:vertical} */
+
   .card-footer{display:flex;justify-content:flex-end;gap:10px;padding:10px 20px 18px}
   .btn{height:40px;padding:0 16px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;cursor:pointer}
   .btn:hover{background:#f8fafc}
@@ -183,3 +184,82 @@ body.modal-open {
 }
 #suggestionModal.modal-root { z-index: 1000002; }
 #suggestion-fab            { z-index: 1000001; }
+
+
+/* use your card header as-is; this styles only the body */
+.suggestion-body {
+  background-color: #0d50c8;
+  padding: 2rem 1.5rem;
+  color: #fff;             
+  text-align: center;
+}
+
+.suggestion-text {
+  max-width: 900px;
+  margin: 0 auto 1.75rem auto;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+/* two columns on desktop, stack on mobile */
+.suggestion-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* Suggested Node | Description */
+  gap: 1.25rem 2rem;
+  align-items: start;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: #111;
+  outline: none;
+}
+
+/* make the submit span both columns and align right */
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+/* simple button that matches your theme */
+.btn-primary {
+  background: #113ea9;     /* tweak to your exact brand blue if needed */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-primary:hover { filter: brightness(1.05); }
+
+/* responsive: stack fields on small screens */
+@media (max-width: 768px) {
+  .suggestion-form {
+    grid-template-columns: 1fr; /* stack */
+  }
+  .suggestion-body { text-align: center; }
+
+.suggestion-text { text-align: center; line-height: 1.4;}
+}
