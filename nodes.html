@@ -123,23 +123,30 @@
       <button class="icon-btn" type="button" aria-label="Close dialog" data-close>✕</button>
     </div>
 
-    <form id="suggestionForm" class="card-body" novalidate>
-      <div class="grid">
-        <div class="field">
-          <label for="title">Title *</label>
-          <input id="title" name="title" placeholder="Short summary" required />
+    <div class="suggestion-body">
+      <p class="suggestion-text">
+        We’re always expanding our node system to discover new connections and ideas.
+        If you think a new category should be added, or if something could be described better,
+        share your suggestions with us!
+      </p>
+    
+      <form class="suggestion-form" action="#" method="post">
+        <div class="form-field">
+          <label for="node">Suggested Node</label>
+          <input id="node" name="node" type="text" placeholder="Type here..." required>
         </div>
-        <div class="field span-2">
-          <label for="description">Description *</label>
-          <textarea id="description" name="description" placeholder="Type here..." required></textarea>
+    
+        <div class="form-field">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="1" placeholder="Type here..." required></textarea>
         </div>
-      </div>
-
-      <div class="card-footer">
-        <button class="btn" type="button" data-close>Cancel</button>
-        <button id="sendBtn" class="btn btn-primary" type="submit" disabled>Send</button>
-      </div>
-    </form>
+    
+        <!-- optional submit; remove if you already have one -->
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
