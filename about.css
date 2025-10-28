@@ -340,7 +340,145 @@ hr {
   }
 
 
+  /* --- Newsletter under the logo --- */
+.footer-brand { display:flex; flex-direction:column; gap:1rem; }
+.newsletter { width:100%; max-width:420px; padding-bottom: 5%;}
+.newsletter-title{
+  margin:0 0 .5rem 0;
+  font-family:"Acumin-Light";
+  font-weight:400;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  font-size:.95rem;
+  color:#fff;
+  opacity:.9;
+}
+.newsletter-row{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  width:100%;
+  border-bottom:1px solid rgba(255,255,255,.75);
+  padding:.35rem 0;
+}
+.newsletter input{
+  flex:1;
+  background:transparent;
+  border:0;
+  outline:0;
+  color:#fff;
+  font:inherit;
+  padding:.35rem 0;
+}
+.newsletter input::placeholder{ color:rgba(255,255,255,.7); }
+.newsletter-submit{
+  background:transparent;
+  border:0;
+  color:#fff;
+  font:inherit;
+  cursor:pointer;
+  white-space:nowrap;
+  padding:.35rem 0;
+}
+.newsletter-submit:hover{ text-decoration:underline; }
 
+/* --- Slim legal strip (below footer) --- */
+.footer-legal{
+  background: var(--brand-blue);
+  color: rgba(255,255,255,.9);
+  border-top: 1px solid rgba(255,255,255,.25);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  padding: 10px var(--page-pad);
+  font-family:"Acumin-Light";
+  font-size:.85rem;
+  padding-inline: max(var(--page-pad), 5vw);
+}
+.footer-legal a{ color:inherit; text-decoration:none; }
+.footer-legal a:hover{ text-decoration:underline; }
+
+/* Responsive: stack newsletter & keep legal strip readable */
+@media (max-width: 860px){
+  .footer-brand { gap: .75rem; }
+  .footer-legal { font-size:.8rem; }
+}
+/* desktop / large tablets */
+@media (min-width: 1024px){
+  /* give the logo+newsletter more room */
+  .site-footer { align-items: start; }
+
+  .footer-meta   { grid-column: 1 / 8; }   /* was 1 / 9 */
+  .footer-social { grid-column: 1 / 8; }   /* keeps your right column free */
+  .footer-brand  { 
+    grid-column: 9 / -1;                  /* was 10 / -1 → much wider */
+    justify-self: start;                  /* sit at the left of its column */
+    align-self: start;                    /* align with other blocks */
+  }
+
+  /* let the form breathe a bit more on wide screens */
+  .newsletter { max-width: 560px; }        /* was 420px */
+  .footer-logo { width: clamp(140px, 12vw, 220px); }
+}
+
+/* if you still see it a tad too far right on very large screens,
+   you can pull the whole footer content in a bit: */
+@media (min-width: 1440px){
+  .site-footer { padding-inline: max(var(--page-pad), 5vw); }
+}
+
+
+/* keep previous footer grid as-is */
+
+/* logo stays where it was (tight right column) */
+.footer-brand{
+  grid-column: 9 / -1;   /* your original placement */
+  grid-row: 1;            /* sits on the first row */
+  justify-self: start;
+}
+.footer-logo{ width: 160px; height: auto; }
+
+/* make ONLY the newsletter longer by spanning more columns */
+.footer-newsletter{
+  grid-column: 9 / -1;    /* wider than the logo column */
+  grid-row: 2;            /* visually under the logo */
+  max-width: 960px;       /* make it long; adjust to taste */
+  width: 100%;
+}
+
+/* keep the existing newsletter visuals */
+.newsletter-title{
+  margin:0 0 .5rem 0;
+  font-family:"Acumin-Light";
+  font-weight:400;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  font-size:.95rem;
+  color:#fff; opacity:.9;
+}
+.newsletter-row{
+  display:flex; align-items:center; gap:.75rem;
+  width:100%;
+  border-bottom:1px solid rgba(255,255,255,.75);
+  padding:.35rem 0;
+}
+.newsletter input{
+  flex:1; background:transparent; border:0; outline:0;
+  color:#fff; font:inherit; padding:.35rem 0;
+}
+.newsletter input::placeholder{ color:rgba(255,255,255,.7); }
+.newsletter-submit{
+  background:transparent; border:0; color:#fff; font:inherit;
+  cursor:pointer; white-space:nowrap; padding:.35rem 0;
+}
+.newsletter-submit:hover{ text-decoration:underline; }
+
+/* responsive: stack full width on mobile */
+@media (max-width: 860px){
+  .footer-brand{ grid-column:1 / -1; grid-row:auto; }
+  .footer-newsletter{ grid-column:1 / -1; grid-row:auto; max-width: none; }
+}
   /* ================= TEAM GRID (About page) ================= */
 
 /* If you're toggling this block open/closed */
