@@ -1,15 +1,311 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    cursor:url(myBall.cur),auto;
-    /* cursor: none; */
-    font-family: "Headers";
-    overflow: hidden;
+/* ====== FOOTER: lock to About-page look (override everything) ====== */
+.site-footer,
+.footer-legal { 
+  font-family: "Acumin-Light" !important;
+  color: #fff !important;
+}
 
-    cursor: auto;
-    
+/* break .mainbody font-size inheritance */
+.site-footer { 
+  padding-top:20%;
+  font-size: 1rem !important;
+  line-height: 1.4 !important;
+  margin-top: auto !important;              /* push to end */
+  background: var(--brand-blue) !important;
+  padding-block: clamp(16px, 3vh, 36px) !important;
+  padding-inline: var(--page-pad) !important;
+  display: grid !important;
+  grid-template-columns: repeat(var(--columns), minmax(0,1fr)) !important;
+  gap: var(--gutter) !important;
+  align-items: center !important;
+}
+
+.site-footer a{ 
+ 
+  color: rgba(255,255,255,.95) !important; 
+  text-decoration: none !important; 
+}
+.site-footer a:hover{ text-decoration: underline !important; }
+
+/* left column content (3 blocks + privacy link row) */
+.footer-meta{
+  grid-column: 1 / 9 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap: clamp(12px, 3vw, 36px) !important;
+}
+.footer-meta p{
+  margin: 0 !important; 
+  line-height: 1.35 !important; 
+  font-size: clamp(14px, 1.1vw, 18px) !important; 
+  color: rgba(255,255,255,.95) !important; 
+}
+
+/* right column: logo */
+.footer-brand{
+  grid-column: 9 / -1 !important;
+  grid-row: 1 !important;
+  justify-self: start !important;
+  align-self: start !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+}
+.footer-logo{ 
+  display:block !important; 
+  width: clamp(110px, 12vw, 200px) !important; 
+  height:auto !important; 
+}
+
+/* newsletter directly under logo, full width of right column */
+.footer-newsletter{
+  grid-column: 9 / -1 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+  max-width: 960px !important;         /* long line like your mock */
+}
+.newsletter-title{
+  margin: 0 0 .5rem 0 !important;
+  font-weight: 400 !important;
+  letter-spacing: .04em !important;
+  text-transform: uppercase !important;
+  font-size: .95rem !important;
+  opacity: .9 !important;
+}
+.newsletter-row{
+  display: flex !important;
+  align-items: center !important;
+  gap: .75rem !important;
+  width: 100% !important;
+  border-bottom: 1px solid rgba(255,255,255,.75) !important;
+  padding: .35rem 0 !important;
+}
+.newsletter input{
+  flex: 1 !important;
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  color: #fff !important;
+  font: inherit !important;
+  padding: .35rem 0 !important;
+}
+.newsletter input::placeholder{ color: rgba(255,255,255,.7) !important; }
+.newsletter-submit{
+  background: transparent !important;
+  border: 0 !important;
+  color: #fff !important;
+  font: inherit !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  padding: .35rem 0 !important;
+}
+.newsletter-submit:hover{ text-decoration: underline !important; }
+
+/* social row matches About look */
+.footer-social{
+  grid-column: 1 / 9 !important;
+  display: flex !important;
+  gap: clamp(20px, 6vw, 80px) !important;
+  margin: 0 !important;
+}
+
+/* thin separator + legal strip exactly like About */
+.footer-legal{
+  background: var(--brand-blue) !important;
+  color: rgba(255,255,255,.9) !important;
+  border-top: 1px solid rgba(255,255,255,.25) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  padding: 10px var(--page-pad) !important;
+  font-size: .85rem !important;
+  padding-block: clamp(12px, 2.6vh, 24px) !important;
+}
+.footer-legal a{ color: inherit !important; text-decoration: none !important; }
+.footer-legal a:hover{ text-decoration: underline !important; }
+
+/* responsive matches About */
+@media (max-width:1024px){
+  .footer-meta{ grid-column: 1 / 10 !important; }
+}
+@media (max-width:860px){
+  .footer-meta{
+    grid-column: 1 / -1 !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
+  .footer-brand{
+    grid-column: 1 / -1 !important;
+    justify-self: start !important;
+    margin-top: 6px !important;
+  }
+  .footer-social{ grid-column: 1 / -1 !important; gap: 16px !important; }
+  .footer-newsletter{
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+    max-width: none !important;
+    padding-top: 4% !important;
+  }
+  .footer-legal{ font-size: .8rem !important; }
+}
 
-  
+/* keep footer pinned at the end of the page */
+body{ display:flex; flex-direction:column; min-height:100dvh; }
+.mainbody{ flex:1 0 auto; }        /* content area */
+
+/* ===== Restore viewport layout for the Index ===== */
+:root { --header-h: 80px; } /* adjust if your fixed header height changes */
+
+#swup.mainbody{
+  /* Turn the content into 4 rows:
+     1) index title  2) filter bar  3) LIST (fills viewport)  4) footer */
+  /* display: grid !important; */
+  grid-template-rows: min-content min-content 1fr min-content !important;
+  min-height: calc(100dvh - var(--header-h)) !important;
+  row-gap: 0 !important;
+}
+
+
+/* Let the list take the 1fr track and grow naturally without inner scrolling */
+.list-projects{
+  min-height: 0 !important;        /* critical for 1fr to compute properly */
+  flex: 0 0 auto !important;       /* cancel earlier flex growth rules */
+}
+
+/* When the list is open, don't cap it — footer will move below */
+.list-projects:not(.is-hidden1){
+  max-height: none !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Footer should not float up when content is short */
+.site-footer{ margin-top: 0 !important; }
+
+/* ---- sizing constants ---- */
+:root{
+  --header-h: 80px;      /* your fixed header height */
+  --topbars-h: 120px;    /* .index-outer + .search-filter combined */
+  --peek-fix: 24px;      /* tiny buffer so footer can't peek */
+}
+
+/* 1) Reserve space for the fixed header */
+.header{ height: var(--header-h); }
+body{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-h);
+  background-color:#0e50c8;
+}
+.index-outer{ margin-top: 0 !important; }
+
+/* 2) Page content fills the viewport under the header */
+#swup.mainbody{
+  flex: 1 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: calc(100dvh - var(--header-h)) !important;
+}
+
+/* 3) Bars take only what they need */
+.index-outer,
+.search-filter{ flex: 0 0 auto; }
+
+/* 4) List occupies the rest of the first screen (no footer peek) */
+.list-projects{
+  flex: 1 1 auto !important;
+  min-height: calc(100dvh - var(--header-h) - var(--topbars-h) + var(--peek-fix)) !important;
+  max-height: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  overflow: visible !important;
+  display: block !important;
+}
+.list-projects:not(.is-hidden1){
+  min-height: calc(100dvh - var(--header-h) - var(--topbars-h) + var(--peek-fix)) !important;
+}
+
+/* 5) Footer sticks to end of the page */
+.site-footer{ margin-top: 20% !important; }
+.footer-legal{ margin-top: 0 !important; }
+
+/* Optional: if your top bars are taller on phones, bump the estimate */
+@media (max-width: 500px){
+  :root{ --topbars-h: 150px; }  /* adjust if needed */
+}
+
+
+/* ======= RAILS PARITY WITH ABOUT PAGE ======= */
+/* Match the same variables used on the first sheet */
+:root{
+  --grid-max: 2080px;   /* same cap as the first file */
+  --page-pad: 20px;     /* same side gutter baseline */
+}
+
+/* A) Full-bleed backgrounds, but content sits on centered rails
+   (identical behavior to the first sheet’s “container” on wide screens) */
+
+/* Header + top bars + list + footer bars: align content to rails */
+.header,
+.index-outer,
+.search-filter,
+.list-projects,
+.site-footer,
+.footer-legal{
+  /* keep full width backgrounds; move content inward as screens grow */
+  padding-left:  max(var(--page-pad), calc((100vw - var(--grid-max)) / 2)) !important;
+  padding-right: max(var(--page-pad), calc((100vw - var(--grid-max)) / 2)) !important;
+}
+
+/* B) Cap inner list rows so long text/images don’t exceed the rails */
+@media (min-width: 1200px){
+  .list-projects > *{
+    max-width: var(--grid-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* C) Footer content alignment like About page
+   (keep footer full-bleed but align its grid to the same rails) */
+.site-footer{
+  align-items: start; /* mirrors the first sheet’s desktop tweak */
+}
+
+/* D) Ensure the left/right “extra space” appears on ultra-wide screens
+   (so the content column is visually centered like the About page) */
+@media (min-width: 1200px){
+  /* If any child of the list stretches, keep it within the rails */
+  .index-item,
+  .description-text{
+    max-width: var(--grid-max);
+    margin-inline: auto;
+  }
+}
+
+/* E) Keep your viewport fill & sticky footer behavior you liked */
+:root { --header-h: 80px; } /* same as before; adjust if header differs */
+
+#swup.mainbody{
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: calc(100dvh - var(--header-h)) !important;
+}
+
+.index-outer,
+.search-filter{ flex: 0 0 auto !important; }
+
+.list-projects{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  overflow: visible !important;
+}
+
+/* Footer *after* the full-height swup block */
+.site-footer{ margin-top: 0 !important; }
