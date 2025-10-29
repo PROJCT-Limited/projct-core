@@ -36,6 +36,7 @@
   *{box-sizing:border-box}
   html,body{height:100%;}
   body{
+    background: var(--brand-blue);
     min-height:100dvh;       
     margin:0;
     color:var(--ink);
@@ -52,7 +53,6 @@
   .container{
     width:100%;
     margin-inline:0;                         /* no auto-centering */
-    margin-top: 80px;
     padding-inline:var(--page-pad);          /* 20px gutters */
     display:grid;
     grid-template-columns:repeat(var(--columns), minmax(0,1fr));
@@ -60,11 +60,11 @@
     align-items:start;
   }
   
-  section.panel{
+  /* section.panel{
     min-height:100svh;
     display:grid;
     align-content:start;
-    margin:0}
+    margin:0} */
   
 
   .panel.hero{
@@ -140,7 +140,7 @@
     text-align:center
 }
 
-hr {
+/* hr {
     grid-column:5/-2;
     border-top: 1.5px solid var(--brand-blue);
     color:var(--brand-blue);
@@ -150,7 +150,7 @@ hr {
     margin: 20px;
     padding-top: 20px;
     margin:auto;
-  }
+  } */
 
   .member .avatar{
     width:200px;
@@ -176,7 +176,7 @@ hr {
   /* Quote + CTAs */
   .quote{
     grid-column:1/9;
-    font-size:clamp(30px,3.2vw,62px);
+    font-size:clamp(30px,3.2vw,50px);
     line-height: 120%;
     font-weight: 10;
     font-family: "Acumin-Regular";
@@ -275,7 +275,7 @@ hr {
   }
 
 /* Default header text & icons on hero (blue background) */
-.header { color: #fff; }
+/* .header { color: #fff; } */
 .mobile-overlay { color: #fff; }
 
 /* When scrolled onto white background */
@@ -304,184 +304,9 @@ hr {
   fill: none;
 }
 
-
-  /* LAST PANEL: 3 rows = quote / spacer (CTAs at bottom) / footer */
-  .site-footer{
-    font-family: "Acumin-Light";
-    margin-top:auto;                         /* pushes footer to the end */
-    background:var(--brand-blue); color:#fff;
-    padding-block:clamp(16px,3vh,36px);
-    padding-inline:var(--page-pad);          /* keep 20px rails */
-    display:grid;
-    grid-template-columns:repeat(var(--columns),minmax(0,1fr));
-    gap:var(--gutter);
-    align-items:center;
-  }
-  .footer-meta{
-    grid-column:1/9;
-    display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:clamp(12px,3vw,36px);
-  }
-  .footer-meta p{ margin:0; line-height:1.35; font-size:clamp(14px,1.1vw,18px); color:rgba(255,255,255,.95); }
-  .footer-brand{ grid-column:10/-1; justify-self:end; align-self:center; }
-  .footer-logo{ display:block; width:clamp(110px,12vw,200px); height:auto; }
-  .footer-social{ grid-column:1/9; display:flex; gap:clamp(20px,6vw,80px); margin:0; }
-  .site-footer a{ color:rgba(255,255,255,.95); text-decoration:none; }
-  .site-footer a:hover{ text-decoration:underline; }
-  
-  @media (max-width:1024px){
-    .footer-meta{ grid-column:1/10; }
-    .footer-brand{ grid-column:10/-1; }
-  }
-  @media (max-width:860px){
-    .footer-meta{ grid-column:1/-1; grid-template-columns:1fr; gap:12px; }
-    .footer-brand{ grid-column:1/-1; justify-self:start; margin-top:6px; }
-    .footer-social{ grid-column:1/-1; gap:16px; }
-  }
-
-
-  /* --- Newsletter under the logo --- */
-.footer-brand { display:flex; flex-direction:column; gap:1rem; }
-.newsletter { width:100%; max-width:420px; padding-bottom: 5%;}
-.newsletter-title{
-  margin:0 0 .5rem 0;
-  font-family:"Acumin-Light";
-  font-weight:400;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  font-size:.95rem;
-  color:#fff;
-  opacity:.9;
-}
-.newsletter-row{
-  display:flex;
-  align-items:center;
-  gap:.75rem;
-  width:100%;
-  border-bottom:1px solid rgba(255,255,255,.75);
-  padding:.35rem 0;
-}
-.newsletter input{
-  flex:1;
-  background:transparent;
-  border:0;
-  outline:0;
-  color:#fff;
-  font:inherit;
-  padding:.35rem 0;
-}
-.newsletter input::placeholder{ color:rgba(255,255,255,.7); }
-.newsletter-submit{
-  background:transparent;
-  border:0;
-  color:#fff;
-  font:inherit;
-  cursor:pointer;
-  white-space:nowrap;
-  padding:.35rem 0;
-}
-.newsletter-submit:hover{ text-decoration:underline; }
-
-/* --- Slim legal strip (below footer) --- */
-.footer-legal{
-  background: var(--brand-blue);
-  color: rgba(255,255,255,.9);
-  border-top: 1px solid rgba(255,255,255,.25);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:1rem;
-  padding: 10px var(--page-pad);
-  font-family:"Acumin-Light";
-  font-size:.85rem;
-  padding-inline: max(var(--page-pad), 5vw);
-}
-.footer-legal a{ color:inherit; text-decoration:none; }
-.footer-legal a:hover{ text-decoration:underline; }
-
-/* Responsive: stack newsletter & keep legal strip readable */
-@media (max-width: 860px){
-  .footer-brand { gap: .75rem; }
-  .footer-legal { font-size:.8rem; }
-}
-/* desktop / large tablets */
-@media (min-width: 1024px){
-  /* give the logo+newsletter more room */
-  .site-footer { align-items: start; }
-
-  .footer-meta   { grid-column: 1 / 8; }   /* was 1 / 9 */
-  .footer-social { grid-column: 1 / 8; }   /* keeps your right column free */
-  .footer-brand  { 
-    grid-column: 9 / -1;                  /* was 10 / -1 → much wider */
-    justify-self: start;                  /* sit at the left of its column */
-    align-self: start;                    /* align with other blocks */
-  }
-
-  /* let the form breathe a bit more on wide screens */
-  .newsletter { max-width: 560px; }        /* was 420px */
-  .footer-logo { width: clamp(140px, 12vw, 220px); }
-}
-
-/* if you still see it a tad too far right on very large screens,
-   you can pull the whole footer content in a bit: */
-@media (min-width: 1440px){
-  .site-footer { padding-inline: max(var(--page-pad), 5vw); }
-}
-
-
-/* keep previous footer grid as-is */
-
-/* logo stays where it was (tight right column) */
-.footer-brand{
-  grid-column: 9 / -1;   /* your original placement */
-  grid-row: 1;            /* sits on the first row */
-  justify-self: start;
-}
-.footer-logo{ width: 160px; height: auto; }
-
-/* make ONLY the newsletter longer by spanning more columns */
-.footer-newsletter{
-  grid-column: 9 / -1;    /* wider than the logo column */
-  grid-row: 2;            /* visually under the logo */
-  max-width: 960px;       /* make it long; adjust to taste */
-  width: 100%;
-}
-
-/* keep the existing newsletter visuals */
-.newsletter-title{
-  margin:0 0 .5rem 0;
-  font-family:"Acumin-Light";
-  font-weight:400;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  font-size:.95rem;
-  color:#fff; opacity:.9;
-}
-.newsletter-row{
-  display:flex; align-items:center; gap:.75rem;
-  width:100%;
-  border-bottom:1px solid rgba(255,255,255,.75);
-  padding:.35rem 0;
-}
-.newsletter input{
-  flex:1; background:transparent; border:0; outline:0;
-  color:#fff; font:inherit; padding:.35rem 0;
-}
-.newsletter input::placeholder{ color:rgba(255,255,255,.7); }
-.newsletter-submit{
-  background:transparent; border:0; color:#fff; font:inherit;
-  cursor:pointer; white-space:nowrap; padding:.35rem 0;
-}
-.newsletter-submit:hover{ text-decoration:underline; }
-
-/* responsive: stack full width on mobile */
-@media (max-width: 860px){
-  .footer-brand{ grid-column:1 / -1; grid-row:auto; }
-  .footer-newsletter{ grid-column:1 / -1; grid-row:auto; max-width: none; }
-}
   /* ================= TEAM GRID (About page) ================= */
 
-/* If you're toggling this block open/closed */
+
 .is-hidden { display: none; }
 
 /* Make the description block align with your grid if it's inside .container */
@@ -497,7 +322,6 @@ hr {
   column-gap: 0.4rem;
   row-gap: 1.65rem;
   justify-items: stretch;     /* stretch cells; cards self-limit via max width */
-  margin-bottom: 50px;
 }
 
 /* Card */
@@ -582,31 +406,25 @@ hr {
 
 .team-grid{ grid-column: 1 / -1; }
 
-/* 
-  .team-grid_inner{
-    grid-column: 1 / -1;
-  }
-   */
-   /* Keep wrapper grid, but let the inner grid span all wrapper columns */
+
 .team-grid_inner{
-    grid-column: 1 / -1;        /* span every column of .team-grid */
+    grid-column: 1 / -1;       
   }
   
   .container > .team-grid{
-    grid-column: 1 / -1;   /* span the page grid */
-    display: block;        /* override any old display:grid on this class */
+    grid-column: 1 / -1;   
+    display: block;      
     width: 100%;
   }
   
-  /* 2) Make the INNER grid handle wrapping (simpler formula) */
+
   .team-grid_inner {
     --card-min: 8rem;
     --card-max: 15.5rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
     gap: 1rem 10rem;
-    margin-bottom: 20px;
-    margin-top: 50px;
+
     }
   
   /* 3) Cards — keep your look, but don't block wrapping */
@@ -748,8 +566,8 @@ hr {
 @media (max-width: 1600px){
   .team-grid_inner{
     --card-min: 7.5rem !important;  /* small bump, still compact */
-    column-gap: 9.25rem !important;
-    row-gap: 1.75rem !important;
+    column-gap: 5.25rem !important;
+    row-gap: 1rem !important;
   }
   .team-grid_image-wrapper{
     max-width: clamp(12rem, 20vw, 18rem) !important;
@@ -759,7 +577,7 @@ hr {
 /* 1441–1599px: medium */
 @media (min-width: 1600px) and (max-width: 1800px){
   .team-grid_inner{
-    --card-min: 18rem !important;    /* fewer columns => wider cards */
+    --card-min: 18rem !important;
     column-gap: 1.5rem !important;
     row-gap: 2rem !important;
   }
@@ -771,8 +589,8 @@ hr {
 /* ≥ 1600px (27″ etc.): large */
 @media (min-width: 1600px){
   .team-grid_inner{
-    --card-min: 16rem !important;    /* big cards */
-    column-gap: 10rem !important;
+    --card-min: 10rem !important;   
+    column-gap: 8rem !important;
     row-gap: 2.25rem !important;
   }
   .team-grid_image-wrapper{
@@ -780,4 +598,353 @@ hr {
   }
   .team-grid_name{ font-size: clamp(1.1rem, 0.9rem + 0.6vw, 1.5rem) !important; }
   .team-grid_post{ font-size: clamp(1rem, 0.8rem + 0.4vw, 1.2rem) !important; }
+}
+
+
+.header,
+.index-outer,
+.search-filter,
+.list-projects,
+.site-footer,
+.footer-legal{
+  /* keep full width backgrounds; move content inward as screens grow */
+  padding-left:  max(var(--page-pad), calc((100vw - var(--grid-max)) / 2)) !important;
+  padding-right: max(var(--page-pad), calc((100vw - var(--grid-max)) / 2)) !important;
+}
+
+
+.site-footer,
+.footer-legal { 
+  font-family: "Acumin-Light" !important;
+  color: #fff !important;
+}
+
+/* break .mainbody font-size inheritance */
+.site-footer { 
+  padding-top:20%;
+  font-size: 1rem !important;
+  line-height: 1.4 !important;
+  margin-top: auto !important;              /* push to end */
+  background: var(--brand-blue) !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(var(--columns), minmax(0,1fr)) !important;
+  gap: var(--gutter) !important;
+  align-items: center !important;
+}
+
+.site-footer a{ 
+ 
+  color: rgba(255,255,255,.95) !important; 
+  text-decoration: none !important; 
+}
+.site-footer a:hover{ text-decoration: underline !important; }
+
+/* left column content (3 blocks + privacy link row) */
+.footer-meta{
+  grid-column: 1 / 9 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap: clamp(12px, 3vw, 36px) !important;
+}
+.footer-meta p{
+  margin: 0 !important; 
+  line-height: 1.35 !important; 
+  font-size: clamp(14px, 1.1vw, 18px) !important; 
+  color: rgba(255,255,255,.95) !important; 
+}
+
+/* right column: logo */
+.footer-brand{
+  grid-column: 9 / -1 !important;
+  grid-row: 1 !important;
+  justify-self: start !important;
+  align-self: start !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+}
+.footer-logo{ 
+  display:block !important; 
+  width: clamp(110px, 12vw, 200px) !important; 
+  height:auto !important; 
+}
+
+/* newsletter directly under logo, full width of right column */
+.footer-newsletter{
+  grid-column: 9 / -1 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+  max-width: 960px !important;         /* long line like your mock */
+}
+.newsletter-title{
+  margin: 0 0 .5rem 0 !important;
+  font-weight: 400 !important;
+  letter-spacing: .04em !important;
+  text-transform: uppercase !important;
+  font-size: .95rem !important;
+  opacity: .9 !important;
+}
+.newsletter-row{
+  display: flex !important;
+  align-items: center !important;
+  gap: .75rem !important;
+  width: 100% !important;
+  border-bottom: 1px solid rgba(255,255,255,.75) !important;
+  padding: .35rem 0 !important;
+}
+.newsletter input{
+  flex: 1 !important;
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  color: #fff !important;
+  font: inherit !important;
+  padding: .35rem 0 !important;
+}
+.newsletter input::placeholder{ color: rgba(255,255,255,.7) !important; }
+.newsletter-submit{
+  background: transparent !important;
+  border: 0 !important;
+  color: #fff !important;
+  font: inherit !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  padding: .35rem 0 !important;
+}
+.newsletter-submit:hover{ text-decoration: underline !important; }
+
+/* social row matches About look */
+.footer-social{
+  grid-column: 1 / 9 !important;
+  display: flex !important;
+  gap: clamp(20px, 6vw, 80px) !important;
+  margin: 0 !important;
+}
+
+/* thin separator + legal strip exactly like About */
+.footer-legal{
+  background: var(--brand-blue) !important;
+  color: rgba(255,255,255,.9) !important;
+  border-top: 1px solid rgba(255,255,255,.25) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  font-size: .85rem !important;
+  padding-block: clamp(12px, 2.6vh, 24px) !important;
+}
+.footer-legal a{ color: inherit !important; text-decoration: none !important; }
+.footer-legal a:hover{ text-decoration: underline !important; }
+
+/* responsive matches About */
+@media (max-width:1024px){
+  .footer-meta{ grid-column: 1 / 10 !important; }
+}
+@media (max-width:860px){
+  .footer-meta{
+    grid-column: 1 / -1 !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .footer-brand{
+    grid-column: 1 / -1 !important;
+    justify-self: start !important;
+    margin-top: 6px !important;
+  }
+  .footer-social{ grid-column: 1 / -1 !important; gap: 16px !important; }
+  .footer-newsletter{
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+    max-width: none !important;
+    padding-top: 4% !important;
+  }
+  .footer-legal{ font-size: .8rem !important; }
+}
+
+/* keep footer pinned at the end of the page */
+body{ display:flex; flex-direction:column; min-height:100dvh; }
+.mainbody{ flex:1 0 auto; }        /* content area */
+
+
+/* =========================================
+   SECTION RHYTHM + SEPARATORS (About only)
+   ========================================= */
+
+/* Responsive rhythm: ≈ 90px on typical laptop, breathes on big/small screens */
+:root{
+  --section-gap: clamp(56px, 6vh, 112px);  /* ~90px middle */
+  --rule-color: rgba(14,80,200,.2);        /* soft blue line */
+}
+
+/* Panel base (no forced viewport height) */
+section.panel{
+  display: grid;
+  align-content: start;
+  margin: 0;
+  /* give text and media some air */
+  padding-block: var(--section-gap);
+}
+
+/* Keep only the first panel full-viewport */
+.panel.hero{
+  min-height: 100svh;
+  padding-block: clamp(24px, 6vh, 64px); /* small inner breathing */
+}
+
+/* Draw a separator before every panel after the hero */
+.panel + .panel{
+  position: relative;
+}
+.panel + .panel::before{
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;      /* top rule */
+  height: 1px;
+  background: var(--rule-color);
+  /* align the rule to the same rails as .container */
+  left: 0; right: 0;
+}
+@media (min-width: 1200px){
+  .panel + .panel::before{
+    max-width: var(--grid-max);
+    margin-inline: auto;
+  }
+}
+
+/* Container: keep your cap & center on wide screens */
+@media (min-width: 1200px){
+  .container{
+    max-width: var(--grid-max);
+    margin-inline: auto;
+  }
+}
+
+/* Headline/aside already good; just ensure the aside never collides with the rule */
+.hero .aside{ margin-top: clamp(8px, 1.5vh, 20px); }
+
+/* TEAM — keep your styling, just use the new vertical rhythm */
+.team-grid{ margin-top: clamp(24px, 3vh, 40px); }
+
+/* SPACE — let images scale with content without huge fixed heights */
+.space-grid{
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.space-grid img{
+  width: 100%;
+  height: auto;        /* was clamp(600px,55vh,920px) */
+  aspect-ratio: 4 / 3; /* keep a pleasant shape */
+  object-fit: cover;
+}
+
+/* QUOTE + CTAs — consistent spacing */
+.quote{ margin-top: 0; }
+.ctas{ margin-top: clamp(28px, 4vh, 56px);margin-bottom: clamp(70px, 10vh, 140px);}
+
+/* Replace wide <hr> with the new separators; keep <hr> minimal if used */
+hr{
+  grid-column: 1 / -1;
+  border: 0;
+  height: 1px;
+  background: var(--rule-color);
+  width: 100%;
+  margin: var(--section-gap) 0;
+}
+
+/* Rails parity: align header/footer content to rails on ultra-wide screens */
+.header,
+.site-footer,
+.footer-legal{
+  padding-left:  max(var(--page-pad), calc((100vw - var(--grid-max))/2));
+  padding-right: max(var(--page-pad), calc((100vw - var(--grid-max))/2));
+}
+
+/* Footer spacing matches the new rhythm (content-height page, sticky at end) */
+.site-footer{ padding-block: clamp(16px, 3vh, 36px); }
+.footer-legal{ padding-block: clamp(12px, 2.6vh, 24px); }
+
+/* Swirl sits to the left of the aside on large screens; stacks on small */
+.hero-swirl{
+  grid-column: 4 / 5;                 /* adjust to taste; pairs with your grid */
+  align-self: start;
+  width: clamp(60px, 6vw, 110px);
+  height: auto;
+  margin-top: clamp(8px, 1.4vh, 16px);
+  filter: brightness(0) invert(1);    /* white on blue; remove if your SVG is already white */
+}
+@media (max-width: 1024px){
+  .hero-swirl{ grid-column: 1 / -1; margin-bottom: 8px; }
+}
+
+
+/* ============ ALIGN TO TEXT RAILS (DESKTOP) ============ */
+/* Text already uses grid-column: 5 / -2 */
+.team-grid{ grid-column: 5 / -2 !important; }    
+.space-grid{ grid-column: 5 / -2 !important; }  
+
+.team-grid_inner{
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-min, 12rem), 1fr)) !important;
+}
+
+/* ============ HR LINES ON CONTAINER RAILS ============ */
+.container > hr{
+  grid-column: 1 / -1 !important; 
+  width: 100% !important;
+  margin: 40px 0 !important;        
+  border: 0 !important;
+  border-top: 1.5px solid var(--brand-blue) !important;
+
+}
+
+/* Remove previous viewport-wide hr sizing if present */
+hr{ width: auto !important; margin-inline: 0 !important; }
+
+/* ============ RESPONSIVE: FULL WIDTH ON SMALL SCREENS ============ */
+@media (max-width: 860px){
+  .team-grid,
+  .space-grid{ grid-column: 1 / -1 !important; }  /* follow your mobile pattern */
+  .container > hr{ margin: 28px 0 !important; }
+}
+
+/* ===== Team grid: keep 2-up, just tighter gaps on small screens ===== */
+
+/* phones & small tablets */
+@media (max-width: 860px){
+  .team-grid_inner{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important; /* stay 2-up */
+    column-gap: 1rem !important;   /* tighter left/right gap */
+    row-gap: 1rem !important;         /* tighter top/bottom gap */
+  }
+
+  /* let cards breathe but fit the tighter grid */
+  .team-grid_item{ max-width: none !important; width: 100% !important; }
+  .team-grid_image-wrapper{ max-width: none !important; }
+  .team-grid_name{ font-size: clamp(.95rem, .9rem + .2vw, 1.05rem); }
+  .team-grid_post{ font-size: clamp(.85rem, .8rem + .2vw, .95rem); }
+}
+
+/* extra-tight on very small phones, still 2-up */
+@media (max-width: 420px){
+  .team-grid_inner{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    column-gap: 1rem !important;
+    row-gap: 0.75rem !important;
+  }
+}
+/* Space: stack images on mobile */
+@media (max-width: 860px){
+  .space-grid{
+    grid-template-columns: 1fr !important;  /* one per row */
+    gap: 16px !important;
+  }
+  .space-grid img{
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 4 / 3 !important;
+    object-fit: cover !important;
+  }
 }
