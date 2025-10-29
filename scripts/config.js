@@ -119,9 +119,10 @@ function getUIConfig() {
     baseWidth:  mobile ? 360 : 1200,
     baseHeight: mobile ? 640 : 680,
 
-    topBarRatio: mobile ? 0.24 : 0.18,
-    topBarMin:   110,
-    topBarMax:   240,
+      // Make the mobile TOP blue panel taller
+       topBarRatio: mobile ? 0.44 : 0.18,                         // target ~62% screen height
+       topBarMin:   260,                                          // never shorter than 260px
+       topBarMax:   Math.round(windowHeight * 0.80),   
 
     zonePadX:    mobile ? 12 : 40,
     zonePadY:    mobile ? 90 : 120,
