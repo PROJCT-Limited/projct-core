@@ -161,7 +161,8 @@ const imageH = pickImageH(imageW);
     function useLightFont()  { if (typeof acuminLight   !== 'undefined' && acuminLight)   textFont(acuminLight); }
     
 // ~48% of the screen height for the mobile bottom panel (can be tuned via UI.mobilePanelRatio)
-const MOBILE_RATIO_DEFAULT = 0.48;
+// Mobile panel height target (fraction of screen height)
+const MOBILE_RATIO_DEFAULT = 0.62; // was 0.48
 
 // Mobile metrics (smaller paddings; image sized to a right column)
 function metricsMobile(usableW, usableH) {
@@ -183,23 +184,38 @@ const imageH = pickImageH(imageW);
   return { outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize, colGap, gapAfterTags };
 }
 
-// Draw tag pills in multiple rows using your drawPill()
+
 function layoutTagPillsWrapped(tags, startX, startY, maxW, tagH, gapX, gapY, padX) {
   let x = startX, y = startY, rows = 0;
+  const wrapRight = startX + maxW;
+
+  // measure with the SAME size drawPill() uses
+  const MEASURE_SIZE = tagH * 0.45;
+
   for (let i = 0; i < (tags?.length || 0); i++) {
     const label = String(tags[i]).toUpperCase();
-    textSize(tagH * 0.0001);
-    const pillW = textWidth(label) + padX * 2;
+
+    // pre-measure width at draw size
+    textSize(MEASURE_SIZE);
+    const measured = textWidth(label);
+    const pillW = Math.ceil(measured + padX * 2);
 
     if (rows === 0) rows = 1;
-    if (x + pillW > startX + maxW) { // wrap
+
+    // wrap to next row if this pill would cross the right edge
+    if (x + pillW > wrapRight) {
       rows++;
       x = startX;
       y += tagH + gapY;
     }
+
+    // draw at the final position; drawPill returns actual width
     const used = drawPill(x, y, label, tagH, padX);
+
     x += used + gapX;
   }
+
+  // nextY is the baseline just below the last row of pills
   return { rows, nextY: rows ? (y + tagH) : startY };
 }
 
@@ -237,50 +253,64 @@ function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.15) {
 
     // -------- MAIN DRAW (always defined) --------
     window.drawTopBar = function drawTopBar() {
-      // Original panel bounds supplied by world.js
+      // Original  supplied by world.js
+
 // ----- PANEL BOUNDS -----
 const isMobileBottom = (LAYOUT === 'bottom');
+const isMobileLike   = (LAYOUT === 'bottom' || LAYOUT === 'top'); // compact mobile metrics
+const atTop          = (LAYOUT === 'top');
 
-// Use full width and ~half height on mobile bottom; keep your old calc on desktop/left
-let panelW, panelH, margin, headerOffset = 0;
+// ----- PANEL BOUNDS -----
+// layout flags already defined above
 
-if (isMobileBottom) {
-  panelW = width;
-  panelH = Math.round(height * (G.UI?.mobilePanelRatio || MOBILE_RATIO_DEFAULT));
-  margin = 0;                // no margins from edges
-  headerOffset = 0;          // ignore DOM header on mobile bottom
-} else {
-  panelW = (typeof sideBarW !== 'undefined' && LAYOUT === 'left') ? sideBarW : width + 70;
-  panelH = (LAYOUT === 'left') ? height : topBarH;
-  margin = 24;
-
-  // Measure DOM header (your previous logic)
-  function __measureHeader() {
-    try {
-      const sels = ['header', '.header', '#header', '.site-header', '.topbar', '.navbar', '.app-header', '.nav'];
-      let h = 0;
-      for (const s of sels) {
-        const el = document.querySelector(s);
-        if (el) {
-          const r = el.getBoundingClientRect();
-          h = Math.max(h, (r && (r.height || (r.bottom - r.top))) || 0);
-        }
+// --- Measure DOM header height (use world.js helper if present) ---
+function __measureHeader() {
+  try {
+    const sels = ['header', '.header', '#header', '.site-header', '.topbar', '.navbar', '.app-header', '.nav'];
+    let h = 0;
+    for (const s of sels) {
+      const el = document.querySelector(s);
+      if (el) {
+        const r = el.getBoundingClientRect();
+        h = Math.max(h, (r && (r.height || (r.bottom - r.top))) || 0);
       }
-      return h;
-    } catch (e) { return 0; }
-  }
-  const domHeaderH = (typeof window.getHeaderHeight === 'function') ? window.getHeaderHeight() : __measureHeader();
-  const applyHeaderOffset = (LAYOUT === 'left' || LAYOUT === 'top');
-  headerOffset = applyHeaderOffset ? domHeaderH : 0;
+    }
+    return h;
+  } catch (e) { return 0; }
+}
+const domHeaderH = (typeof window.getHeaderHeight === 'function')
+  ? window.getHeaderHeight()
+  : (typeof __measureHeaderHeight === 'function' ? __measureHeaderHeight() : __measureHeader());
+
+// Panel size
+let panelW, panelH, margin;
+if (LAYOUT === 'left') {
+  // DESKTOP: panel to the left, fill canvas height below header
+  panelW = (typeof sideBarW === 'number') ? sideBarW : width;
+  panelH = Math.max(0, height - domHeaderH);
+  margin = 24;
+} else if (atTop) {
+  // MOBILE/TOP: panel at the top
+  panelW = width;
+  const ratio = (G.UI?.mobilePanelRatio ?? MOBILE_RATIO_DEFAULT);
+  panelH = (typeof topBarH === 'number' ? topBarH : Math.round(height * ratio));
+  margin = 0;
+} else {
+  // fallback (rare)
+  panelW = width;
+  panelH = Math.round(height * 0.48);
+  margin = 0;
 }
 
-// Inner rect (blue area)
-const innerW = isMobileBottom ? panelW : (panelW + 70 - margin);
-const innerH = isMobileBottom ? panelH : (panelH - headerOffset - margin * 2);
-
-// Screen origin
+// Screen origin:
+// left  -> start below header
+// top   -> start below header
+// bottom-> (not used now)
 const originX = 0;
-const originY = isMobileBottom ? (height - panelH) : 0;
+const originY = (LAYOUT === 'left' || atTop) ? domHeaderH : 0;
+const innerW = isMobileLike ? panelW : Math.max(0, panelW - margin * 2);
+const innerH = isMobileLike ? panelH : Math.max(0, panelH - margin * 2);
+
 
 push();
 translate(originX, originY);
@@ -288,18 +318,16 @@ translate(originX, originY);
 // Blue background flush to edges on mobile; with margins on desktop
 noStroke();
 setFill(THEME.blue);
-rect(isMobileBottom ? 0 : margin, headerOffset + (isMobileBottom ? 0 : margin), innerW, innerH);
-
-// Move drawing origin into the blue panel
-translate(isMobileBottom ? 0 : margin, headerOffset + (isMobileBottom ? 0 : margin));
+rect(isMobileLike ? 0 : margin, (isMobileLike ? 0 : margin), innerW, innerH);
+translate(isMobileLike ? 0 : margin, (isMobileLike ? 0 : margin));
 
 
      // Metrics (desktop vs mobile)
-const M = isMobileBottom ? metricsMobile(innerW, innerH) : metrics(innerW);
+const M = isMobileLike ? metricsMobile(innerW, innerH) : metrics(innerW);
 const {
   outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize
 } = M;
-const colGap       = M.colGap || 16;
+
 const gapAfterTags = M.gapAfterTags ?? Math.max(12, Math.round((titleSize || TYPE.title) * 0.30));
 
 const node = currentNode();
@@ -318,6 +346,8 @@ if (node) {
 // Content frame
 const contentX = outerPad;
 const contentW = innerW - outerPad * 2;
+
+
 
 // Title (wrap-aware)
 useLightFont();
@@ -342,180 +372,180 @@ const tagLayout = layoutTagPillsWrapped(tags, contentX, tagStartY, contentW, tag
 const contentTopY = tagLayout.nextY + Math.max(8, bodyGap);
 
 // ---------- IMAGE + BODY (mobile: two columns; desktop: stack as before) ----------
-let imageX, imageY, bodyX, bodyW;
+// let imageX, imageY, bodyX, bodyW;
 
-// MOBILE BOTTOM: two-column when feasible; else stack
-if (isMobileBottom) {
-  const rightImgW = imageW;
-  const leftBodyW = contentW - rightImgW - colGap;
+// // MOBILE BOTTOM: two-column when feasible; else stack
+// if (isMobileBottom) {
+//   const rightImgW = imageW;
+//   const leftBodyW = contentW - rightImgW - colGap;
 
-  if (leftBodyW >= 220) {
-    // two columns
-    bodyX = contentX;
-    bodyY = contentTopY;
-    bodyW = leftBodyW;
+//   if (leftBodyW >= 220) {
+//     // two columns
+//     bodyX = contentX;
+//     bodyY = contentTopY;
+//     bodyW = leftBodyW;
 
-    imageX = contentX + leftBodyW + colGap;
-    imageY = contentTopY;
-  } else {
-    // fallback: stack image then body
-    imageX = contentX;
-    imageY = contentTopY;
+//     imageX = contentX + leftBodyW + colGap;
+//     imageY = contentTopY;
+//   } else {
+//     // fallback: stack image then body
+//     imageX = contentX;
+//     imageY = contentTopY;
 
-    bodyX = contentX;
-    bodyY = imageY + imageH + Math.max(8, bodyGap);
-    bodyW = contentW;
-  }
-} else {
-  // DESKTOP/LEFT: keep your previous stacked flow (image first, then body)
-  imageX = contentX;
-  imageY = contentTopY+400;
+//     bodyX = contentX;
+//     bodyY = imageY + imageH + Math.max(8, bodyGap);
+//     bodyW = contentW;
+//   }
+// } else {
+//   // DESKTOP/LEFT: keep your previous stacked flow (image first, then body)
+//   imageX = contentX;
+//   imageY = contentTopY+400;
 
-  bodyX  = contentX;
-  bodyY  = imageY + 50+imageH + Math.max(12, bodyGap);
-  bodyW  = contentW;
-}
+//   bodyX  = contentX;
+//   bodyY  = imageY + 50+imageH + Math.max(12, bodyGap);
+//   bodyW  = contentW;
+// }
 
 
 // ===== After tags are laid out =====
+// After laying out tags:
 const tagsBottomY = tagLayout.nextY;
 
-// constant meta height
+// constant meta height (3 rows)
 const blockH = rowH * 3 + 18;
 
-// consistent section spacing
-const SAFE_GAP = Math.max(12, Math.round((bodySize || TYPE.body) * 0.6));
+// spacing controls
+const GAP_ABOVE_CONTENT = 20;  // between tags and content block
+const GAP_BELOW_CONTENT = 20;  // gap above meta rows
 
-// consistent section spacing
-const GAP_ABOVE_CONTENT = 20;  // between tags and image/text block
-const GAP_BELOW_CONTENT = 20;  // exact gap to meta rows
-
-// where the content area (image + body) starts
+// where content starts
 const contentY = tagsBottomY + GAP_ABOVE_CONTENT;
 
-// meta rows are always docked to the bottom inside padding
+// meta rows are pinned to the bottom inside padding
 const metaY = innerH - blockH - outerPad;
 
-// the *target* bottom of the content block (exactly 20px above meta)
+// exact bottom limit the content block is allowed to use
 const contentBottom = metaY - GAP_BELOW_CONTENT;
 
-// total vertical budget for image + (gap) + text, ending exactly at contentBottom
+// available vertical pixels for (image + body) block
 const availForContent = Math.max(0, contentBottom - contentY);
 
 
 useLightFont();
 const _bodySize = (bodySize / 1.2 || TYPE.body);
 
-// two-column on mobile when there’s enough width; otherwise stack
-const twoColumnOK = (LAYOUT === 'bottom') && (contentW <= 550);
+// two-column when panel is TOP and there’s enough width; otherwise stack
+const colGap = M.colGap || 16;
+const leftMin  = 180; // min width for the text column (tweak)
+const rightMin = 140; // min width for the image column (tweak)
+const twoColumnOK = (LAYOUT === 'top') && (contentW >= leftMin + rightMin + colGap);
 
 if (twoColumnOK) {
-  // ----- TWO-COLUMN MOBILE -----
+
   const colGap = M.colGap || 16;
-  const rightImgW = Math.min(imageW, Math.round(contentW * 0.42));
-  const leftBodyW = Math.max(120, contentW - rightImgW - colGap);
 
-  const imgX  = contentX + leftBodyW + colGap;
-  const bodyX = contentX;
-  const columnH = availForContent;
-
-
-
-
-// column height is the whole budget so the block ends at contentBottom
-
-
-// image frame
-let drawImgW = rightImgW;
-let desiredFrameH = img ? frameHeightForImage(img, drawImgW)
-                        : Math.round((imageH * rightImgW) / Math.max(1, imageW));
-                        let drawImgH = Math.min(Math.max(120, desiredFrameH), columnH);
-
-// text height fills the rest (or just uses the whole column)
-const bodyMeasure = measureWrappedHeight(desc, leftBodyW, _bodySize, 1.25);
-const bodyH = Math.min(bodyMeasure.height, columnH); 
-
-// draw image at (imgX, contentY) with drawImgH
-// draw text at (bodyX, contentY) with bodyH
-// => the lower of image/text ends at contentY + maxColH === contentBottom
-
-
-
-  if (img && typeof img === 'object') {
-    drawImageCover(
-      img,
-      imgX, contentY,
-      drawImgW, drawImgH,
-      biasForImage(img)
-    );
-  } else {
-    noFill();   noStroke();
-    rrect(imgX, contentY, drawImgW, drawImgH, 6)
+  // Start with a reasonable split
+  let rightImgW = Math.min(imageW, Math.round(contentW * 0.45));
+  let leftBodyW = contentW - rightImgW - colGap;
+  
+  // Enforce minimums so two-column works on ~360–400px viewports too
+  const leftMin  = 180; // readable body text
+  const rightMin = 140; // image worth showing
+  
+  if (leftBodyW < leftMin) {
+    leftBodyW = leftMin;
+    rightImgW = Math.max(rightMin, contentW - leftBodyW - colGap);
+  } else if (rightImgW < rightMin) {
+    rightImgW = rightMin;
+    leftBodyW = Math.max(leftMin, contentW - rightImgW - colGap);
   }
 
-  // draw body
+  const imgX       = contentX + leftBodyW + colGap;
+  const bodyX      = contentX;
+  const columnH    = availForContent;
+
+  // --- Reserve room for text and cap the image ---
+  const minBodyH   = 80;                          // guarantees description appears
+  const imgMaxH    = Math.max(120, columnH - minBodyH);
+
+  // image size (respect orientation)
+  let drawImgW = rightImgW;
+  let desiredFrameH = img ? frameHeightForImage(img, drawImgW)
+                          : Math.round((imageH * rightImgW) / Math.max(1, imageW));
+  let drawImgH = Math.min(Math.max(120, desiredFrameH), imgMaxH);
+
+  // body gets the rest (never under minBodyH)
+  const bodyH = Math.max(minBodyH, columnH - drawImgH - GAP_ABOVE_CONTENT);
+
+  // render image
+  if (img && typeof img === 'object') {
+    drawImageCover(img, imgX, contentY, drawImgW, drawImgH, biasForImage(img));
+  }
+
+  // render body
   textSize(_bodySize);
+  const bm = measureWrappedHeight(desc, leftBodyW, _bodySize, 1.25);
   textAlign(LEFT, TOP);
-  textLeading(bodyMeasure.lineH);
+  textLeading(bm.lineH);
   setFill(THEME.white);
   if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
-  text(desc, bodyX, contentY, leftBodyW, columnH);
-
+  text(desc, bodyX, contentY, leftBodyW, bodyH);
 } else {
-
- 
-
+  // ----- STACKED (desktop / narrow mobile) -----
 // ----- STACKED (desktop / narrow mobile) -----
-let drawImgW = imageW;
+// ----- STACKED (desktop / narrow mobile) -----
+let drawImgW = Math.min(imageW, contentW);
 let drawImgH = imageH;
 
-// measure full body
-const bodyMeasure = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
-const bodyFullH   = bodyMeasure.height;
-
-// ensure image + gap + text fits within availForContent
-if (drawImgH + GAP_ABOVE_CONTENT + bodyFullH > availForContent) {
-  drawImgH = Math.max(120, availForContent - GAP_ABOVE_CONTENT - bodyFullH);
-  const s = drawImgH / Math.max(1, imageH);
-  drawImgW = Math.min(contentW, Math.max(1, Math.round(imageW * s)));
+// compute proper frame height from actual image orientation
+if (img && img.width && img.height) {
+  const desiredH = frameHeightForImage(img, drawImgW);
+  drawImgH = Math.min(desiredH, imageH);
 }
 
-// compute text height so that the stack ends exactly at contentBottom
-const bodyH = Math.max(0, availForContent - drawImgH - GAP_ABOVE_CONTENT);
+// vertical budget for (image + text)
+const minBodyH = 96;                                // guarantees description appears
+const imgMaxH  = Math.max(120, Math.round(availForContent * 0.45));
+drawImgH       = Math.min(drawImgH, imgMaxH);
 
-// BOTTOM-ALIGN: total stack = drawImgH + GAP_ABOVE_CONTENT + bodyH
+// keep aspect if image capped
+if (img && img.width && img.height) {
+  const ar = img.height / img.width; // h/w
+  drawImgW = Math.min(contentW, Math.max(120, Math.round(drawImgH / ar)));
+}
+
+// body gets the remainder (at least minBodyH)
+const bodyH  = Math.max(minBodyH, availForContent - drawImgH - GAP_ABOVE_CONTENT);
 const blockH = drawImgH + GAP_ABOVE_CONTENT + bodyH;
 const startY = Math.max(contentY, contentBottom - blockH);
 
-// (optional) nudge portrait images up to keep faces higher, without breaking bottom align
+// light portrait nudge up, but *never* above contentY
 const portraitNudge = (isPortraitImage(img) ? Math.round(Math.min(drawImgH * 0.25, startY - contentY)) : 0);
 
-// final positions
-const imgY  = startY - portraitNudge +100;
+// positions
+const imgX  = contentX;
+const imgY  = startY - portraitNudge;        // (removed old +100 bug)
 const bodyY = imgY + drawImgH + GAP_ABOVE_CONTENT;
 
-// draw image
+// render image
 if (img && typeof img === 'object') {
-  drawImageCover(
-    img,
-    contentX, imgY,
-    drawImgW, drawImgH,
-    biasForImage(img)
-  );
-} else {
-  noFill();  noStroke();
-  rrect(contentX, imgY, drawImgW, drawImgH, 6);
-
+  drawImageCover(img, imgX, imgY, drawImgW, drawImgH, biasForImage(img));
 }
 
-// draw body (clips inside bodyH, so bottom = contentBottom)
+// render body
 textSize(_bodySize);
+const bm = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
 textAlign(LEFT, TOP);
-textLeading(bodyMeasure.lineH);
+textLeading(bm.lineH);
 setFill(THEME.white);
 if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
 text(desc, contentX, bodyY, contentW, bodyH);
 }
+
+
+ 
+
+
 
 // ----- META rows pinned at the bottom -----
 useRegularFont();
@@ -528,7 +558,7 @@ drawKVRow(contentX, metaY + rowH + 9, contentW, 'CATEGORY', cat,  rowH);
 drawRule(contentX, metaY + rowH * 2 + 12, contentW);
 drawKVRow(contentX, metaY + rowH * 2 + 15, contentW, 'TYPE',     type, rowH);
 
-drawRule(contentX, metaY + rowH * 2 + 40, contentW);
+drawRule(contentX, metaY + rowH * 2 + 36, contentW);
 
 
 
@@ -600,6 +630,174 @@ function drawImageCover(img, dx, dy, dW, dH, bias = 'auto', alignX = 0.5, alignY
 }
 
 
+
+/* ===================== UI TOPBAR — HELPERS (drop-in) ===================== */
+
+/* ---------- drawing convenience ---------- */
+
+// setFill / setStroke accept arrays [r,g,b,(a)] or numeric gray/a
+function setFill(c, a) {
+  if (Array.isArray(c)) {
+    if (c.length === 4) fill(c[0], c[1], c[2], c[3]);
+    else if (c.length === 3) fill(c[0], c[1], c[2], a ?? 255);
+    else if (c.length === 1) fill(c[0], a ?? 255);
+  } else if (typeof c === 'number') {
+    fill(c, a ?? 255);
+  } else {
+    noFill();
+  }
+}
+function setStroke(c, a) {
+  if (Array.isArray(c)) {
+    if (c.length === 4) stroke(c[0], c[1], c[2], c[3]);
+    else if (c.length === 3) stroke(c[0], c[1], c[2], a ?? 255);
+    else if (c.length === 1) stroke(c[0], a ?? 255);
+  } else if (typeof c === 'number') {
+    stroke(c, a ?? 255);
+  } else {
+    noStroke();
+  }
+}
+
+// rounded-rect with auto radius clamp
+function rrect(x, y, w, h, r = 6) {
+  const rr = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+  rect(x, y, w, h, rr);
+}
+
+// switch fonts safely; falls back if fonts are missing
+function useLightFont()   { try { if (window.acuminLight)   textFont(window.acuminLight);   } catch (e){} }
+function useRegularFont() { try { if (window.acuminRegular) textFont(window.acuminRegular); } catch (e){} }
+
+/* ---------- text measurement & layout ---------- */
+
+// Measure wrapped height for a block of text (word-wrap, p5 textWidth)
+function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.25) {
+  if (!txt) return { lines: 0, lineH: Math.round(fontSize * leadingMul), height: 0 };
+  textSize(fontSize);
+  const words = String(txt).split(/\s+/);
+  const lines = [];
+  let cur = "";
+  for (const w of words) {
+    const test = cur ? cur + " " + w : w;
+    if (textWidth(test) <= maxW) {
+      cur = test;
+    } else {
+      if (cur) lines.push(cur);
+      // If a single word exceeds maxW, hard-wrap by characters
+      if (textWidth(w) > maxW) {
+        let chunk = "";
+        for (const ch of w) {
+          const t2 = chunk + ch;
+          if (textWidth(t2) <= maxW) chunk = t2;
+          else { lines.push(chunk); chunk = ch; }
+        }
+        cur = chunk;
+      } else {
+        cur = w;
+      }
+    }
+  }
+  if (cur) lines.push(cur);
+  const lineH = Math.round(fontSize * leadingMul);
+  return { lines: lines.length, lineH, height: lines.length * lineH };
+}
+
+/* ---------- image sizing/cropping ---------- */
+
+// Treats image like CSS object-fit: cover; crops from center by default.
+// bias: 'horizontal' (crop top/bottom more), 'vertical' (crop left/right more), or 'auto'.
+// alignX/alignY: 0..1 where 0=left/top and 1=right/bottom (rarely needed to change).
+function drawImageCover(img, dx, dy, dW, dH, bias = 'auto', alignX = 0.5, alignY = 0.5) {
+  if (!img || !img.width || !img.height || dW <= 0 || dH <= 0) return;
+  const sW = img.width, sH = img.height;
+  const dAR = dW / dH, sAR = sW / sH;
+
+  // Compute target crop size (tW x tH) in source pixels
+  let tW, tH;
+  if (sAR > dAR) { // source wider → crop left/right
+    tH = sH;
+    tW = Math.round(sH * dAR);
+  } else {         // source taller → crop top/bottom
+    tW = sW;
+    tH = Math.round(sW / dAR);
+  }
+
+  // Bias affects where we crop from (center by default)
+  let ax = alignX, ay = alignY;
+  if (bias === 'horizontal') ax = 0.5;
+  if (bias === 'vertical')   ay = 0.5;
+
+  const sx = Math.max(0, Math.min(sW - tW, Math.round((sW - tW) * ax)));
+  const sy = Math.max(0, Math.min(sH - tH, Math.round((sH - tH) * ay)));
+
+  imageMode(CORNER);
+  image(img, dx, dy, dW, dH, sx, sy, tW, tH);
+}
+
+// Decide the display frame height based on real image orientation
+// h/w ratio: ~3:2 for landscape, ~4:5 for portrait (tweak if you like)
+
+
+function isPortraitImage(img, tolerance = 0.05) {
+  return !!(img && img.width && img.height && (img.height / img.width) > (1 + tolerance));
+}
+function biasForImage(img) {
+  return isPortraitImage(img) ? 'vertical' : 'horizontal';
+}
+function frameHeightForImage(img, destW) {
+  const ratio = isPortraitImage(img) ? IMAGE_RATIO_V : IMAGE_RATIO_H;
+  return Math.round(destW * ratio);
+}
+
+/* ---------- tags & meta rows ---------- */
+
+// Draw a lime pill with blue text; returns pixel width used
+function drawPill(x, y, label, h, padX, THEME) {
+  const textSz = Math.max(12, Math.round(h * 0.45));
+  textSize(textSz);
+  const w = Math.ceil(textWidth(label) + padX * 2);
+  noStroke();
+  setFill(THEME.lime);
+  rrect(x, y, w, h, h / 2);
+  setFill(THEME.blue);
+  textAlign(CENTER, CENTER);
+  text(label, x + w / 2, y + h / 2 + 1);
+  return w;
+}
+
+// Lay out multiple pills with wrapping; draws them and returns {nextY, rows}
+function layoutTagPillsWrapped(tags, startX, startY, maxW, tagH, gapX, gapY, padX, THEME) {
+  let x = startX, y = startY, rows = 0;
+  const wrapRight = startX + maxW;
+  const MEASURE_SIZE = Math.max(12, Math.round(tagH * 0.45));
+
+  for (let i = 0; i < (tags?.length || 0); i++) {
+    const label = String(tags[i]).toUpperCase();
+    textSize(MEASURE_SIZE);
+    const pillW = Math.ceil(textWidth(label) + padX * 2);
+
+    if (rows === 0) rows = 1;
+    if (x + pillW > wrapRight) {
+      rows++;
+      x = startX;
+      y += tagH + gapY;
+    }
+    const used = drawPill(x, y, label, tagH, padX, THEME);
+    x += used + gapX;
+  }
+  return { nextY: y + tagH, rows };
+}
+
+// Thin rule and key/value rows (for YEAR / CATEGORY / TYPE)
+function drawRule(x, y, w, THEME) {
+  setStroke(THEME.line); strokeWeight(1); line(x, y, x + w, y); noStroke();
+}
+function drawKVRow(x, y, w, key, value, rowH, THEME) {
+  textSize(14);
+  textAlign(LEFT,  CENTER); setFill(THEME.white); text(key,  x,      y + rowH / 2);
+  textAlign(RIGHT, CENTER);                         text(value || "—", x + w, y + rowH / 2);
+}
 
 // choose the target frame height for a given dest width, per-image
 function frameHeightForImage(img, destW) {
