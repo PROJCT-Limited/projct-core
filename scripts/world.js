@@ -3,20 +3,42 @@ let LAYOUT = 'top'; // 'top' | 'left' | 'bottom'
 let sideBarW = 0; // width of the left panel when LAYOUT==='left'
 
 
+
+
 function computeTopBar() {
   if (isMobileViewport()) {
-  // Mobile: put panel at BOTTOM
-  LAYOUT = 'bottom';
-  topBarH = constrain(round(windowHeight * UI.topBarRatio), UI.topBarMin, UI.topBarMax);
-  sideBarW = 0;
+    // MOBILE: keep panel on TOP and make it taller
+    LAYOUT = 'top';
+    sideBarW = 0;
+  
+    // Prefer explicit UI.topBarRatio, then UI.mobilePanelRatio, then our default
+    const ratio = (UI?.topBarRatio ?? UI?.mobilePanelRatio ?? 0.62); // was 0.32
+    const minH  = (UI?.topBarMin  ?? 260);                           // was 200
+    const maxH  = (UI?.topBarMax  ?? Math.round(windowHeight * 0.80)); // was 0.6
+  
+    topBarH = constrain(Math.round(windowHeight * ratio), minH, maxH);
   } else {
-  // Desktop: move panel to the LEFT
-  LAYOUT = 'left';
-  // Tunable: how wide the left bar should be
-  sideBarW = constrain(round(windowWidth * 0.28), 260, 420);
-  topBarH = 0;
+    // --- DESKTOP: panel on the LEFT (same as before) ---
+    LAYOUT = 'left';
+    sideBarW = constrain(round(windowWidth * 0.28), 260, 420);
+    topBarH = 0;
   }
-  }
+}
+
+function __measureHeaderHeight() {
+  try {
+    const sels = ['header', '.header', '#header', '.site-header', '.topbar', '.navbar', '.app-header', '.nav'];
+    let h = 0;
+    for (const s of sels) {
+      const el = document.querySelector(s);
+      if (el) {
+        const r = el.getBoundingClientRect();
+        h = Math.max(h, (r && (r.height || (r.bottom - r.top))) || 0);
+      }
+    }
+    return h;
+  } catch (e) { return 0; }
+}
 
   function computeTransform() {
     let availW, availH;
