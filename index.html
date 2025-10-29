@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>PROJCT structure</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style2.css">
+  
   <link rel="stylesheet" href="cursor.css">
  
  
@@ -88,7 +90,8 @@
     <div class="index-outer list-item"> 
     <img src = "SVG/Asset 4.svg" alt="Arrow" class = "nav-svg1"/>
     <div class="index">
-        INDEX</div>  <img src = "SVG/search-icon.svg" alt="search-icon" class = "nav-svg2"/>
+        INDEX</div>  
+        <!-- <img src = "SVG/search-icon.svg" alt="search-icon" class = "nav-svg2"/> -->
     </div>
 
    <!-- FILTER BAR -->
@@ -127,7 +130,7 @@
 
     <div class="list-projects">
         <hr>
-    <p class="list-projects1" data-tag="Case-studies">Lightbox Gallery</p> 
+    <p class="list-projects1" data-tag="Practice">Lightbox Gallery</p> 
     <div class="index-item is-hidden">
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
@@ -266,10 +269,39 @@
     </div>
 
   </div>
-<!-- </div> -->
-   
+  <footer class="site-footer footer-content">
+    <div class="footer-meta">
+      <p>GF, 176 Queens Road West<br>Sai Ying Pun, Hong Kong</p>
+      <p>General inquiries<br><a href="mailto:project@line.co">hi@projct.co</a></p>
+      <p>Office number<br>+852 5727 1122</p>
+ 
+    </div>
 
-<!-- <div class="cursor-circle"></div> -->
+    <div class="footer-brand">
+      <img src="SVG/logo-white.svg" alt="PROJCT" class="footer-logo">
+    </div>
+  
+    <!-- NEW: newsletter as a sibling so it can span wider -->
+    <form class="footer-newsletter newsletter" action="#" method="post" onsubmit="event.preventDefault();">
+      <h3 class="newsletter-title">Get the newsletter</h3>
+      <label class="newsletter-row">
+        <input type="email" name="email" placeholder="Your email address" required aria-label="Email address">
+        <button type="submit" class="newsletter-submit" aria-label="Subscribe">→ Subscribe</button>
+      </label>
+    </form>
+  
+
+    <nav class="footer-social" aria-label="Social">
+      <a  target="_blank" rel="noopener">Are.na</a>
+      <a  target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.instagram.com/projct_co/?igshid=NTdlMDg3MTY%3D" target="_blank" rel="noopener noreferrer">Instagram</a>
+
+    </nav>
+  </footer>
+  <div class="footer-legal">
+    <a href="https://www.projct.co/policies/">Privacy Policy</a>
+    <span>© PROJCT 2025</span>
+  </div>
 
 
   
