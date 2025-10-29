@@ -33,7 +33,7 @@
     height:56px;width:56px;padding:0 18px;
     border:0;border-radius:28px;cursor:pointer;
     color:#fff;background:var(--brand);
-    box-shadow:var(--shadow);
+    /* box-shadow:var(--shadow); */
     overflow:hidden; /* keep icon inside */
     transition:width .35s cubic-bezier(.2,.8,.2,1),border-radius .35s cubic-bezier(.2,.8,.2,1);
   }
@@ -129,9 +129,11 @@
 /* On mobile: move it under the header by ~20px (respect safe-area) */
 @media (max-width: 500px) {
   #suggestion-fab {
-    top: calc(var(--header-height, 72px) + 15px + env(safe-area-inset-top, 0px));
-    bottom: auto;                /* important: unset bottom */
+    position: fixed;                 /* or absolute, if you positioned it that way */
+    top: auto !important;            /* unset the old top rule */
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     right: 16px;
+    left: auto;                      /* ensure it doesn't keep an old left */
   }
 
   /* Optional: slightly smaller width when expanded on tiny screens */
@@ -262,4 +264,47 @@ body.modal-open {
   .suggestion-body { text-align: center; }
 
 .suggestion-text {  line-height: 1.4;}
+}
+
+/* === Cap About page to match Index rails (no markup changes) === */
+
+/* 1) Shared sizing */
+:root{
+  --grid-max: 2080px;     /* same cap you used on Index */
+  --page-pad: 20px;
+  --header-h: 80px;
+}
+
+/* 2) Cap the full-bleed bars (content centered inside wide backgrounds) */
+.header,
+.site-footer,
+.footer-legal{
+  padding-left:  max(var(--page-pad), calc((100vw - var(--grid-max)) / 2)) !important;
+  padding-right: max(var(--page-pad), calc((100vw - var(--grid-max)) / 2)) !important;
+}
+
+/* 3) Cap the page content blocks */
+.container{
+  max-width: var(--grid-max);
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+}
+
+/* 4) Keep hero/sections full-width background but capped content */
+.panel.hero,
+.panel{
+  /* backgrounds remain full-bleed naturally; no change needed */
+}
+
+/* 5) Make sure nothing causes horizontal scroll on huge screens */
+html, body{ overflow-x: hidden; }
+
+/* 6) Mobile unchanged (rails collapse to page padding) */
+@media (max-width: 860px){
+  .header,
+  .site-footer,
+  .footer-legal{
+    padding-left:  var(--page-pad) !important;
+    padding-right: var(--page-pad) !important;
+  }
 }
