@@ -1,5 +1,5 @@
 // === Google Sheet → PROJECTS 
-const GOOGLE_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSusQjz8MYYWZ4E_IzJDHWYn7R9WjbmT8pKq76TNkJGemiBZuS298Ldop7y3xzRElo4tYuU8VXApoSQ/pub?gid=925317863&single=true&output=csv'; 
+const GOOGLE_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcpgkwOXHAC5yY6wr1t9OHSXhui1R96VI2P3raxS0gEFBgG0VyVN9rSW3bk5aJfHTOXCplLbvpjdVR/pub?gid=0&single=true&output=csv'; 
 
 
 window.PROJECTS = window.PROJECTS || [];
