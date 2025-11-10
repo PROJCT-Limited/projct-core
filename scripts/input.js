@@ -29,8 +29,11 @@ function isInPanelScreen(px, py) {
   if (mode !== "graph" || !showBluePanel) return false;
   const layout = (typeof LAYOUT === "string" ? LAYOUT : "side");
   if (layout === "top") {
-    const h = (typeof topBarH === "number" ? topBarH : 0);
-    return py <= h;
+    const headerH = (typeof window.getHeaderHeight === "function")
+         ? window.getHeaderHeight()
+         : 0;
+       const h = headerH + (typeof topBarH === "number" ? topBarH : 0);
+       return py <= h;  
   } else {
     const w = (typeof sideBarW === "number" ? sideBarW : 0);
     return px <= w;
