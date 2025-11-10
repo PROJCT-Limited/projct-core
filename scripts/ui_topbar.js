@@ -1,5 +1,4 @@
-/* ui_topbar.js — styled info panel (desktop: left, mobile: bottom)
-   Fully null-safe (does not read UI.* or COLORS.* directly) and avoids color() at load time. */
+
 
 // --- image cache so sheet URLs become p5.Image objects ---
 const IMAGE_CACHE = new Map(); // url -> {img, status:'loading'|'ready'|'error'}
@@ -220,35 +219,35 @@ function layoutTagPillsWrapped(tags, startX, startY, maxW, tagH, gapX, gapY, pad
 }
 
 // Measure wrapped text using current textFont/textSize settings.
-function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.15) {
-  if (!txt) return { lines: 0, lineH: Math.round(fontSize * leadingMul), height: 0 };
-  textSize(fontSize);
-  const words = String(txt).split(/\s+/);
-  const lines = [];
-  let cur = "";
-  for (const w of words) {
-    const test = cur ? cur + " " + w : w;
-    if (textWidth(test) <= maxW) {
-      cur = test;
-    } else {
-      if (cur) lines.push(cur);
-      if (textWidth(w) > maxW) { // hard-wrap very long words
-        let chunk = "";
-        for (const ch of w) {
-          const t2 = chunk + ch;
-          if (textWidth(t2) <= maxW) chunk = t2;
-          else { lines.push(chunk); chunk = ch; }
-        }
-        cur = chunk;
-      } else {
-        cur = w;
-      }
-    }
-  }
-  if (cur) lines.push(cur);
-  const lineH = Math.round(fontSize * leadingMul);
-  return { lines: lines.length, lineH, height: lines.length * lineH };
-}
+// function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.15) {
+//   if (!txt) return { lines: 0, lineH: Math.round(fontSize * leadingMul), height: 0 };
+//   textSize(fontSize);
+//   const words = String(txt).split(/\s+/);
+//   const lines = [];
+//   let cur = "";
+//   for (const w of words) {
+//     const test = cur ? cur + " " + w : w;
+//     if (textWidth(test) <= maxW) {
+//       cur = test;
+//     } else {
+//       if (cur) lines.push(cur);
+//       if (textWidth(w) > maxW) { // hard-wrap very long words
+//         let chunk = "";
+//         for (const ch of w) {
+//           const t2 = chunk + ch;
+//           if (textWidth(t2) <= maxW) chunk = t2;
+//           else { lines.push(chunk); chunk = ch; }
+//         }
+//         cur = chunk;
+//       } else {
+//         cur = w;
+//       }
+//     }
+//   }
+//   if (cur) lines.push(cur);
+//   const lineH = Math.round(fontSize * leadingMul);
+//   return { lines: lines.length, lineH, height: lines.length * lineH };
+// }
 
 
     // -------- MAIN DRAW (always defined) --------
@@ -524,7 +523,7 @@ const portraitNudge = (isPortraitImage(img) ? Math.round(Math.min(drawImgH * 0.2
 
 // positions
 const imgX  = contentX;
-const imgY  = startY - portraitNudge;        // (removed old +100 bug)
+const imgY  = startY - portraitNudge;     
 const bodyY = imgY + drawImgH + GAP_ABOVE_CONTENT;
 
 // render image
@@ -533,13 +532,30 @@ if (img && typeof img === 'object') {
 }
 
 // render body
+// measure with the same settings we'll draw with
 textSize(_bodySize);
 const bm = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
+
+// tiny guard so rounding never hits the rule
+const GUARD = 3;
+const clipH = Math.max(0, bodyH - GUARD);
+
+// --- HARD CLIP: body cannot render below its box ---
+const ctx = drawingContext;
+ctx.save();
+ctx.beginPath();
+ctx.rect(contentX, bodyY, contentW, clipH);
+ctx.clip();
+
 textAlign(LEFT, TOP);
 textLeading(bm.lineH);
 setFill(THEME.white);
 if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
-text(desc, contentX, bodyY, contentW, bodyH);
+
+// draw the full text; the clip keeps it in-bounds
+text(desc, contentX, bodyY, contentW, bm.height);
+
+ctx.restore();
 }
 
 
@@ -569,36 +585,36 @@ pop();
   
 
   // --- word-wrap measurer (uses current textFont/textSize) ---
-function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.25) {
-  if (!txt) return { lines: 0, lineH: Math.round(fontSize * leadingMul), height: 0 };
-  textSize(fontSize);
-  const words = String(txt).split(/\s+/);
-  const lines = [];
-  let cur = "";
-  for (const w of words) {
-    const test = cur ? cur + " " + w : w;
-    if (textWidth(test) <= maxW) {
-      cur = test;
-    } else {
-      if (cur) lines.push(cur);
-      // if a single word is wider than maxW, hard-wrap by characters
-      if (textWidth(w) > maxW) {
-        let chunk = "";
-        for (const ch of w) {
-          const t2 = chunk + ch;
-          if (textWidth(t2) <= maxW) chunk = t2;
-          else { lines.push(chunk); chunk = ch; }
-        }
-        cur = chunk;
-      } else {
-        cur = w;
-      }
-    }
-  }
-  if (cur) lines.push(cur);
-  const lineH = Math.round(fontSize * leadingMul);
-  return { lines: lines.length, lineH, height: lines.length * lineH };
-}
+// function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.25) {
+//   if (!txt) return { lines: 0, lineH: Math.round(fontSize * leadingMul), height: 0 };
+//   textSize(fontSize);
+//   const words = String(txt).split(/\s+/);
+//   const lines = [];
+//   let cur = "";
+//   for (const w of words) {
+//     const test = cur ? cur + " " + w : w;
+//     if (textWidth(test) <= maxW) {
+//       cur = test;
+//     } else {
+//       if (cur) lines.push(cur);
+//       // if a single word is wider than maxW, hard-wrap by characters
+//       if (textWidth(w) > maxW) {
+//         let chunk = "";
+//         for (const ch of w) {
+//           const t2 = chunk + ch;
+//           if (textWidth(t2) <= maxW) chunk = t2;
+//           else { lines.push(chunk); chunk = ch; }
+//         }
+//         cur = chunk;
+//       } else {
+//         cur = w;
+//       }
+//     }
+//   }
+//   if (cur) lines.push(cur);
+//   const lineH = Math.round(fontSize * leadingMul);
+//   return { lines: lines.length, lineH, height: lines.length * lineH };
+// }
 
 
 
@@ -673,19 +689,20 @@ function useRegularFont() { try { if (window.acuminRegular) textFont(window.acum
 
 // Measure wrapped height for a block of text (word-wrap, p5 textWidth)
 function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.25) {
-  if (!txt) return { lines: 0, lineH: Math.round(fontSize * leadingMul), height: 0 };
+  if (!txt) return { lines: 0, lineH: Math.round((textAscent() + textDescent()) * leadingMul), height: 0 };
   textSize(fontSize);
+
   const words = String(txt).split(/\s+/);
   const lines = [];
   let cur = "";
+
   for (const w of words) {
     const test = cur ? cur + " " + w : w;
     if (textWidth(test) <= maxW) {
       cur = test;
     } else {
       if (cur) lines.push(cur);
-      // If a single word exceeds maxW, hard-wrap by characters
-      if (textWidth(w) > maxW) {
+      if (textWidth(w) > maxW) { // hard-wrap very long words
         let chunk = "";
         for (const ch of w) {
           const t2 = chunk + ch;
@@ -699,7 +716,8 @@ function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.25) {
     }
   }
   if (cur) lines.push(cur);
-  const lineH = Math.round(fontSize * leadingMul);
+
+  const lineH = Math.ceil((textAscent() + textDescent()) * leadingMul);
   return { lines: lines.length, lineH, height: lines.length * lineH };
 }
 
