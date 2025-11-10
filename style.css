@@ -1306,8 +1306,71 @@ font-family: 'Acumin-Light';
 
   
 
-/* shared (put in style.css, near the end) */
-:root{
-  --grid-max: 2080px;   /* same as About */
-  --page-pad: 20px;
+  :root {
+    --rail-blue: #124fc7;                 /* same blue as your UI */
+    --headerH: 0px;                       /* JS will update this */
+  }
+  
+  /* Right rail container */
+  .tags-rail{
+    position: fixed;
+    right: 0;
+    top: calc(var(--headerH) + env(safe-area-inset-top, 0px));
+    bottom: 0;
+    width: 128px;                         /* thin column */
+    padding: 10px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;                /* right align */
+    overflow-y: auto;
+    pointer-events: auto;
+    z-index: 50;                          /* above canvas, below menus if needed */
+  }
+  
+  /* Pills: blue outline + blue text */
+  .tags-rail .rail-tag{
+    display: block;
+    margin: 0;
+    padding: 6px 10px;
+    font-size: 12px;
+    line-height: 1;
+    color: var(--rail-blue);
+    background: rgba(255,255,255,0.96);   /* light chip bg */
+    border: 1.5px solid var(--rail-blue);
+    border-radius: 999px;
+    cursor: pointer;
+    user-select: none;
+    text-align: right;                    /* right text align */
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      /* 🔑 keep to one line and avoid tall chips */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; 
+  }
+  
+  .tags-rail .rail-tag:hover{
+    background: var(--rail-blue);
+    color: #fff;
+  }
+  
+  /* small, unobtrusive scrollbar */
+  .tags-rail::-webkit-scrollbar{ width: 6px; }
+  .tags-rail::-webkit-scrollbar-thumb{
+    background: rgba(18,79,199,.25);
+    border-radius: 3px;
+  }
+  /* hidden everywhere by default */
+#tagsRail { display: none; }
+
+/* visible only in graph mode */
+body.mode-graph #tagsRail { display: flex; }
+
+.tags-rail { display:block; }
+body.layout-bottom .tags-rail { display:none !important; }
+
+
+@media (max-width: 900px) {
+  .tags-rail { display:none !important; }
 }
