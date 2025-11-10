@@ -1,3 +1,5 @@
+
+
 function setupSelectUI() {
   worldOffsetX = 0;
   worldOffsetY = 0;
@@ -14,10 +16,10 @@ function setupSelectUI() {
 
   // spawn floating tags (slight overlap so they start moving)
   tagNodes = [];
-  const cols = Math.ceil(Math.sqrt(TAGS.length));
+  // const cols = Math.ceil(Math.sqrt(TAGS.length));
   const margin = 80;
   let i = 0;
-  for (const t of TAGS) {
+  for (const t of ([])) {
     const cx = margin + (i % cols) * ((baseWidth - margin*2) / (cols - 1 || 1));
     const cy = margin + Math.floor(i / cols) * 70;
     // jitter so some initial repulsion kicks in
@@ -36,7 +38,7 @@ function spawnFloatingTags() {
   const wr = selectPlayableWorldRect(12);
   const bounds = { minX: wr.left, maxX: wr.right, minY: wr.top, maxY: wr.bottom };
 
-  for (const t of TAGS) {
+  for (const t of (window.TAGS || [])) {
     const n = new TagBubble(t.label, t.tags);
     placeNodeNoOverlap(n, tagNodes, bounds, 250, 6);
     clampTagToRect(n, wr);  // ensure inside after placement
@@ -271,3 +273,53 @@ function strokeWithAlpha(col, a) {
 function canPlay() {
   return (Array.isArray(selected) ? selected.length : 0) === (UI.maxSelected || 3);
 }
+
+
+// CREATING RAIL TAGS LSI AT THE RIGHT SIDE
+window.renderTagsRail = function renderTagsRail(limit = 20){
+  const rail = document.getElementById('tagsRail');
+  if (!rail) return;
+
+  const tags = (window.ALL_TAGS || []);
+  rail.innerHTML = '';
+
+  // You can limit how many to show or keep them all
+  const list = tags.slice(0, limit);
+  for (const t of list) {
+    const btn = document.createElement('button');
+    btn.className = 'rail-tag';
+    btn.textContent = t.label;
+    btn.title = `${t.label} (${t.count})`;
+    btn.addEventListener('click', () => launchTagCluster(t.key));
+    rail.appendChild(btn);
+  }
+};
+
+// Measure header height (handles common class/id names)
+function measureHeaderHeight() {
+  try {
+    const sels = ['header', '.header', '#header', '.site-header', '.topbar', '.navbar', '.app-header', '.nav'];
+    let h = 0;
+    for (const s of sels) {
+      const el = document.querySelector(s);
+      if (el) {
+        const r = el.getBoundingClientRect();
+        h = Math.max(h, (r && (r.height || (r.bottom - r.top))) || 0);
+      }
+    }
+    return h;
+  } catch (_) { return 0; }
+}
+
+// Apply header height to CSS var so the rail sits below it
+function applyHeaderOffset() {
+  const h = (typeof window.getHeaderHeight === 'function') ? window.getHeaderHeight()
+        : measureHeaderHeight();
+  document.documentElement.style.setProperty('--headerH', `${Math.round(h)}px`);
+}
+
+// Call on load & resize
+applyHeaderOffset();
+window.addEventListener('resize', applyHeaderOffset);
+
+// If your layout mode changes (top/left/bottom), call applyHeaderOffset() again.
