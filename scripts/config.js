@@ -7,15 +7,24 @@ const COLORS = {
   tagFill: "#225DDC",
 };
 
-// Floating tag buttons (label → actual data tags)
-const TAGS = [
-  { label: "New York",   tags: ["People"]  },
-  { label: "Design",     tags: ["Process"] },
-  { label: "Exhibition", tags: ["Purpose"] },
-  { label: "Finance",    tags: ["Research"]},
-  { label: "Climate",    tags: ["Context"] },
-];
-
+// // Floating tag buttons (label → actual data tags)
+// const TAGS = [
+//   { label: "New York",   tags: ["People"]  },
+//   { label: "Design",     tags: ["Process"] },
+//   { label: "Exhibition", tags: ["Purpose"] },
+//   { label: "Finance",    tags: ["Research"]},
+//   { label: "Climate",    tags: ["Context"] },
+//   { label: "Artistic practice",   tags: ["People"]  },
+// ];
+// NOTE: make it global so we can replace it after the sheet loads.
+// window.TAGS = [
+//   { label: "New York",   tags: ["People"]  },
+//   { label: "Design",     tags: ["Process"] },
+//   { label: "Exhibition", tags: ["Purpose"] },
+//   { label: "Finance",    tags: ["Research"]},
+//   { label: "Climate",    tags: ["Context"] },
+// ];
+window.TAGS_READY = false;
 // const PROJECTS = [
 //   // ——— EXHIBIT / CLIMATE CLUSTER ———
 //   {
