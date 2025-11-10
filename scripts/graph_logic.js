@@ -83,12 +83,41 @@ let TAG_REGISTRY = [];
 
 function tagsIntersect(a, b) {
   if (!Array.isArray(a) || !Array.isArray(b)) return false;
-  const set = new Set(a);
-  for (const t of b) if (set.has(t)) return true;
+  const set = new Set(a.map(t => String(t).toLowerCase()));
+  for (const t of b) if (set.has(String(t).toLowerCase())) return true;
   return false;
 }
 
+// Build seeds from selected tags across BOTH projects and children.
+// Prefer children over projects when overlap is tied.
+function buildSeedsFromSelectedTags(selectedTags) {
+  const sel = new Set((selectedTags || []).map(s => String(s).toLowerCase()));
 
+  function overlap(tags) {
+    let k = 0;
+    for (const t of (tags || [])) if (sel.has(String(t).toLowerCase())) k++;
+    return k;
+  }
+
+  // Ensure registries are ready
+  if (!TAG_REGISTRY || TAG_REGISTRY.length === 0) rebuildRegistries();
+
+  // Score every node (projects + children)
+  const scored = TAG_REGISTRY
+    .map(n => ({ n, ov: overlap(n.tags) }))
+    .filter(x => x.ov > 0);
+
+  // Sort: more overlap first, and among equals, CHILD before PROJECT
+  scored.sort((A, B) => {
+    if (B.ov !== A.ov) return B.ov - A.ov;
+    const aChild = (A.n.kind === 'child'), bChild = (B.n.kind === 'child');
+    return (aChild === bChild) ? 0 : (aChild ? -1 : 1);
+  });
+
+  // Limit if you want (optional)
+  const MAX_SEEDS = 30;
+  return scored.slice(0, MAX_SEEDS).map(x => x.n);
+}
 
 function buildNodeRegistry() {
   const reg = new Map();
@@ -206,138 +235,103 @@ function pickBestProject(selectedTags) {
 // - explicit children from the dataset
 // - "related" projects sharing enough tags with the focus/children pool
 function buildExpandedForFocus(focusTitle) {
+  // Quick index of projects
   const byTitle = new Map(PROJECTS.map(p => [p.title, p]));
-  const focus = byTitle.get(focusTitle);
-  if (!focus) return { center: null, children: [], related: [] };
+  const proj = byTitle.get(focusTitle);
 
-  // Build a tag pool from the focus + its explicit children
-  const tagPool = new Set(focus.tags || []);
-  const children = (focus.children || []).map(c => ({
-    title: c.title,
-    tags: Array.isArray(c.tags) ? c.tags.slice() : [],
-    info: c.info || { category: "Subnode" }
-  }));
-  for (const c of children) for (const t of (c.tags || [])) tagPool.add(t);
+  // ─────────────────────────────
+  // CASE 1: focusing a PROJECT
+  // ─────────────────────────────
+  if (proj) {
+    const tagPool = new Set(proj.tags || []);
+    const children = (proj.children || []).map(c => ({
+      title: c.title,
+      tags: Array.isArray(c.tags) ? c.tags.slice() : [],
+      info: c.info || { category: "Subnode" }
+    }));
+    for (const c of children) for (const t of (c.tags || [])) tagPool.add(t);
 
-  // ── Levers to control fan-out ────────────────────────────────────────────
-  const MIN_SHARED = 2;        // require ≥ 2 shared tags to count as related
-
-  // ─────────────────────────────────────────────────────────────────────────
-  const MAX_RELATED = LIMITS.focusRelated;  // <-- use global cap here
-  // Score related projects by # of shared tags with the tagPool
-  const relatedScored = [];
-  for (const p of PROJECTS) {
-    if (p.title === focus.title) continue;
-
-    const tags = Array.isArray(p.tags) ? p.tags : [];
-    let shared = 0;
-    for (const t of tags) if (tagPool.has(t)) shared++;
-
-    if (shared >= MIN_SHARED) {
-      relatedScored.push({
-        title: p.title,
-        tags: tags.slice(),
-        info: p.info || { category: "Project" },
-        shared
-      });
-    }
-  }
-
-  // Sort by most shared tags first and cap
-  relatedScored.sort((a, b) => b.shared - a.shared);
-  const related = relatedScored.slice(0, MAX_RELATED).map(r => ({
-    title: r.title,
-    tags: r.tags,
-    info: r.info
-  }));
-
-  // Strong de-duplication by title across all buckets
-  const seen = new Set([focus.title]);
-  const dedup = list => {
-    const out = [];
-    for (const n of list) {
-      if (seen.has(n.title)) continue;
-      seen.add(n.title);
-      out.push(n);
-    }
-    return out;
-  };
-
-  let childrenList = dedup(children);
-  childrenList = childrenList.slice(0, LIMITS.focusChildren);   // <-- cap children here
-
-  let relatedList  = dedup(related).slice(0, LIMITS.focusRelated); // <-- already capped
-  return {
-    center: { title: focus.title, tags: (focus.tags || []).slice(), info: focus.info || { category: "Project" } },
-    children: childrenList,
-    related:  relatedList
-  };
-}
-
-
-// Recenter and enlarge the given node, rebuild nodes/links around it.
-function focusNodeGraph(targetNode) {
-  
-  if (typeof applyMobileSpacing === "function") applyMobileSpacing();
-  if (!targetNode || !targetNode.title) return;
-
-  // Recompute subgraph content
-  const sub = buildExpandedForFocus(targetNode.title);
-
-  // Rebuild nodes/links array
-  nodes = [];
-  links = [];
-  centerNode = null;
-activeNode = null;
-
-  // Center node
-
-  centerNode = new GraphNode(sub.center?.title || targetNode.title,
-                             baseWidth/2, baseHeight/2,
-                             (sub.center?.tags || targetNode.tags || []),
-                             true, false,
-                             sub.center?.info || targetNode.info || { category: "Project" });
-  centerNode.fixed = true;
-  nodes.push(centerNode);
-  activeNode = centerNode;
-
-  // Place children + related around
-// Place children + related around
-const kids = (sub.children || []).slice(0, LIMITS.focusChildren);
-const rels = (sub.related  || []).slice(0, LIMITS.focusRelated);
-const payload = [...kids, ...rels];
-const N = payload.length;
-const off = random(TWO_PI);
-
-
-  for (let i = 0; i < N; i++) {
-    const a = off + (TWO_PI * i) / Math.max(1, N);
-    const r = new GraphNode(payload[i].title,
-                            centerNode.x + cos(a) * UI.spawnRadius,
-                            centerNode.y + sin(a) * UI.spawnRadius,
-                            payload[i].tags,
-                            false, true,
-                            payload[i].info || { category: "Node" });
-    r.spawned = true;
-    r.spawnT = 0;
-    nodes.push(r);
-    links.push(new GraphLink(centerNode, r));
-  }
-
-  // Extra links between children if they share a tag
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i], b = nodes[j];
-      if (a === centerNode || b === centerNode) continue;
-      if (a.sharesTagWith(b)) {
-        const L = new GraphLink(a, b);
-        L.restLength = UI.childRest;
-        L.strength   = 0.018;
-        links.push(L);
-        if (LAYOUT === "bottom") enforceMinOrbit(centerNode, nodes);
+    const MIN_SHARED = 2;
+    const relatedScored = [];
+    for (const p of PROJECTS) {
+      if (p.title === proj.title) continue;
+      const tags = Array.isArray(p.tags) ? p.tags : [];
+      let shared = 0;
+      for (const t of tags) if (tagPool.has(t)) shared++;
+      if (shared >= MIN_SHARED) {
+        relatedScored.push({
+          title: p.title,
+          tags: tags.slice(),
+          info: p.info || { category: "Project" },
+          shared
+        });
       }
     }
+    relatedScored.sort((a, b) => b.shared - a.shared);
+    const related = relatedScored.slice(0, LIMITS.focusRelated).map(r => ({
+      title: r.title, tags: r.tags, info: r.info
+    }));
+
+    const seen = new Set([proj.title]);
+    const dedup = list => {
+      const out = [];
+      for (const n of list) { if (!seen.has(n.title)) { seen.add(n.title); out.push(n); } }
+      return out;
+    };
+
+    let childrenList = dedup(children).slice(0, LIMITS.focusChildren);
+    let relatedList  = dedup(related).slice(0, LIMITS.focusRelated);
+
+    return {
+      center: { title: proj.title, tags: (proj.tags || []).slice(), info: proj.info || { category: "Project" } },
+      children: childrenList,
+      related:  relatedList
+    };
   }
+
+  // ─────────────────────────────
+  // CASE 2: focusing a CHILD
+  // ─────────────────────────────
+  let parent = null, child = null;
+  outer: for (const p of PROJECTS) {
+    for (const c of (p.children || [])) {
+      if (c.title === focusTitle) { parent = p; child = c; break outer; }
+    }
+  }
+  if (!child) {
+    // Unknown title
+    return { center: null, children: [], related: [] };
+  }
+
+  // Center = the child
+  const center = {
+    title: child.title,
+    tags: Array.isArray(child.tags) ? child.tags.slice() : [],
+    info: child.info || { category: "Subnode" }
+  };
+
+  // Siblings = other children of the parent
+  const siblings = (parent.children || [])
+    .filter(c => c.title !== child.title)
+    .map(c => ({ title: c.title, tags: c.tags || [], info: c.info || { category: "Subnode" } }))
+    .slice(0, LIMITS.focusChildren);
+
+  // Related = parent project first, then other projects that share tags with the child
+  const tagPool = new Set(center.tags || []);
+  const relatedProjects = [];
+  for (const p of PROJECTS) {
+    if (p.title === parent.title) continue;
+    const tags = p.tags || [];
+    if (tagsIntersect(tags, Array.from(tagPool))) {
+      relatedProjects.push({ title: p.title, tags: tags.slice(), info: p.info || { category: "Project" } });
+    }
+  }
+  // Put parent first; then cap others
+  const related = [{ title: parent.title, tags: parent.tags || [], info: parent.info || { category: "Project" } }]
+    .concat(relatedProjects)
+    .slice(0, LIMITS.focusRelated);
+
+  return { center, children: siblings, related };
 }
 
 
@@ -367,10 +361,34 @@ const off = random(TWO_PI);
     if (typeof applyMobileSpacing === "function") applyMobileSpacing();
     mode = "graph";
   
+    
+
     const selectedTags = [];
-    for (const s of selected) s.tags.forEach(t => selectedTags.push(t));
-  
-    const chosen = pickBestProject(selectedTags);
+for (const s of selected) s.tags.forEach(t => selectedTags.push(t));
+
+// Build seeds across projects + children and prefer a child when overlap ties
+if (!TAG_REGISTRY || TAG_REGISTRY.length === 0) rebuildRegistries();
+
+// case-insensitive overlap
+const sel = new Set(selectedTags.map(x => String(x).toLowerCase()));
+const overlap = tags => (tags || []).reduce((k, t) => k + (sel.has(String(t).toLowerCase()) ? 1 : 0), 0);
+
+// score every node (projects + children)
+const scored = TAG_REGISTRY
+  .map(n => ({ n, ov: overlap(n.tags) }))
+  .filter(x => x.ov > 0)
+  .sort((A, B) => {
+    if (B.ov !== A.ov) return B.ov - A.ov;                 // more overlap first
+    const aChild = A.n.kind === 'child', bChild = B.n.kind === 'child';
+    return (aChild === bChild) ? 0 : (aChild ? -1 : 1);     // tie → child first
+  });
+
+// pick best seed (child if available), else fall back to your old picker
+const chosen = scored.length ? scored[0].n : pickBestProject(selectedTags);
+
+
+
+
     nodes = []; links = [];centerNode = null;
     activeNode = null;
     if (!localStorage.getItem('graphTipSeen')) {
@@ -379,7 +397,7 @@ const off = random(TWO_PI);
       // they've seen it before—still mark we're in graph mode for CSS if you want
       document.body.classList.add('mode-graph', 'graphTip-dismissed');
     }
-  
+    if (window.renderTagsRailRandom) window.renderTagsRailRandom();
     if (!chosen) {
       centerNode = new GraphNode("No match", baseWidth/2, baseHeight/2, [], true, false, {
         desc: "No project matches your selection. Try different tags.",
@@ -607,8 +625,11 @@ function graphScreenCenter() {
  
 
   // Blue panel sizes you already use in ui_topbar.js
-  const panelLeft  = (typeof LAYOUT !== "undefined" && LAYOUT === "left") ? (sideBarW || 0) : 0;
-  const panelTop   = (typeof LAYOUT !== "undefined" && LAYOUT === "top")  ? (topBarH || 0)  : 0;
+   const headerH = (typeof window.getHeaderHeight === "function")
+     ? window.getHeaderHeight()
+     : (typeof __measureHeaderHeight === "function" ? __measureHeaderHeight() : 0);
+   const panelLeft = (LAYOUT === "left") ? (sideBarW || 0) : 0;
+   const panelTop  = (LAYOUT === "top")  ? (headerH + (topBarH || 0)) : headerH;
 
   const availW = sW - panelLeft;
   const availH = sH - panelTop;
@@ -676,3 +697,130 @@ function enforceMinOrbit(center, allNodes, opts = {}) {
     }
   }
 }
+
+
+
+// Shuffle helper
+function shuffleInPlace(a){
+  for (let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// case-insensitive tag test
+function hasTagCI(list, key){
+  if (!Array.isArray(list)) return false;
+  const k = String(key).toLowerCase();
+  return list.some(t => String(t).toLowerCase() === k);
+}
+
+// Build + show a random tag cluster
+window.launchTagCluster = function launchTagCluster(tagKey){
+  if (!PROJECTS || !PROJECTS.length) return;
+
+  // collect matches (projects + children)
+  const matches = [];
+
+  for (const p of PROJECTS){
+    if (hasTagCI(p.tags, tagKey)){
+      matches.push({ title: p.title, tags: (p.tags||[]), info: p.info || { category:'Project' } });
+    }
+    for (const c of (p.children||[])){
+      if (hasTagCI(c.tags, tagKey)){
+        matches.push({ title: c.title, tags: (c.tags||[]), info: c.info || { category:'Subnode' } });
+      }
+    }
+  }
+
+  if (!matches.length){
+    console.warn('[tag cluster] no matches for', tagKey);
+    return;
+  }
+
+  // random subset
+  const MAX = 12; // tune
+  shuffleInPlace(matches);
+  const payload = matches.slice(0, MAX);
+
+  // enter graph mode
+  if (typeof applyMobileSpacing === "function") applyMobileSpacing();
+  mode = "graph";
+
+  if (!localStorage.getItem('graphTipSeen')) {
+    openGraphTip();
+  } else {
+    document.body.classList.add('mode-graph', 'graphTip-dismissed');
+  }
+  
+ 
+  if (window.renderTagsRailRandom) window.renderTagsRailRandom();
+  
+
+
+  // reset graph arrays
+  nodes = []; links = []; centerNode = null; activeNode = null;
+
+  // center = tag hub
+  const { cx, cy } = graphScreenCenter();
+  const label = `#${(tagKey||'').toLowerCase()}`;
+  centerNode = new GraphNode(
+    label,
+    cx / (scaleFactor || 1),
+    cy / (scaleFactor || 1),
+    [String(tagKey)],
+    true, false,
+ { category: 'Tag', desc: `Random selection for tag “${label}”` }
+  );
+  centerNode.fixed = true;
+  nodes.push(centerNode);
+  activeNode = centerNode;
+
+  // place payload around in a circle
+  const N = payload.length;
+  const R = UI.spawnRadius || 180;
+  const off = random(TWO_PI);
+
+  for (let i=0; i<N; i++){
+    const a = off + (TWO_PI * i)/Math.max(1, N);
+    const d = payload[i];
+    const n = new GraphNode(
+      d.title,
+      centerNode.x + Math.cos(a)*R,
+      centerNode.y + Math.sin(a)*R,
+      d.tags || [],
+      false, true,
+      d.info || { category:'Node' }
+    );
+    n.spawned = true; n.spawnT = 0;
+    nodes.push(n);
+
+    const L = new GraphLink(centerNode, n);
+    L.restLength = UI.childRest || 140;
+    L.strength   = 0.06;
+    links.push(L);
+  }
+
+  // light cross-links if nodes share any tag (not just the chosen tag)
+  for (let i=1; i<nodes.length; i++){
+    for (let j=i+1; j<nodes.length; j++){
+      const a = nodes[i], b = nodes[j];
+      if (a === centerNode || b === centerNode) continue;
+      if (a.sharesTagWith && a.sharesTagWith(b)){
+        const L = new GraphLink(a, b);
+        L.restLength = (UI.childRest || 140) * 0.9;
+        L.strength   = 0.02;
+        links.push(L);
+      }
+    }
+  }
+
+  // nice spread
+  enforceMinOrbit(centerNode, nodes, { orbitMul: 1.35, overshoot: 1.08, kick: 4 });
+
+  // focus hub
+  centerCameraOnNode(centerNode, false);
+  if (LAYOUT === 'bottom') enforceMinOrbit(centerNode, nodes);
+};
+
