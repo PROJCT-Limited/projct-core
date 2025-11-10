@@ -111,12 +111,65 @@ function rowsToProjects(rows) {
 }
 
 
+
+// ---- Build randomized (deduped) TAG buttons from PROJECTS ----
+function randomizedTagButtonsFromProjects(projects, limit = 11) {
+  limit = Math.max(1, Math.min(limit, 20)); // sane guard
+
+  // Count tags case-insensitively, keep a nice display label
+  const counts = new Map(); // key(lower) -> {key, display, raw, count}
+  function addTag(t) {
+    if (!t) return;
+    const raw     = String(t).trim();
+    if (!raw) return;
+    const key     = raw.toLowerCase();
+    const display = raw.charAt(0).toUpperCase() + raw.slice(1);
+    const obj     = counts.get(key) || { key, display, raw, count: 0 };
+    obj.count++;
+    counts.set(key, obj);
+  }
+
+  for (const p of (projects || [])) {
+    (p.tags || []).forEach(addTag);
+    for (const c of (p.children || [])) (c.tags || []).forEach(addTag);
+  }
+
+  const items = Array.from(counts.values());
+  if (items.length === 0) {
+    // fallback (no tags in sheet)
+    return [
+      { label: "Design",   tags: ["design"] },
+      { label: "People",   tags: ["people"] },
+      { label: "Process",  tags: ["process"] },
+      { label: "Context",  tags: ["context"] },
+      { label: "Purpose",  tags: ["purpose"] },
+    ];
+  }
+
+  // Sort by frequency DESC, then randomize a shortlist, then cut to limit.
+  items.sort((a, b) => b.count - a.count);
+  const shortlist = items.slice(0, Math.min(items.length, 30));
+  for (let i = shortlist.length - 1; i > 0; i--) { // Fisher–Yates
+    const j = Math.floor(Math.random() * (i + 1));
+    [shortlist[i], shortlist[j]] = [shortlist[j], shortlist[i]];
+  }
+  const pick = shortlist.slice(0, Math.min(limit, shortlist.length));
+
+  // Map to the format used by select_mode.js
+  // Each button filters by its single tag value, same as your hard-coded list.
+  return pick.map(t => ({ label: t.display, tags: [t.raw] }));
+}
+
+
+
+
+
 function parseCsv(text) {
   if (window.Papa && typeof Papa.parse === 'function') {
     const out = Papa.parse(text, { header: true, skipEmptyLines: true });
     return out.data || [];
   }
-  // VERY simple fallback (quotes not fully supported)
+
   const [headerLine, ...lines] = text.split(/\r?\n/).filter(Boolean);
   const headers = headerLine.split(',').map(h => h.trim());
   return lines.map(line => {
@@ -127,41 +180,129 @@ function parseCsv(text) {
   });
 }
 
-// main loader
+// Build a list of all tags across projects + children (with counts)
+function buildAllTagsRegistry(projects) {
+  const counts = new Map(); // key -> { key, label, count }
+
+  function add(t) {
+    if (!t) return;
+    const key = String(t).trim().toLowerCase();
+    if (!key) return;
+    const label = key.charAt(0).toUpperCase() + key.slice(1);
+    const obj = counts.get(key) || { key, label, count: 0 };
+    obj.count++;
+    counts.set(key, obj);
+  }
+
+  for (const p of (projects || [])) {
+    (p.tags || []).forEach(add);
+    for (const c of (p.children || [])) (c.tags || []).forEach(add);
+  }
+  // most frequent first
+  return Array.from(counts.values()).sort((a, b) => b.count - a.count);
+}
+
 async function loadProjectsFromSheet(url) {
   const res  = await fetch(url, { cache: 'no-store' });
   const csv  = await res.text();
   const rows = parseCsv(csv);
   const projects = rowsToProjects(rows);
 
-
   window.PROJECTS = projects;
-  if (typeof rebuildRegistries === 'function') rebuildRegistries();
+
+  // build registries used by graph + rail
+  if (typeof rebuildRegistries === "function") rebuildRegistries();
+
+  // build right-rail data and render it RANDOMIZED
+  try {
+    window.ALL_TAGS = buildAllTagsRegistry(window.PROJECTS);
+    if (window.renderTagsRailRandom) window.renderTagsRailRandom();
+  } catch (e) {
+    console.warn('[tags rail] failed to build:', e);
+  }
+
+  // selection bubbles from sheet (11 randomized)
+  try {
+    const newTags = randomizedTagButtonsFromProjects(window.PROJECTS, 11);
+    window.TAGS = newTags;
+    // If already on the select screen, respawn bubbles
+    if (typeof mode !== 'undefined' && mode === 'select' && typeof spawnFloatingTags === 'function') {
+      spawnFloatingTags();
+    }
+    console.log('[TAGS] randomized from sheet:', newTags.map(t => t.label));
+  } catch (e) {
+    console.warn('[TAGS] randomized build failed:', e);
+  }
+
+  // if already in graph mode, keep the camera/center stable
+  if (typeof mode !== "undefined" && mode === "graph" && typeof centerNode !== "undefined" && centerNode) {
+    if (typeof focusNodeGraph === "function") {
+      focusNodeGraph(centerNode);
+    } else if (typeof centerCameraOnNode === "function") {
+      centerCameraOnNode(centerNode, false);
+    }
+  }
+
+  console.log("[Sheet] Loaded projects:", projects.length);
+}
+  
 
 
 
-  console.log('[Sheet] Loaded projects:', projects.length);
+
+function ensureTagsRail(){
+  let rail = document.getElementById('tagsRail');
+  if (!rail) {
+    rail = document.createElement('div');
+    rail.id = 'tagsRail';
+    rail.className = 'tags-rail';
+    document.body.appendChild(rail);
+    console.log('[rail] created #tagsRail');
+  }
+  return rail;
 }
 
-async function loadProjectsFromSheet(url) {
-    const res  = await fetch(url, { cache: 'no-store' });
-    const csv  = await res.text();
-    const rows = parseCsv(csv);
-    const projects = rowsToProjects(rows);
-  
-    window.PROJECTS = projects;
-  
-    if (typeof rebuildRegistries === "function") rebuildRegistries();
-  
-    // If already in graph mode, re-center so the blue panel picks up new info
-    if (typeof mode !== "undefined" && mode === "graph" && typeof centerNode !== "undefined" && centerNode) {
-      if (typeof focusNodeGraph === "function") {
-        focusNodeGraph(centerNode);
-      } else if (typeof centerCameraOnNode === "function") {
-        centerCameraOnNode(centerNode, false);
-      }
-    }
-  
-    console.log("[Sheet] Loaded projects:", projects.length);
+function rnd(){
+  if (window.crypto && crypto.getRandomValues) {
+    const u = new Uint32Array(1);
+    crypto.getRandomValues(u);
+    return u[0] / 0xFFFFFFFF;
   }
-  
+  return Math.random();
+}
+
+function shuffleCopy(arr){
+  const a = arr.slice();
+  for (let i=a.length-1; i>0; i--){
+    const j = Math.floor(rnd() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+window.renderTagsRailRandom = function renderTagsRailRandom(){
+  const rail = ensureTagsRail();
+  const all  = (window.ALL_TAGS || []).filter(t => t && t.count > 0);
+
+  if (!all.length) { console.warn('[rail] ALL_TAGS empty'); return; }
+
+  const items = shuffleCopy(all);      // <- RANDOMIZE
+  const MAX   = 20;
+  const pick  = items.slice(0, MAX);
+
+  rail.innerHTML = '';
+  for (const t of pick){
+    const btn = document.createElement('button');
+    btn.className   = 'rail-tag';
+    btn.textContent = t.label;
+    btn.title       = `${t.label} (${t.count})`;
+    btn.addEventListener('click', () => launchTagCluster(t.key));
+    rail.appendChild(btn);
+  }
+
+  console.log('[rail] randomized tags:', pick.map(t => t.label));
+  rail.dataset.version = String(Date.now());   // makes overwrites easy to spot when debugging
+};
+
+// **Force any old deterministic renderer to be our random one**
+window.renderTagsRail = window.renderTagsRailRandom;
