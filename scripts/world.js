@@ -125,9 +125,9 @@ function getPlayableScreenRect() {
     return { x: panel.w, y: headerH, w: W - panel.w, h: H - headerH };
   }
   if (layout === "top") {
-    const topClear = Math.max(panel.h, headerH);
+     const topClear = headerH + panel.h;     // header + blue panel
     return { x: 0, y: topClear, w: W, h: H - topClear };
-  }
+   }
   if (layout === "bottom") {
     const bottomH = panel.h;
     return { x: 0, y: headerH, w: W, h: H - headerH - bottomH };
