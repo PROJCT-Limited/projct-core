@@ -69,6 +69,7 @@ function rowsToProjects(rows) {
       year:  getAny(r, ["year", "project_year"]),
       type:  getAny(r, ["type", "project_type", "node_type"]),
       image: getAny(r, ["image", "project_image", "node_image"]),
+      link:  getAny(r, ["link", "url", "website", "project_link"])
     };
 
     if (kind === "project") {
@@ -94,7 +95,8 @@ function rowsToProjects(rows) {
             desc: info.desc || "",
             year: info.year || "",
             type: info.type || "",
-            image: info.image || ""
+            image: info.image || "",
+            link:     info.link || ""
           }
         });
       }
@@ -306,3 +308,5 @@ window.renderTagsRailRandom = function renderTagsRailRandom(){
 
 // **Force any old deterministic renderer to be our random one**
 window.renderTagsRail = window.renderTagsRailRandom;
+
+
