@@ -123,10 +123,45 @@ const type = info.type || "—";
       const title = n?.title || n?.label || "PROJECT NAME";
       const desc  = n?.info?.desc || "Although fluid, we focus much energy on product, innovation, and growth with our ecosystem of clients, investors, founders.";
       const cat   = n?.info?.category || n?.category || "PROJECT";
+      const linkRaw = info.link || info.url || "";
+      const linkURL = normalizeLink(linkRaw);
+      const linkText = linkLabel(linkRaw);   
+
   
       const tags  = (n?.tags && n.tags.length) ? n.tags : ["TAG 1", "TAG 2", "TAG 3"];
-      return { title, desc, year, cat, type, tags };
+      return { title, desc, year, cat, type, tags, linkURL, linkText };
+
+
+      function normalizeLink(url) {
+        if (!url) return "";
+        let s = String(url).trim();
+        if (!s) return "";
+        if (!/^https?:\/\//i.test(s)) s = "https://" + s;
+        return s;
+      }
+      
+      function linkLabel(url) {
+        const norm = normalizeLink(url);
+        if (!norm) return "";
+        try {
+          const u = new URL(norm);
+          return u.hostname.replace(/^www\./i, "");
+        } catch (e) {
+          return "Open link";
+        }
+      }
+
     }
+
+
+
+
+
+
+
+
+
+
     function nodeImage(n) {
       const src =
         n?.image || n?.img || n?.info?.image || "";
@@ -140,7 +175,8 @@ const type = info.type || "—";
 const imageW = clamp(Math.round(usableW * 0.55), 240, 460);
 const imageH = pickImageH(imageW);
 
-
+let metaLinkHitbox = null;
+let metaLinkURL    = null;
 
       const outerPad  = clamp(Math.round(usableW * 0.035), 16, 28);
       const titleY    = outerPad + 10;
@@ -335,11 +371,20 @@ let desc  = "Although fluid, we focus much energy on product, innovation, and gr
 let year  = "2025", cat = "PROJECT", type = "ONE";
 let tags  = ["TAG 1", "TAG 2", "TAG 3"];
 let img   = null;
+let linkURL  = "";    
+let linkText = "";
 
 if (node) {
   const t = nodeText(node);
-  title = t.title; desc = t.desc; year = t.year; cat = t.cat; type = t.type; tags = t.tags;
-  img = nodeImage(node);
+  title    = t.title;
+  desc     = t.desc;
+  year     = t.year;
+  cat      = t.cat;
+  type     = t.type;
+  tags     = t.tags;
+  linkURL  = t.linkURL || "";
+  linkText = t.linkText || "";
+  img      = nodeImage(node);
 }
 
 // Content frame
@@ -410,8 +455,8 @@ const contentTopY = tagLayout.nextY + Math.max(8, bodyGap);
 // After laying out tags:
 const tagsBottomY = tagLayout.nextY;
 
-// constant meta height (3 rows)
-const blockH = rowH * 3 + 18;
+// constant meta height (3 actually changed to 4 rows)
+const blockH = rowH * 4 + 24;
 
 // spacing controls
 const GAP_ABOVE_CONTENT = 20;  // between tags and content block
@@ -564,18 +609,51 @@ ctx.restore();
 
 
 // ----- META rows pinned at the bottom -----
+// ----- META rows pinned at the bottom -----
 useRegularFont();
+
+// clear hitbox each frame
+metaLinkHitbox = null;
+metaLinkURL    = null;
+
+// figure out where this panel is on screen
+const panelBaseX = originX + (isMobileLike ? 0 : margin);
+const panelBaseY = originY + (isMobileLike ? 0 : margin);
+
+// local Y positions for each row
+const yYear     = metaY + 4;
+const yCategory = yYear + rowH + 6;
+const yType     = yCategory + rowH + 6;
+const yLink     = yType + rowH + 6;
+
+// YEAR
 drawRule(contentX, metaY, contentW);
-drawKVRow(contentX, metaY + 4,  contentW, 'YEAR',     year, rowH);
+drawKVRow(contentX, yYear, contentW, "YEAR", year, rowH);
 
-drawRule(contentX, metaY + rowH + 6, contentW);
-drawKVRow(contentX, metaY + rowH + 9, contentW, 'CATEGORY', cat,  rowH);
+// CATEGORY
+drawRule(contentX, yCategory - 2, contentW);
+drawKVRow(contentX, yCategory + 2, contentW, "CATEGORY", cat, rowH);
 
-drawRule(contentX, metaY + rowH * 2 + 12, contentW);
-drawKVRow(contentX, metaY + rowH * 2 + 15, contentW, 'TYPE',     type, rowH);
+// TYPE
+drawRule(contentX, yType - 2, contentW);
+drawKVRow(contentX, yType + 2, contentW, "TYPE", type, rowH);
 
-drawRule(contentX, metaY + rowH * 2 + 36, contentW);
+if (linkURL) {
+  drawRule(contentX, yLink - 2, contentW);
+  drawKVRow(contentX, yLink + 2, contentW, "LINK", linkText, rowH);
 
+  metaLinkHitbox = {
+    x: panelBaseX + contentX,
+    y: panelBaseY + yLink,
+    w: contentW,
+    h: rowH
+  };
+  metaLinkURL = linkURL;
+
+  drawRule(contentX, yLink + rowH + 8, contentW);
+} else {
+  drawRule(contentX, yType + rowH + 8, contentW);
+}
 
 
 pop();
@@ -726,32 +804,32 @@ function measureWrappedHeight(txt, maxW, fontSize, leadingMul = 1.25) {
 // Treats image like CSS object-fit: cover; crops from center by default.
 // bias: 'horizontal' (crop top/bottom more), 'vertical' (crop left/right more), or 'auto'.
 // alignX/alignY: 0..1 where 0=left/top and 1=right/bottom (rarely needed to change).
-function drawImageCover(img, dx, dy, dW, dH, bias = 'auto', alignX = 0.5, alignY = 0.5) {
-  if (!img || !img.width || !img.height || dW <= 0 || dH <= 0) return;
-  const sW = img.width, sH = img.height;
-  const dAR = dW / dH, sAR = sW / sH;
+// function drawImageCover(img, dx, dy, dW, dH, bias = 'auto', alignX = 0.5, alignY = 0.5) {
+//   if (!img || !img.width || !img.height || dW <= 0 || dH <= 0) return;
+//   const sW = img.width, sH = img.height;
+//   const dAR = dW / dH, sAR = sW / sH;
 
-  // Compute target crop size (tW x tH) in source pixels
-  let tW, tH;
-  if (sAR > dAR) { // source wider → crop left/right
-    tH = sH;
-    tW = Math.round(sH * dAR);
-  } else {         // source taller → crop top/bottom
-    tW = sW;
-    tH = Math.round(sW / dAR);
-  }
+//   // Compute target crop size (tW x tH) in source pixels
+//   let tW, tH;
+//   if (sAR > dAR) { // source wider → crop left/right
+//     tH = sH;
+//     tW = Math.round(sH * dAR);
+//   } else {         // source taller → crop top/bottom
+//     tW = sW;
+//     tH = Math.round(sW / dAR);
+//   }
 
-  // Bias affects where we crop from (center by default)
-  let ax = alignX, ay = alignY;
-  if (bias === 'horizontal') ax = 0.5;
-  if (bias === 'vertical')   ay = 0.5;
+//   // Bias affects where we crop from (center by default)
+//   let ax = alignX, ay = alignY;
+//   if (bias === 'horizontal') ax = 0.5;
+//   if (bias === 'vertical')   ay = 0.5;
 
-  const sx = Math.max(0, Math.min(sW - tW, Math.round((sW - tW) * ax)));
-  const sy = Math.max(0, Math.min(sH - tH, Math.round((sH - tH) * ay)));
+//   const sx = Math.max(0, Math.min(sW - tW, Math.round((sW - tW) * ax)));
+//   const sy = Math.max(0, Math.min(sH - tH, Math.round((sH - tH) * ay)));
 
-  imageMode(CORNER);
-  image(img, dx, dy, dW, dH, sx, sy, tW, tH);
-}
+//   imageMode(CORNER);
+//   image(img, dx, dy, dW, dH, sx, sy, tW, tH);
+// }
 
 // Decide the display frame height based on real image orientation
 // h/w ratio: ~3:2 for landscape, ~4:5 for portrait (tweak if you like)
@@ -829,6 +907,24 @@ function biasForImage(img) {
   return isPortraitImage(img) ? 'vertical' : 'horizontal';
 }
 
-function isPortraitImage(img, tolerance = 0.05) {
-  return !!(img && img.width && img.height && (img.height / img.width) > (1 + tolerance));
-}
+// function isPortraitImage(img, tolerance = 0.05) {
+//   return !!(img && img.width && img.height && (img.height / img.width) > (1 + tolerance));
+// }
+// called from input.js when user taps/clicks on the panel
+window.openMetaLinkIfHit = function (sx, sy) {
+  if (!metaLinkHitbox || !metaLinkURL) return false;
+
+  const r = metaLinkHitbox;
+  const inside =
+    sx >= r.x && sx <= r.x + r.w &&
+    sy >= r.y && sy <= r.y + r.h;
+
+  if (!inside) return false;
+
+  try {
+    window.open(metaLinkURL, "_blank", "noopener");
+  } catch (e) {
+    console.warn("[meta link] failed to open", metaLinkURL, e);
+  }
+  return true;
+};
