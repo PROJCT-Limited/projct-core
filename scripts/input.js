@@ -293,7 +293,14 @@ function mouseReleased() {
       draggingNode = null;
       return;
     }
-
+// click on blue panel → maybe the LINK row?
+if (typeof isInPanelScreen === "function" &&
+  isInPanelScreen(pointer.x, pointer.y) &&
+  typeof openMetaLinkIfHit === "function") {
+if (openMetaLinkIfHit(pointer.x, pointer.y)) {
+  return; // handled (open link), don't treat as graph click
+}
+}
     if (!isInPanelScreen(pointer.x, pointer.y)) {
       const tapped = pickGraphNodeAt(pointer.worldX, pointer.worldY);
       if (tapped) {
