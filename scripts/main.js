@@ -80,13 +80,18 @@ function draw() {
   }
 
   if (mode === "select") {
-    // Select UI draws in screen space
+    // When a deep-link is waiting to launch the graph,
+    // don't show the 0/3 select UI at all.
+    if (window.deepLinkPending) {
+      return;   // blank/white background while data loads
+    }
+
     push();
-    translate(0, 0); 
+    translate(0, 0);
     scale(1);
     drawSelectScreen();
     pop();
-  } else {
+  } else if (mode === "graph") {
 
     if (entryCircleAlpha > 0 && playCircle?.x != null) {
       // Draw the fading entry circle using world coordinates
