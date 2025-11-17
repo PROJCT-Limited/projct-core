@@ -289,7 +289,7 @@ window.renderTagsRailRandom = function renderTagsRailRandom(){
   if (!all.length) { console.warn('[rail] ALL_TAGS empty'); return; }
 
   const items = shuffleCopy(all);      // <- RANDOMIZE
-  const MAX   = 20;
+  const MAX   = 15;
   const pick  = items.slice(0, MAX);
 
   rail.innerHTML = '';
