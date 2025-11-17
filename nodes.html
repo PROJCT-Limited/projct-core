@@ -149,10 +149,43 @@
     </div>
   </div>
 </div>
+<div id="share-node-modal" class="popup-overlay">
+  <div class="popup-card">
+    <div class="popup-header">
+      <span class="popup-title">Share this node</span>
+      <button type="button" class="popup-close" id="share-node-close">×</button>
+    </div>
+
+    <div class="popup-body">
+      <p class="popup-text">
+        Send this link to someone and they’ll open the graph focused on the same node.
+      </p>
+
+      <label class="popup-label" for="share-node-url">Node URL</label>
+      <input
+        id="share-node-url"
+        class="popup-input"
+        type="text"
+        readonly
+      />
+
+      <button type="button" id="share-node-copy" class="popup-button">
+        Copy URL
+      </button>
+    </div>
+  </div>
+</div>
 
   <!-- p5 container -->
   <div id="machine"></div>
-  <div id="tagsRail" class="tags-rail"></div>
+  <div id="tagsRailWrapper" class="tags-rail-wrapper">
+    <div id="tagsToggle" class="tags-toggle">
+      <span class="tags-toggle-label">tags</span>
+      <span class="tags-toggle-arrow">→</span>
+    </div>
+  
+    <div id="tagsRail" class="tags-rail"></div>
+  </div>
   <!-- libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script
