@@ -290,3 +290,168 @@ document.addEventListener('swup:contentReplaced', () => {
       });
     });
   })();
+
+
+
+
+
+
+// --- SHARE NODE MODAL LOGIC ---
+let shareNodeModal   = document.getElementById("share-node-modal");
+let shareNodeUrlEl   = document.getElementById("share-node-url");
+let shareNodeCopyBtn = document.getElementById("share-node-copy");
+let shareNodeClose   = document.getElementById("share-node-close");
+
+function openShareNodeModal(nodeOrTitle) {
+  if (!shareNodeModal || !shareNodeUrlEl) return;
+
+  // Accept either a GraphNode or a raw string
+  let nodeTitle = "";
+  if (nodeOrTitle && typeof nodeOrTitle === "object" && nodeOrTitle.title) {
+    nodeTitle = String(nodeOrTitle.title).trim();
+  } else if (typeof nodeOrTitle === "string") {
+    nodeTitle = nodeOrTitle.trim();
+  }
+
+  if (!nodeTitle) {
+    console.warn("[share] Missing node title for share modal:", nodeOrTitle);
+    return;
+  }
+
+  const url = buildNodeUrl(nodeTitle);
+  shareNodeUrlEl.value = url;
+
+  // show modal (use same show/hide class as other popups)
+  shareNodeModal.classList.add("is-visible");
+
+  // select URL so user can Cmd+C as well
+  setTimeout(() => {
+    shareNodeUrlEl.focus();
+    shareNodeUrlEl.select();
+  }, 50);
+}
+
+function closeShareNodeModal() {
+  if (!shareNodeModal) return;
+  shareNodeModal.classList.remove("is-visible");
+}
+
+// wiring
+if (shareNodeClose) {
+  shareNodeClose.addEventListener("click", closeShareNodeModal);
+}
+if (shareNodeModal) {
+  shareNodeModal.addEventListener("click", function (ev) {
+    if (ev.target === shareNodeModal) closeShareNodeModal(); // click backdrop to close
+  });
+}
+
+if (shareNodeCopyBtn && shareNodeUrlEl) {
+  shareNodeCopyBtn.addEventListener("click", function () {
+    const url = shareNodeUrlEl.value;
+    if (!url) return;
+
+    // Modern clipboard if available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => showCopiedState());
+    } else {
+      // Fallback for older browsers
+      shareNodeUrlEl.select();
+      try {
+        document.execCommand("copy");
+        showCopiedState();
+      } catch (e) {
+        console.warn("Copy failed", e);
+      }
+    }
+  });
+
+  function showCopiedState() {
+    const oldText = shareNodeCopyBtn.textContent;
+    shareNodeCopyBtn.textContent = "Copied!";
+    setTimeout(() => {
+      shareNodeCopyBtn.textContent = oldText;
+    }, 1500);
+  }
+}
+
+
+
+// // ========== FOCUS NODE FROM URL PARAM ==========
+// // ========== AUTO-LAUNCH GRAPH FROM ?node= ==========
+// // ========== AUTO-LAUNCH GRAPH FROM ?node= ==========
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get("node");
+  if (!raw) return;
+
+  const focusTitle = decodeURIComponent(raw).trim();
+  if (!focusTitle) return;
+  window.deepLinkPending = true;
+
+  // If we're already in graph mode, don't interfere
+  // if (typeof window.mode !== "undefined" && window.mode === "graph") {
+  //   return;
+  // }
+
+  // Wait until PROJECTS are loaded and our helper exists
+  function ready() {
+    return Array.isArray(window.PROJECTS) &&
+           window.PROJECTS.length > 0 &&
+           typeof window.launchGraphFromNodeTitle === "function";
+  }
+
+  // Remove ?node= from the URL after we’ve consumed it
+  function consumeParam() {
+    const p = new URLSearchParams(window.location.search);
+    p.delete("node");
+    const qs = p.toString();
+    const newUrl =
+      window.location.pathname +
+      (qs ? "?" + qs : "") +
+      window.location.hash;
+    history.replaceState(null, "", newUrl);
+  }
+
+  function tryOnce() {
+    if (!ready()) return false;
+    window.launchGraphFromNodeTitle(focusTitle);
+    window.deepLinkPending = false;
+    consumeParam();     // ← so it won't run again on swup/contentReplaced
+    return true;
+  }
+
+  if (tryOnce()) return;
+
+  let tries = 0;
+  const maxTries = 40;  // ~6s at 150ms
+  const timer = setInterval(() => {
+    tries++;
+    if (tryOnce() || tries >= maxTries) {
+      clearInterval(timer);
+      if (tries >= maxTries) window.deepLinkPending = false;
+    }
+  }, 150);
+})();
+
+
+// --- tags rail toggle: arrow right -> down + slide-in ---
+(function setupTagsToggle() {
+  if (typeof window === "undefined") return;
+
+  function init() {
+    const toggle = document.getElementById("tagsToggle");
+    if (!toggle) return;
+
+    toggle.addEventListener("click", () => {
+      // toggle class on <body>
+      document.body.classList.toggle("tags-open");
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
