@@ -446,6 +446,7 @@ const chosen = scored.length ? scored[0].n : pickBestProject(selectedTags);
     //     }
     //   }
     // }
+    
   }
   
 
@@ -576,7 +577,112 @@ const chosen = scored.length ? scored[0].n : pickBestProject(selectedTags);
 
 
 
+// Public helper: build a graph focused on a specific node title
+// and center the camera on it. This is used by deep links (?node=...)
+// and can also be called manually.
+window.launchGraphFromNodeTitle = function launchGraphFromNodeTitle(focusTitle) {
+  const title = (focusTitle || "").trim();
+  if (!title) return;
 
+  if (!Array.isArray(PROJECTS) || PROJECTS.length === 0) return;
+
+  if (!TAG_REGISTRY || !NODE_REGISTRY || (NODE_REGISTRY.size === 0)) {
+    if (typeof rebuildRegistries === "function") rebuildRegistries();
+  }
+
+  const { center, children } = getDirectRelatives(title);
+  if (!center || !center.title) return;
+
+  // 🔵 make deep-link look like a “normal” graph session
+  if (typeof applyMobileSpacing === "function") applyMobileSpacing();
+  mode = "graph";
+  showBluePanel    = true;   // <- draw the blue UI panel
+  entryCircleAlpha = 0;      // <- never draw the big circle
+  entryCircleFading = false; // <- no fade animation
+
+  // Enter graph mode
+  if (typeof applyMobileSpacing === "function") applyMobileSpacing();
+  mode = "graph";
+
+  if (!localStorage.getItem("graphTipSeen")) {
+    openGraphTip();
+  } else {
+    document.body.classList.add("mode-graph", "graphTip-dismissed");
+  }
+  if (window.renderTagsRailRandom) window.renderTagsRailRandom();
+
+  // Reset graph state
+  nodes = [];
+  links = [];
+  centerNode = null;
+  activeNode = null;
+
+  const { cx, cy } = graphScreenCenter();
+  const s = scaleFactor || 1;
+
+  // Create center node at the visible graph center
+  centerNode = new GraphNode(
+    center.title,
+    cx / s,
+    cy / s,
+    center.tags || [],
+    true,
+    false,
+    center.info || { category: "Node" }
+  );
+  centerNode.fixed = true;
+  nodes.push(centerNode);
+  activeNode = centerNode;
+
+  // Spawn children in a ring around the center
+  const kids = Array.isArray(children) ? children : [];
+  const N = kids.length;
+  if (N > 0) {
+    const R = UI.spawnRadius || 180;
+    const off = random(TWO_PI);
+
+    for (let i = 0; i < N; i++) {
+      const a = off + (TWO_PI * i) / Math.max(1, N);
+      const c = kids[i];
+      const child = new GraphNode(
+        c.title,
+        centerNode.x + Math.cos(a) * R,
+        centerNode.y + Math.sin(a) * R,
+        c.tags || [],
+        false,
+        true,
+        c.info || { category: "Subnode" }
+      );
+      child.spawned = true;
+      child.spawnT  = 0;
+      nodes.push(child);
+
+      const L = new GraphLink(centerNode, child);
+      L.restLength = UI.childRest || 140;
+      L.strength   = 0.06;
+      links.push(L);
+    }
+
+    // Optional: cross-links among non-center nodes by tag overlap
+    for (let i = 1; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        if (a === centerNode || b === centerNode) continue;
+        if (a.sharesTagWith && a.sharesTagWith(b)) {
+          const Lx = new GraphLink(a, b);
+          Lx.restLength = (UI.childRest || 140) * 0.9;
+          Lx.strength   = 0.02;
+          links.push(Lx);
+        }
+      }
+    }
+  }
+
+  // Make sure the camera is on the new center node
+  if (typeof centerCameraOnNode === "function") {
+    centerCameraOnNode(centerNode, true);  // instant center
+  }
+};
 
 
 
@@ -824,3 +930,169 @@ window.launchTagCluster = function launchTagCluster(tagKey){
   if (LAYOUT === 'bottom') enforceMinOrbit(centerNode, nodes);
 };
 
+
+
+
+
+// Try to read ?node=<title> from the URL and focus that node.
+// Returns true if a node was found and graph was launched.
+function restoreNodeFromUrl() {
+  const qs = new URLSearchParams(window.location.search);
+  const raw = qs.get('node');
+  if (!raw) return false;
+
+  const title = decodeURIComponent(raw);
+
+  const def = NODE_REGISTRY.get(title);
+  if (!def) {
+    console.warn('No node in registry for URL title:', title);
+    return false;
+  }
+
+  // Switch to graph mode instead of the select screen
+  mode = "graph";
+
+  // Wipe any old graph state
+  nodes = [];
+  links = [];
+  centerNode = null;
+  activeNode = null;
+
+  // Build subgraph around this node
+  focusNodeGraph({
+    title: def.title,
+    tags: def.tags || [],
+    info: def.info || {}
+  });
+
+
+
+
+
+
+
+
+// ====== BUILD + COPY A DEEP LINK FOR A NODE ======
+function buildNodeUrl(nodeTitle) {
+  if (!nodeTitle) return window.location.href;
+
+  const url = new URL(window.location.href);
+
+  // Point to nodes.html (this page)
+  url.pathname = url.pathname.replace(/[^/]+$/, "nodes.html");
+
+  // Let URLSearchParams encode the value
+  url.searchParams.set("node", nodeTitle.trim());
+
+  return url.toString();
+}
+
+function copyLinkForNode(node) {
+  if (!node || !node.title) {
+    console.warn("copyLinkForNode: no node to share");
+    return;
+  }
+
+  const text = buildNodeUrl(node.title);
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(err => {
+      console.warn("Clipboard API failed, falling back:", err);
+      fallbackCopyText(text);
+    });
+  } else {
+    fallbackCopyText(text);
+  }
+}
+
+function fallbackCopyText(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.position = "fixed";
+  ta.style.top = "-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand("copy");
+    console.log("Copied node link (fallback):", text);
+  } catch (e) {
+    console.error("Failed to copy link:", e);
+  }
+  document.body.removeChild(ta);
+}
+
+
+
+
+
+
+
+
+
+
+
+  
+  // Make sure camera is centered on the new centerNode
+  if (centerNode) {
+    centerCameraOnNode(centerNode, true);
+    activeNode = centerNode;
+  }
+
+  return true;
+}
+
+
+
+// // ========== FOCUS NODE FROM URL PARAM ==========
+// // Auto-launch graph from ?node=Some%20Title
+// (function () {
+//   const params = new URLSearchParams(window.location.search);
+//   const raw = params.get("node");
+//   if (!raw) return;
+
+//   const focusTitle = decodeURIComponent(raw).trim();
+//   if (!focusTitle) return;
+
+//   // If we're already in graph mode, don't interfere
+//   if (typeof window.mode !== "undefined" && window.mode === "graph") {
+//     return;
+//   }
+
+//   // Wait until PROJECTS are loaded and helper exists
+//   function ready() {
+//     return Array.isArray(window.PROJECTS) &&
+//            window.PROJECTS.length > 0 &&
+//            typeof window.launchGraphFromNodeTitle === "function";
+//   }
+
+//   // Remove ?node= from the URL after we’ve consumed it
+//   function consumeParam() {
+//     const p = new URLSearchParams(window.location.search);
+//     p.delete("node");
+//     const qs = p.toString();
+//     const newUrl =
+//       window.location.pathname +
+//       (qs ? "?" + qs : "") +
+//       window.location.hash;
+//     history.replaceState(null, "", newUrl);
+//   }
+
+//   function tryOnce() {
+//     if (!ready()) return false;
+//     window.launchGraphFromNodeTitle(focusTitle);
+//     consumeParam();
+//     return true;
+//   }
+
+//   if (tryOnce()) return;
+
+//   let tries = 0;
+//   const maxTries = 40;  // ~6s at 150ms
+//   const timer = setInterval(() => {
+//     tries++;
+//     if (tryOnce() || tries >= maxTries) {
+//       clearInterval(timer);
+//     }
+//   }, 150);
+// })();
