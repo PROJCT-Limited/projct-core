@@ -182,15 +182,63 @@ function clampPointWorld(xw, yw, rWorld = 0) {
 }
 
 
+// --- deep link helpers ---
 
-// // spacing knobs for mobile (bottom layout)
-// function applyMobileSpacing() {
-//   if (typeof UI !== "object" || typeof LAYOUT !== "string") return;
-//   if (LAYOUT !== "bottom") return;
+// --- deep link helpers ---
 
-//   // Keep node size; just spread them out
-//   UI.childRest    = Math.round((UI.childRest    || 140) * 1.95); // longer springs center↔child/related
-//   UI.spawnRadius  = Math.round((UI.spawnRadius  || 180) * 1.20); // initial ring farther out
-//   UI.repulsionMul = (UI.repulsionMul || 1) * 1.25;               // a bit more push between nodes
-//   UI.crossRestMul = 1.15;                                        // long-ish cross-links too
-// }
+// Build a URL that opens the app focused on a specific node title
+function buildNodeUrl(nodeTitle) {
+  if (!nodeTitle) return window.location.href;
+
+  const url = new URL(window.location.href);
+
+  // Make sure we're pointing at nodes.html
+  // (optional, but keeps links clean if you use Swup/navigation)
+  url.pathname = url.pathname.replace(/[^/]+$/, 'nodes.html');
+
+  // Let URLSearchParams do the encoding
+  url.searchParams.set('node', nodeTitle);
+
+  // Clear any hash fragment; everything we need is in ?node=
+  url.hash = '';
+
+  return url.toString();
+}
+
+// Copy link for the currently relevant node
+function copyLinkForNode(node) {
+  if (!node || !node.title) return;
+
+  const url = buildNodeUrl(node.title);
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        console.log('Copied node link:', url);
+      })
+      .catch(err => {
+        console.warn('Clipboard API failed, falling back:', err);
+        fallbackCopyText(url);
+      });
+  } else {
+    fallbackCopyText(url);
+  }
+}
+
+// Fallback for older browsers
+function fallbackCopyText(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    console.log('Copied node link (fallback):', text);
+  } catch (e) {
+    console.error('Failed to copy link:', e);
+  }
+  document.body.removeChild(ta);
+}
