@@ -1540,7 +1540,7 @@ body.mode-graph.tags-open #tagsRail {
   color: #124fc7; /* your panel blue */
 }
 
-/* example only – copy your existing modal styles if you have them */
+
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -1548,17 +1548,18 @@ body.mode-graph.tags-open #tagsRail {
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 233333000;
 }
 .popup-overlay.is-visible {
   display: flex;
 }
 .popup-card {
+  z-index: 100000000000;
   background: #124fc7;
   color: #ffffff;
   padding: 32px 40px;
   width: min(640px, 90vw);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  
 }
 .popup-header {
   display: flex;
