@@ -61,6 +61,49 @@ function requestImage(src) {
 
 
    (function () {
+
+// --- SHARE NODE BUTTON DOM ---
+let shareNodeButton = null;
+
+function ensureShareNodeButton() {
+  if (shareNodeButton) return;
+
+  shareNodeButton = document.createElement("button");
+  shareNodeButton.className = "share-node-button";
+  shareNodeButton.type = "button";
+  shareNodeButton.textContent = "Share the node";
+  shareNodeButton.style.position = "absolute";
+  shareNodeButton.style.zIndex   = "10050";    
+  shareNodeButton.style.display  = "none";  // hidden until we know where to put it
+
+  document.body.appendChild(shareNodeButton);
+
+  shareNodeButton.addEventListener("click", function () {
+    if (typeof window.currentNode === "function") {
+      const n = window.currentNode();
+      if (n) openShareNodeModal(n);
+    } else if (typeof currentNode === "function") {
+      const n = currentNode();
+      if (n) openShareNodeModal(n);
+    }
+  });
+}
+
+// helper: update position + visibility each frame
+function positionShareNodeButton(screenX, screenY, visible) {
+  if (!shareNodeButton) return;
+  if (!visible) {
+    shareNodeButton.style.display = "none";
+    return;
+  }
+  shareNodeButton.style.display = "block";
+  shareNodeButton.style.left    = `${screenX}px`;
+  shareNodeButton.style.top     = `${screenY}px`;
+}
+
+
+
+
     // ----- SAFE LOCAL SETTINGS (do not depend on global UI/COLORS) -----
     const G = (typeof window !== "undefined") ? window : {};
     const inputUI  = (G && G.UI      && typeof G.UI      === "object") ? G.UI      : null;
@@ -345,7 +388,7 @@ const originX = 0;
 const originY = (LAYOUT === 'left' || atTop) ? domHeaderH : 0;
 const innerW = isMobileLike ? panelW : Math.max(0, panelW - margin * 2);
 const innerH = isMobileLike ? panelH : Math.max(0, panelH - margin * 2);
-
+ensureShareNodeButton();
 
 push();
 translate(originX, originY);
@@ -619,6 +662,14 @@ metaLinkURL    = null;
 // figure out where this panel is on screen
 const panelBaseX = originX + (isMobileLike ? 0 : margin);
 const panelBaseY = originY + (isMobileLike ? 0 : margin);
+
+if (shareNodeButton) {
+  const btnOffsetY = 40;                 // distance above the YEAR row
+  const btnScreenX = panelBaseX + contentX;
+  const btnScreenY = panelBaseY + (metaY - btnOffsetY);
+
+  positionShareNodeButton(btnScreenX, btnScreenY, !!node);
+}
 
 // local Y positions for each row
 const yYear     = metaY + 4;
