@@ -1,6 +1,10 @@
 // High-level mode
 let mode = "select"; 
 
+let topBarButtons = {
+    copy: null
+  };
+  let deepLinkPending = false;
 // Pointer 
 const pointer = { x: 0, y: 0, worldX: 0, worldY: 0, down: false, justReleased: false, isTouch: false };
 
@@ -16,7 +20,7 @@ let topBarH = 0;
 
 // Select-mode
 let tagNodes = [];
-let selected = []; // [{label, tags[]}]
+let selected = []; 
 
 let draggingTag = null;
 let playBtn = null;
@@ -38,3 +42,5 @@ let entryCircleFading = false;  // start fading once we launch
 
 // Where the 0/3 circle lives (WORLD coords)
 let playCircle = { x: 0, y: 0, r: 120 };
+
+
