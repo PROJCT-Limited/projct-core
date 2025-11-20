@@ -455,3 +455,55 @@ if (shareNodeCopyBtn && shareNodeUrlEl) {
     init();
   }
 })();
+
+
+// --- bottom Graph / Tags switch ---
+(function setupViewTabs() {
+  function init() {
+    const graphBtn = document.getElementById("viewTabGraph");
+    const tagsBtn  = document.getElementById("viewTabTags");
+    if (!graphBtn || !tagsBtn) return;
+
+    // SWITCH TO TAGS MODE
+    tagsBtn.addEventListener("click", () => {
+
+      // Save current graph state
+      window.GRAPH_STATE = captureCurrentGraphState();
+
+      // Empty screen for tags exploration
+      nodes = [];
+      links = [];
+      centerNode = null;
+      activeNode = null;
+
+      // Set camera neutral
+      camX = 0;
+      camY = 0;
+      scaleFactor = 1;
+
+      // Switch UI
+      document.body.classList.add("tags-open");
+      window.mode = "tags";
+    });
+
+    // SWITCH BACK TO GRAPH MODE
+    graphBtn.addEventListener("click", () => {
+
+      // Save tags state too (optional)
+      window.TAGS_STATE = captureCurrentGraphState();
+
+      // Restore previous graph exploration
+      restoreGraphState(window.GRAPH_STATE);
+
+      // Switch UI
+      document.body.classList.remove("tags-open");
+      window.mode = "graph";
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
