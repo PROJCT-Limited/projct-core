@@ -1,6 +1,10 @@
 // expose for debugging
 window.openGraphTip  = openGraphTip;
 window.closeGraphTip = closeGraphTip;
+// FULL saved world states
+window.GRAPH_STATE = null;
+window.TAGS_STATE = null;
+
 
 function openGraphTip() {
   const m = document.getElementById('graphTip');
@@ -1041,7 +1045,72 @@ function fallbackCopyText(text) {
 
   return true;
 }
+function captureCurrentGraphState() {
+  return {
+    nodes: nodes.map(n => ({
+      title: n.title,
+      x: n.x,
+      y: n.y,
+      tags: Array.isArray(n.tags) ? n.tags.slice() : [],
+      info: n.info ? {...n.info} : {},
+      fixed: !!n.fixed,
+      spawned: !!n.spawned,
+      hidden: !!n.hidden,
+      // anything else you need
+    })),
 
+    links: links.map(L => ({
+      a: L.a.title,
+      b: L.b.title,
+      restLength: L.restLength,
+      strength: L.strength
+    })),
+
+    centerNode: centerNode ? centerNode.title : null,
+    activeNode: activeNode ? activeNode.title : null,
+
+    camera: {
+      worldOffsetX,
+      worldOffsetY,
+      tx: cam.tx,
+      ty: cam.ty,
+      scaleFactor
+    }
+  };
+}
+function restoreGraphState(state) {
+  if (!state) return;
+
+  // rebuild nodes
+  nodes = state.nodes.map(n => {
+    const g = new GraphNode(n.title, n.x, n.y, n.tags, n.fixed, n.spawned, n.info);
+    g.hidden = n.hidden;
+    return g;
+  });
+
+  // lookup table
+  const byTitle = new Map(nodes.map(n => [n.title, n]));
+
+  // rebuild links
+  links = state.links.map(L => {
+    const a = byTitle.get(L.a);
+    const b = byTitle.get(L.b);
+    if (!a || !b) return null;
+    const G = new GraphLink(a, b);
+    G.restLength = L.restLength;
+    G.strength   = L.strength;
+    return G;
+  }).filter(Boolean);
+
+  centerNode = byTitle.get(state.centerNode) || null;
+  activeNode = byTitle.get(state.activeNode) || null;
+
+  worldOffsetX = state.camera.worldOffsetX;
+  worldOffsetY = state.camera.worldOffsetY;
+  cam.tx       = state.camera.tx;
+  cam.ty       = state.camera.ty;
+  scaleFactor  = state.camera.scaleFactor;
+}
 
 
 // // ========== FOCUS NODE FROM URL PARAM ==========
