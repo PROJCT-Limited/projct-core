@@ -141,7 +141,7 @@
 }
 
 /* Ensure nothing invisible steals taps above the FAB */
-.mobile-overlay.open { z-index: 2000; }  
+.mobile-overlay.open {z-index: 2000000000;  }  
 #suggestionModal.modal-root { z-index: 1000002; }
 #suggestion-fab            { z-index: 1000001; }
 /* allow normal tap behavior on the modal tree */
@@ -182,7 +182,7 @@ body.modal-open {
 /* when open: it’s interactive */
 .mobile-overlay.open {
   display: block;              /* or: pointer-events: auto; opacity: 1; */
-  z-index: 2000;
+  justify-content: center; 
 }
 #suggestionModal.modal-root { z-index: 1000002; }
 #suggestion-fab            { z-index: 1000001; }
