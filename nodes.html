@@ -14,7 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/addons/p5.sound.min.js"></script>
 </head>
 
-<body>
+<body class="nodes-page">
   <div class="header">
     <div class="logo_PROJCT">
       <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 239.57" aria-label="PROJCT" role="img">
@@ -178,14 +178,18 @@
 
   <!-- p5 container -->
   <div id="machine"></div>
-  <div id="tagsRailWrapper" class="tags-rail-wrapper">
+  <div id="viewTabs" class="view-tabs">
+    <button id="viewTabGraph" class="view-tab view-tab-graph">Graph</button>
+    <button id="viewTabTags" class="view-tab view-tab-tags">Tags</button>
+  </div>
+  <!-- <div id="tagsRailWrapper" class="tags-rail-wrapper">
     <div id="tagsToggle" class="tags-toggle">
       <span class="tags-toggle-label">tags</span>
       <span class="tags-toggle-arrow">→</span>
     </div>
-  
+   -->
     <div id="tagsRail" class="tags-rail"></div>
-  </div>
+  <!-- </div> -->
   <!-- libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script
