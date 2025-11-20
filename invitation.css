@@ -255,7 +255,7 @@ body { padding-top: var(--header-h) !important; }
   position: fixed; inset: 0; display: grid; place-items: center;
   visibility: hidden; opacity: 0; pointer-events: none;
   transition: opacity .22s ease, visibility 0s linear .22s;
-  z-index: 99999;   font-family: "Acumin-Light";
+  z-index: 1000002; font-family: "Acumin-Light";
   font-weight: 500;  
 }
 .tip-modal.is-open{ visibility: visible; opacity: 1; pointer-events: auto; transition: opacity .22s ease; }
