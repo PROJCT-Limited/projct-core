@@ -376,7 +376,7 @@ position: fixed;
 inset: 0;                      /* left:0; top:0; right:0; bottom:0 */
 background: #0e50c8;
 color: #fff;
-z-index: 2000;                 /* above everything */
+z-index: 2000000000;                 /* above everything */
 display: flex;
 align-items: center;
 justify-content: center;
@@ -400,6 +400,7 @@ border: 2px solid transparent;
 .mobile-overlay.open {
 opacity: 1;
 color: #fff;
+justify-content: center; 
 visibility: visible;
 pointer-events: auto;
 transform: translateY(0);
@@ -682,8 +683,10 @@ display: block;
 
 /* Overlay above everything, clickable only when open */
 .mobile-overlay {
+  
   position: fixed; inset: 0; background:#0e50c8; color:#fff;
   z-index: 2000;
+  
   display:flex; align-items:center; justify-content:center;
   height: 100dvh; min-height: 100vh;
   opacity:0; visibility:hidden; pointer-events:none;
@@ -1458,12 +1461,12 @@ body.tags-open .tags-toggle-arrow {
 }
 
 /* RAIL is positioned under the toggle */
-#tagsRail.tags-rail,
+/* #tagsRail.tags-rail,
 .tags-rail {
   position: absolute;
   right: 0;
   top: 100%;             /* 🔑 directly below the toggle */
-  width: 128px;
+  /* width: 128px;
   bottom: auto;
 
   max-height: calc(100vh - 140px); 
@@ -1479,11 +1482,11 @@ body.tags-open .tags-toggle-arrow {
 
 
   /* slide-in animation from the right */
-  transform: translateX(110%);
+  /* transform: translateX(110%);
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
-}
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out; */
+} */ */
 
 /* Hide scrollbar in WebKit browsers (Chrome, Safari) */
 .tags-rail::-webkit-scrollbar {
@@ -1601,4 +1604,132 @@ body.mode-graph.tags-open #tagsRail {
 .popup-button:hover {
   background: #ffffff;
   color: #124fc7;
+}
+
+/* bottom view switch (Graph / Tags) */
+.view-tabs {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 999px;
+  background: #f2f2f2;
+
+}
+
+/* only show in graph mode */
+body:not(.mode-graph) .view-tabs {
+  display: none;
+}
+
+.view-tab {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 7px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+/* default state: Graph active, Tags inactive */
+.view-tab-graph {
+  background: #ffffff;
+  color: #111111;
+}
+.view-tab-tags {
+  background: transparent;
+  color: #8f8f8f;
+}
+
+/* when tags are open, flip the highlight */
+body.tags-open .view-tab-graph {
+  background: transparent;
+  color: #8f8f8f;
+}
+body.tags-open .view-tab-tags {
+  background: #ffffff;
+  color: #111111;
+}
+
+/* TAGS RAIL (still on the right) */
+#tagsRail {
+  position: fixed;
+  right: 0;
+  top: calc(var(--headerH) + env(safe-area-inset-top, 0px));
+  bottom: 0;
+  width: 128px;
+
+  padding: 10px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto; */
+  /* overflow-x: hidden;
+
+  /* slide off-screen by default */
+  transform: translateX(110%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+/* only relevant in graph mode */
+body:not(.mode-graph) #tagsRail {
+  display: none;
+}
+
+/* when tags are open, rail slides in */
+body.mode-graph.tags-open #tagsRail {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.view-tabs {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+}
+
+/* desktop = center between panel and right edge */
+@media (min-width: 900px) {
+  body:not(.layout-bottom) .view-tabs {
+    left: calc(var(--panelW) + (100vw - var(--panelW)) / 2);
+    transform: translateX(-50%);
+  }
+}
+/* Center the mobile menu only on the nodes page */
+body.nodes-page #mobileOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Make sure the inner menu block sits in the center */
+body.nodes-page #mobileOverlay .overlay-inner {
+  margin: 0 auto !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Close button stays in the corner, regardless of centering */
+body.nodes-page #mobileOverlay .mobile-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
 }
