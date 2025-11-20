@@ -366,16 +366,19 @@ if (LAYOUT === 'left') {
   // DESKTOP: panel to the left, fill canvas height below header
   panelW = (typeof sideBarW === 'number') ? sideBarW : width;
   panelH = Math.max(0, height - domHeaderH);
+  document.documentElement.style.setProperty('--panelW', panelW + 'px');
   margin = 24;
 } else if (atTop) {
   // MOBILE/TOP: panel at the top
   panelW = width;
   const ratio = (G.UI?.mobilePanelRatio ?? MOBILE_RATIO_DEFAULT);
+  document.documentElement.style.setProperty('--panelW', panelW + 'px');
   panelH = (typeof topBarH === 'number' ? topBarH : Math.round(height * ratio));
   margin = 0;
 } else {
   // fallback (rare)
   panelW = width;
+  document.documentElement.style.setProperty('--panelW', panelW + 'px');
   panelH = Math.round(height * 0.48);
   margin = 0;
 }
