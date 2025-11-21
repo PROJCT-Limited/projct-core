@@ -1674,8 +1674,8 @@ body:not(.mode-graph) .view-tabs {
   border: none;
   outline: none;
   background: transparent;
-  padding: 7px 22px;
-  font-size: 14px;
+  padding: 5px 16px;
+  font-size: 10px;
   font-weight: 500;
   cursor: pointer;
   border-radius: 999px;
