@@ -1515,13 +1515,56 @@ body.mode-graph.tags-open #tagsRail {
   /* ... your existing styles ... */
 }
 
-@media (max-width: 900px) {
-  .tags-rail { display: none !important; }
+/* Base rail – desktop rules (you already have something like this) */
+#tagsRail {
+  position: fixed;
+  right: 0;
+  top: calc(var(--headerH) + env(safe-area-inset-top, 0px));
+  bottom: 0;
+  width: 128px;
+  padding: 10px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transform: translateX(110%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
 }
 
+/* slide in when tags-open is active – already in your CSS */
+body.mode-graph.tags-open #tagsRail {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
 
+/* 🔹 MOBILE RAIL: smaller + tighter */
 @media (max-width: 900px) {
-  .tags-rail { display:none !important; }
+  #tagsRail {
+    width: 96px;
+    padding: 6px 6px 10px;
+    gap: 6px;
+  }
+
+  #tagsRail .rail-tag {
+    font-size: 11px;
+    line-height: 1.2;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+}
+#tagsRail::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+#tagsRail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .share-node-button {
@@ -1732,4 +1775,28 @@ body.nodes-page #mobileOverlay .mobile-close {
   position: absolute;
   top: 16px;
   right: 16px;
+}
+
+/* base rail (desktop rules) stays as you already have it */
+
+/* MOBILE: make rail start below header + blue top panel */
+@media (max-width: 900px) {
+  #tagsRail {
+    top: calc(
+      var(--headerH, 0px) +
+      var(--graphTopPanelH, 0px) +
+      env(safe-area-inset-top, 0px)
+    );
+    width: 96px;
+    padding: 6px 6px 10px;
+    gap: 6px;
+  }
+
+  #tagsRail .rail-tag {
+    font-size: 11px;
+    line-height: 1.2;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
 }
