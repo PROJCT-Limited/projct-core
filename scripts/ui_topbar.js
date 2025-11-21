@@ -375,6 +375,7 @@ if (LAYOUT === 'left') {
   document.documentElement.style.setProperty('--panelW', panelW + 'px');
   panelH = (typeof topBarH === 'number' ? topBarH : Math.round(height * ratio));
   margin = 0;
+  document.documentElement.style.setProperty('--graphTopPanelH', panelH + 'px');
 } else {
   // fallback (rare)
   panelW = width;
