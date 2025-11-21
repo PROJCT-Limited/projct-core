@@ -289,8 +289,15 @@ window.renderTagsRailRandom = function renderTagsRailRandom(){
   if (!all.length) { console.warn('[rail] ALL_TAGS empty'); return; }
 
   const items = shuffleCopy(all);      // <- RANDOMIZE
-  const MAX   = 15;
-  const pick  = items.slice(0, MAX);
+
+  // 🔹 desktop vs mobile limit
+  const isMobile =
+    (typeof window.LAYOUT !== "undefined" && window.LAYOUT === "bottom") ||
+    (window.matchMedia && window.matchMedia("(max-width: 900px)").matches);
+
+  const MAX = isMobile ? 8 : 20;       // ← 8 tags on mobile, 20 on desktop
+
+  const pick = items.slice(0, MAX);
 
   rail.innerHTML = '';
   for (const t of pick){
@@ -303,7 +310,7 @@ window.renderTagsRailRandom = function renderTagsRailRandom(){
   }
 
   console.log('[rail] randomized tags:', pick.map(t => t.label));
-  rail.dataset.version = String(Date.now());   // makes overwrites easy to spot when debugging
+  rail.dataset.version = String(Date.now());
 };
 
 // **Force any old deterministic renderer to be our random one**
