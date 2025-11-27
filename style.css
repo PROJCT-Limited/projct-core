@@ -36,7 +36,8 @@ body{
   display:flex;                    
   flex-direction:column;
   line-height:1.45;
-
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 body {
   display: flex;
@@ -1104,21 +1105,7 @@ font-family: 'Acumin-Light';
   transition: background-color .2s ease, color .2s ease;
 }
 
-/* ===== FOOTER LAYOUT ===== */
-.site-footer{
-  font-family: "Acumin-Light";
-  margin-top: auto;
-  background: var(--brand-blue);
-  color: #fff;
-  padding-block: clamp(16px, 3vh, 36px);
-  padding-inline: var(--page-pad);
-  display: grid;
-  grid-template-columns: repeat(var(--columns), minmax(0,1fr));
-  gap: var(--gutter);                 /* base row+column gap */
-  align-items: center;
-}
-.site-footer a{ color: rgba(255,255,255,.95); text-decoration: none; }
-.site-footer a:hover{ text-decoration: underline; }
+
 
 .footer-meta{
   grid-column: 1 / 9;
@@ -1800,3 +1787,4 @@ body.nodes-page #mobileOverlay .mobile-close {
     white-space: nowrap;
   }
 }
+
