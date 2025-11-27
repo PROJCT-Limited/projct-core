@@ -44,7 +44,8 @@
     display:flex;                    
     flex-direction:column;
     line-height:1.45;
-  
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   img{max-width:100%;height:auto;display:block}
   
@@ -93,7 +94,7 @@
   .kicker{grid-column:1/4;
     font-size:clamp(20px,1.3vw,36px);
     font-family: "Acumin-Light";
-    letter-spacing:.14em;
+    letter-spacing:.05em;
     text-transform:uppercase;
     color:var(--brand-blue);
     align-self:start;margin:0}
