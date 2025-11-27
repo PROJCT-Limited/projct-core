@@ -1,0 +1,206 @@
+/* ===============================
+   Root tokens (matches your “principles” style)
+   =============================== */
+   :root {
+    --bg: #ffffff;
+    --ink: #0b0b0c;
+    --muted: #6a6f76;
+    --rule: #e7e9ec;
+    --accent: #0b0b0c;
+
+    --page-max: 760px;
+    --page-gutter: clamp(16px, 3vw, 28px); /* Local page padding only */
+
+    --radius: 12px;
+
+    --font-sans: "Acumin-Regular", "Acumin-Light", system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
+
+    --h1: clamp(28px, 4.2vw, 42px);
+    --h2: clamp(20px, 3vw, 26px);
+    --h3: clamp(17px, 2.2vw, 20px);
+    --body: clamp(15.5px, 1.6vw, 17px);
+
+
+}
+  *,
+  *::before,
+  *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg)!important;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Align more closely with style.css */
+    font-family: var(--font-sans);
+    font-size: 1rem;      /* roughly 16px, like default */
+    line-height: 1.45;    /* matches style.css body line-height */
+  }
+  
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+
+
+
+  .page {
+    padding-top: clamp(22px, 4vw, 40px);
+  }
+
+  
+  
+  .brand img { height: 26px; width: auto; display: block; }
+  
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .btn--ghost { background: transparent; }
+  .btn--ghost:hover { background: #f3f4f6; }
+  
+  .nav-toggle {
+    display: none;
+    font-size: 18px;
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    cursor: pointer;
+  }
+  
+  /* ===============================
+     Page layout
+     =============================== */
+  .page {
+    padding: clamp(22px, 4vw, 40px) var(--gutter);
+    padding-bottom: 40px !important;
+  }
+  
+  .doc {
+    max-width: var(--page-max);
+    margin: 0 auto;
+  }
+  
+  
+  .doc__header { padding-top: 6px; }
+  .doc__lede {
+    color: var(--muted);
+    margin-top: 10px;
+  }
+  
+  /* Headings */
+  h1, h2, h3, h4 {
+    margin: 0;
+    line-height: 1.25;
+    font-weight: 600;
+
+  }
+  
+  h1 {
+    font-size: var(--h1);
+    font-family: var(--font-sans);
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-size: var(--h2);
+    margin-top: 26px;
+    margin-bottom: 10px;
+  }
+  h3 {
+    font-size: var(--h3);
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+  h4 {
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+  
+  /* TOC */
+  .toc {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: #fafafa;
+  }
+  .toc h2 { margin-top: 0; font-size: 1em; }
+  .toc ol { margin: 8px 0 0 18px; padding: 0; }
+
+  .toc a:hover { text-decoration: underline; }
+  
+  /* Text blocks */
+
+  strong { font-weight: 600; }
+  
+  /* Lists */
+  ul, ol {
+    margin: 8px 0 14px 20px;
+    padding: 0;
+  }
+  li { margin: 4px 0; }
+  
+  ol.tight > li { margin: 2px 0; }
+  
+  /* Rules like the policy page */
+  hr {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 22px 0;
+  }
+  
+  /* Links inside body */
+  .doc a {
+    color: var(--accent);
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* ===============================
+     Responsive tweaks
+     =============================== */
+  @media (max-width: 860px) {
+    .site-header__inner {
+      grid-template-columns: auto 1fr auto;
+    }
+    .site-actions { display: none; }
+    .nav-toggle { display: inline-flex; justify-self: end; }
+  
+    .site-nav {
+      position: absolute;
+      /* left: 0; right: 0; top: 100%; */
+      background: var(--bg);
+      border-bottom: 1px solid var(--rule);
+      display: none;
+      flex-direction: column;
+      padding: 10px var(--gutter);
+      gap: 10px;
+    }
+    .site-nav.site-nav--open { display: flex; }
+  }
+  
+  @media (max-width: 640px) {
+    .toc { padding: 12px; }
+
+  }
+
+
+  footer .newsletter-msg {
+    margin-top: 8px !important;
+    min-height: 1em !important;
+}
