@@ -229,8 +229,7 @@ body{
 }
 
 /* 5) Footer sticks to end of the page */
-.site-footer{ margin-top: 20% !important; }
-.footer-legal{ margin-top: 0 !important; }
+
 
 /* Optional: if your top bars are taller on phones, bump the estimate */
 @media (max-width: 500px){
