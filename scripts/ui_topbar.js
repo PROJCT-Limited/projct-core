@@ -40,6 +40,22 @@ function normalizeImgSrc(src) {
 }
 
 
+// Kick off requestImage() for every image URL in the project list so images
+// are in-flight before the user navigates to a node.  Safe to call multiple
+// times — IMAGE_CACHE deduplicates by URL.
+function preloadAllImages(projects) {
+  if (!Array.isArray(projects)) return;
+  for (const p of projects) {
+    const src = p?.info?.image || p?.image || "";
+    if (src) requestImage(src);
+    for (const c of (p.children || [])) {
+      const csrc = c?.info?.image || c?.image || "";
+      if (csrc) requestImage(csrc);
+    }
+  }
+}
+window.preloadAllImages = preloadAllImages;
+
 function requestImage(src) {
   const url = normalizeImgSrc(src);
   if (!url) return null;
