@@ -966,19 +966,14 @@ function hasTagCI(list, key){
 window.launchTagCluster = function launchTagCluster(tagKey){
   if (!PROJECTS || !PROJECTS.length) return;
 
-  // collect matches (projects + children)
-  const matches = [];
+  if (!TAG_REGISTRY || TAG_REGISTRY.length === 0) rebuildRegistries();
 
-  for (const p of PROJECTS){
-    if (hasTagCI(p.tags, tagKey)){
-      matches.push({ title: p.title, tags: (p.tags||[]), info: p.info || { category:'Project' } });
-    }
-    for (const c of (p.children||[])){
-      if (hasTagCI(c.tags, tagKey)){
-        matches.push({ title: c.title, tags: (c.tags||[]), info: c.info || { category:'Subnode' } });
-      }
-    }
-  }
+  // Use TAG_REGISTRY — already deduplicated by title via Map in buildTagRegistry.
+  // The old PROJECTS double-walk (top-level + .children) caused each child node to
+  // appear twice, because rowsToProjects registers every child as a top-level PROJECTS
+  // entry AND stores it in its parent's .children array.
+  const matches = TAG_REGISTRY.filter(n => hasTagCI(n.tags, tagKey))
+    .map(n => ({ title: n.title, tags: (n.tags || []), info: n.info || { category: n.kind === 'child' ? 'Subnode' : 'Project' } }));
 
   if (!matches.length){
     console.warn('[tag cluster] no matches for', tagKey);
