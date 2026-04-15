@@ -153,6 +153,14 @@ function positionShareNodeButton(screenX, screenY, visible) {
       (typeof activeNode   !== "undefined" && activeNode) || null;
       
   
+    // Returns "" for values that should be hidden: null, undefined, "", "-", "—"
+    function cleanMeta(v) {
+      if (v == null) return "";
+      const s = String(v).trim();
+      if (s === "" || s === "-" || s === "—") return "";
+      return s;
+    }
+
     function nodeText(n) {
       // in ui_topbar.js, inside nodeText(n)
 let info = n?.info || {};
@@ -160,12 +168,12 @@ if ( (!info.year || !info.type) && window.NODE_REGISTRY ) {
   const reg = window.NODE_REGISTRY.get(n.title);
   if (reg && reg.info) info = { ...info, ...reg.info };
 }
-const year = info.year || "—";
-const type = info.type || "—";
+const year = cleanMeta(info.year);
+const type = cleanMeta(info.type);
 
       const title = n?.title || n?.label || "PROJECT NAME";
       const desc  = n?.info?.desc || "Although fluid, we focus much energy on product, innovation, and growth with our ecosystem of clients, investors, founders.";
-      const cat   = n?.info?.category || n?.category || "PROJECT";
+      const cat   = cleanMeta(n?.info?.category || n?.category);
       const linkRaw = info.link || info.url || "";
       const linkURL = normalizeLink(linkRaw);
       const linkText = linkLabel(linkRaw);   
@@ -675,39 +683,43 @@ if (shareNodeButton) {
   positionShareNodeButton(btnScreenX, btnScreenY, !!node);
 }
 
-// local Y positions for each row
-const yYear     = metaY + 4;
-const yCategory = yYear + rowH + 6;
-const yType     = yCategory + rowH + 6;
-const yLink     = yType + rowH + 6;
-
-// YEAR
-drawRule(contentX, metaY, contentW);
-drawKVRow(contentX, yYear, contentW, "YEAR", year, rowH);
-
-// CATEGORY
-drawRule(contentX, yCategory - 2, contentW);
-drawKVRow(contentX, yCategory + 2, contentW, "CATEGORY", cat, rowH);
-
-// TYPE
-drawRule(contentX, yType - 2, contentW);
-drawKVRow(contentX, yType + 2, contentW, "TYPE", type, rowH);
-
+// Build the list of visible meta rows — skip any field that is blank or "-"
+const metaRows = [
+  { key: "YEAR",     value: year },
+  { key: "CATEGORY", value: cat },
+  { key: "TYPE",     value: type },
+];
 if (linkURL) {
-  drawRule(contentX, yLink - 2, contentW);
-  drawKVRow(contentX, yLink + 2, contentW, "LINK", linkText, rowH);
+  metaRows.push({ key: "LINK", value: linkText, isLink: true });
+}
+const visibleRows = metaRows.filter(r => r.value !== "");
 
-  metaLinkHitbox = {
-    x: panelBaseX + contentX,
-    y: panelBaseY + yLink,
-    w: contentW,
-    h: rowH
-  };
-  metaLinkURL = linkURL;
+// Render only visible rows with dynamic y positions so no gaps appear
+if (visibleRows.length > 0) {
+  const rowStep = rowH + 6;
+  let curY = metaY;
 
-  drawRule(contentX, yLink + rowH + 8, contentW);
-} else {
-  drawRule(contentX, yType + rowH + 8, contentW);
+  drawRule(contentX, curY, contentW);
+  curY += 4;
+
+  for (let i = 0; i < visibleRows.length; i++) {
+    const r = visibleRows[i];
+
+    drawKVRow(contentX, curY, contentW, r.key, r.value, rowH);
+
+    if (r.isLink) {
+      metaLinkHitbox = {
+        x: panelBaseX + contentX,
+        y: panelBaseY + curY,
+        w: contentW,
+        h: rowH
+      };
+      metaLinkURL = linkURL;
+    }
+
+    curY += rowStep;
+    drawRule(contentX, curY - 2, contentW);
+  }
 }
 
 
