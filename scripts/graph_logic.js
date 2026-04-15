@@ -35,9 +35,9 @@ function closeGraphTip(markSeen) {
 
 const LIMITS = {
   focusChildren:     UI?.maxChildrenFocus     ?? 20, // center's explicit children (no small cap — show all)
-  focusRelated:      UI?.maxRelatedFocus      ?? 2,  // related projects around a focus
+  focusRelated:      UI?.maxRelatedFocus      ?? 6,  // related projects around a focus
   tagParents:        UI?.maxParents           ?? 1,  // parents shown in tag-refocus
-  tagChildren:       UI?.maxChildrenByTags    ?? 3   // children in tag-based fallback only
+  tagChildren:       UI?.maxChildrenByTags    ?? 8   // children in tag-based fallback only
 };
 
 
@@ -321,11 +321,15 @@ function getRelativesByTags(centerNode) {
     }
   }
 
+  // Only exclude nodes that will actually be shown in the parents ring.
+  // Nodes that share enough tags but don't make the parents cap must still
+  // be allowed to appear in the children ring — otherwise they vanish entirely.
+  const shownParentTitles = new Set(parents.slice(0, LIMITS.tagParents).map(p => p.title));
+
   // Require at least 2 shared tags for a node to appear in the children ring.
-  const parentTitles = new Set(parents.map(p => p.title));
   for (const n of TAG_REGISTRY) {
     if (n.title === centerTitle) continue;
-    if (parentTitles.has(n.title)) continue;
+    if (shownParentTitles.has(n.title)) continue;
     if (tagsSharedCount(centerTags, n.tags || []) >= 2) {
       children.push({ ...n });
     }
@@ -370,25 +374,32 @@ function buildExpandedForFocus(focusTitle) {
   // CASE 1: focusing a PROJECT
   // ─────────────────────────────
   if (proj) {
-    const tagPool = new Set(proj.tags || []);
+    const focusTags = Array.isArray(proj.tags) ? proj.tags : [];
     const children = (proj.children || []).map(c => ({
       title: c.title,
       tags: Array.isArray(c.tags) ? c.tags.slice() : [],
       info: c.info || { category: "Subnode" }
     }));
-    for (const c of children) for (const t of (c.tags || [])) tagPool.add(t);
+
+    // Build the full tag pool (focus + all its children) for shared-count comparison.
+    const tagPoolArr = focusTags.slice();
+    for (const c of children) for (const t of (c.tags || [])) tagPoolArr.push(t);
+
+    // Determine the structural parent title so it is excluded from the related list
+    // (the parent is already linked hierarchically and would otherwise consume a slot).
+    const parentTitle = (proj.info && proj.info._parentTitle) ? proj.info._parentTitle : null;
 
     const MIN_SHARED = 2;
     const relatedScored = [];
     for (const p of PROJECTS) {
       if (p.title === proj.title) continue;
-      const tags = Array.isArray(p.tags) ? p.tags : [];
-      let shared = 0;
-      for (const t of tags) if (tagPool.has(t)) shared++;
+      if (parentTitle && p.title === parentTitle) continue; // skip structural parent
+      // Use tagsSharedCount (case-insensitive) — same function used in CASE 2.
+      const shared = tagsSharedCount(p.tags || [], tagPoolArr);
       if (shared >= MIN_SHARED) {
         relatedScored.push({
           title: p.title,
-          tags: tags.slice(),
+          tags: (Array.isArray(p.tags) ? p.tags : []).slice(),
           info: p.info || { category: "Project" },
           shared
         });
