@@ -217,6 +217,9 @@ async function loadProjectsFromSheet(url) {
   // build registries used by graph + rail
   if (typeof rebuildRegistries === "function") rebuildRegistries();
 
+  // kick off image downloads for all nodes immediately
+  if (typeof preloadAllImages === "function") preloadAllImages(projects);
+
   // build right-rail data and render it RANDOMIZED
   try {
     window.ALL_TAGS = buildAllTagsRegistry(window.PROJECTS);
