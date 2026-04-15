@@ -34,10 +34,10 @@ function closeGraphTip(markSeen) {
 }
 
 const LIMITS = {
-  focusChildren:     UI?.maxChildrenFocus     ?? 3, // center's explicit children
-  focusRelated:      UI?.maxRelatedFocus      ?? 2, // related projects around a focus
-  tagParents:        UI?.maxParents           ?? 1, // parents shown in tag-refocus
-  tagChildren:       UI?.maxChildrenByTags    ?? 3  // children in tag-refocus
+  focusChildren:     UI?.maxChildrenFocus     ?? 20, // center's explicit children (no small cap — show all)
+  focusRelated:      UI?.maxRelatedFocus      ?? 2,  // related projects around a focus
+  tagParents:        UI?.maxParents           ?? 1,  // parents shown in tag-refocus
+  tagChildren:       UI?.maxChildrenByTags    ?? 3   // children in tag-based fallback only
 };
 
 
@@ -54,22 +54,41 @@ let cam = {
 };
 
 
-// Build once after PROJECTS is loaded
+// Build once after PROJECTS is loaded.
+// Each entry carries the correct `parent` field so lookupDirectChildren() works
+// for any node — whether it's a top-level project, a leaf child, or a node
+// that is both a child of one node AND a parent of others.
 function buildTagRegistry() {
-  const list = [];
+  // Use a Map keyed by title so each node appears exactly once.
+  // If a title is encountered both as a PROJECTS entry and as a child entry,
+  // the PROJECTS entry (richer data, correct _parentTitle) wins.
+  const map = new Map();
+
+  function add(entry) {
+    if (!entry.title) return;
+    if (!map.has(entry.title)) {
+      map.set(entry.title, entry);
+    } else {
+      // Merge: keep existing but upgrade parent if we now know it
+      const cur = map.get(entry.title);
+      if (!cur.parent && entry.parent) cur.parent = entry.parent;
+    }
+  }
 
   for (const p of PROJECTS) {
-    list.push({
-      kind: "project",
+    // Determine whether this node is itself a child of another node.
+    const parentTitle = (p.info && p.info._parentTitle) ? p.info._parentTitle : null;
+    add({
+      kind: parentTitle ? "child" : "project",
       title: p.title,
       tags: Array.isArray(p.tags) ? p.tags.slice() : [],
       info: p.info || { category: "Project" },
-      parent: null
+      parent: parentTitle
     });
 
     if (Array.isArray(p.children)) {
       for (const c of p.children) {
-        list.push({
+        add({
           kind: "child",
           title: c.title,
           tags: Array.isArray(c.tags) ? c.tags.slice() : [],
@@ -79,7 +98,7 @@ function buildTagRegistry() {
       }
     }
   }
-  return list;
+  return Array.from(map.values());
 }
 
 // const TAG_REGISTRY = buildTagRegistry();
@@ -90,6 +109,17 @@ function tagsIntersect(a, b) {
   const set = new Set(a.map(t => String(t).toLowerCase()));
   for (const t of b) if (set.has(String(t).toLowerCase())) return true;
   return false;
+}
+
+// Count how many tags are shared between two full tag lists (case-insensitive).
+// Iterates every entry in both arrays — no truncation at any point.
+// Used wherever a node must share at least 2 tags to qualify as "related".
+function tagsSharedCount(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b)) return 0;
+  const setA = new Set(a.map(t => String(t).toLowerCase()));
+  let count = 0;
+  for (const t of b) if (setA.has(String(t).toLowerCase())) count++;
+  return count;
 }
 
 // Build seeds from selected tags across BOTH projects and children.
@@ -162,53 +192,146 @@ function rebuildRegistries() {
 
 
 function getDirectRelatives(centerTitle) {
-  const def = NODE_REGISTRY.get(centerTitle);
-  if (!def) return { center: { title: centerTitle, tags: [], info: { category: "Node" } }, children: [] };
-  const center = { title: def.title, tags: def.tags || [], info: def.info || { category: "Node" } };
-  const children = Array.isArray(def.children) ? def.children.map(c => ({
+  // Use TAG_REGISTRY direct-children lookup so any node — whether stored as
+  // a project or as a child row — can surface its own children correctly.
+  if (!TAG_REGISTRY || !TAG_REGISTRY.length) rebuildRegistries();
+
+  const selfEntry = TAG_REGISTRY.find(n => n.title === centerTitle);
+  const center = selfEntry
+    ? { title: selfEntry.title, tags: selfEntry.tags || [], info: selfEntry.info || { category: "Node" } }
+    : { title: centerTitle, tags: [], info: { category: "Node" } };
+
+  // Children strictly by parent_title match
+  const children = lookupDirectChildren(centerTitle).map(c => ({
     title: c.title, tags: c.tags || [], info: c.info || { category: "Subnode" }
-  })) : [];
+  }));
+
+  // Fallback to NODE_REGISTRY if TAG_REGISTRY yielded nothing
+  if (!children.length) {
+    const def = (NODE_REGISTRY && NODE_REGISTRY.get) ? NODE_REGISTRY.get(centerTitle) : null;
+    if (def && Array.isArray(def.children)) {
+      children.push(...def.children.map(c => ({
+        title: c.title, tags: c.tags || [], info: c.info || { category: "Subnode" }
+      })));
+    }
+  }
+
   return { center, children };
 }
 
 
-function getRelativesByTags(centerNode) {
-  const centerTags = Array.isArray(centerNode.tags) ? centerNode.tags : [];
-  const parents = [];
-  const children = [];
+// Spawn a graph centered on nodeDef.  Called by restoreNodeFromUrl and the
+// sheet-reload path.  Assumes graph state has already been cleared by the caller.
+window.focusNodeGraph = function focusNodeGraph(nodeDef) {
+  if (!nodeDef) return;
+  const title = (nodeDef.title || nodeDef.label || "").trim();
+  if (!title) return;
 
-  // First: collect parents (projects) that match center tags
-  for (const p of PROJECTS) {
-    const projectTagsHit = tagsIntersect(centerTags, p.tags || []);
-    const anyChildHit = Array.isArray(p.children) && p.children.some(c => tagsIntersect(centerTags, c.tags || []));
-    if (projectTagsHit || anyChildHit) {
-      // avoid considering the project as a "parent" if the center itself IS that project
-      if (centerNode.title !== p.title) {
-        parents.push({
-          kind: "project",
-          title: p.title,
-          tags: p.tags || [],
-          info: p.info || { category: "Project" },
-          parent: null
-        });
-      }
+  if (!TAG_REGISTRY || !TAG_REGISTRY.length) rebuildRegistries();
+
+  // Resolve data from registry (caller may pass a GraphNode with stale info)
+  const regEntry = TAG_REGISTRY.find(n => n.title === title);
+  const tags = (regEntry ? regEntry.tags : null) || nodeDef.tags || [];
+  const info = (regEntry ? regEntry.info : null) || nodeDef.info || { category: "Node" };
+
+  const { cx, cy } = graphScreenCenter();
+  const s = scaleFactor || 1;
+
+  centerNode = new GraphNode(title, cx / s, cy / s, tags, true, false, info);
+  centerNode.fixed = true;
+  nodes.push(centerNode);
+  activeNode = centerNode;
+
+  // Direct children by parent_title
+  const kids = lookupDirectChildren(title);
+  const N = kids.length;
+  if (N > 0) {
+    const R   = UI.spawnRadius || 180;
+    const off = random(TWO_PI);
+    for (let i = 0; i < N; i++) {
+      const a = off + (TWO_PI * i) / Math.max(1, N);
+      const c = kids[i];
+      const child = new GraphNode(
+        c.title,
+        centerNode.x + Math.cos(a) * R,
+        centerNode.y + Math.sin(a) * R,
+        c.tags || [], false, true, c.info || { category: "Subnode" }
+      );
+      child.spawned = true; child.spawnT = 0;
+      nodes.push(child);
+      const L = new GraphLink(centerNode, child);
+      L.restLength = UI.childRest || 140;
+      L.strength   = 0.06;
+      links.push(L);
     }
   }
 
-  // Then: all other nodes that match by tags (excluding center + parents)
+  if (typeof centerCameraOnNode === "function") centerCameraOnNode(centerNode, true);
+};
+
+
+// Return all TAG_REGISTRY entries whose parent field matches parentTitle.
+// This is the authoritative lookup for direct children — based strictly on
+// the parent_title column from the sheet, not on tag overlap.
+function lookupDirectChildren(parentTitle) {
+  if (!TAG_REGISTRY || !TAG_REGISTRY.length) return [];
+  return TAG_REGISTRY.filter(n => n.parent === parentTitle);
+}
+
+function getRelativesByTags(centerNode) {
+  const centerTitle = centerNode.title;
+  const centerTags  = Array.isArray(centerNode.tags) ? centerNode.tags : [];
+
+  // ── PRIORITY PATH: explicit parent_title children ──────────────────────
+  // If this node has sheet-defined children (matched by parent_title), show
+  // those directly.  Tag overlap is NOT used here — hierarchy is purely
+  // relationship-based, not row-type-based.
+  const directKids = lookupDirectChildren(centerTitle);
+  if (directKids.length > 0) {
+    // Surface this node's own parent as context (if it has one)
+    const parents = [];
+    const selfEntry = TAG_REGISTRY.find(n => n.title === centerTitle);
+    if (selfEntry && selfEntry.parent) {
+      const parentEntry = TAG_REGISTRY.find(n => n.title === selfEntry.parent);
+      if (parentEntry) parents.push({ ...parentEntry });
+    }
+    // directMode=true tells refocusToByTags not to cap the children list
+    return { parents, children: directKids.map(n => ({ ...n })), directMode: true };
+  }
+
+  // ── FALLBACK: tag-based relatives (original behaviour) ──────────────────
+  const parents  = [];
+  const children = [];
+
+  // Require at least 2 shared tags for a project to appear in the parents ring.
+  // tagsSharedCount compares the FULL tag list of each node — no truncation.
+  for (const p of PROJECTS) {
+    const projectHits = tagsSharedCount(centerTags, p.tags || []);
+    const bestChildHit = Array.isArray(p.children)
+      ? p.children.reduce((best, c) => Math.max(best, tagsSharedCount(centerTags, c.tags || [])), 0)
+      : 0;
+    if (Math.max(projectHits, bestChildHit) >= 2 && centerTitle !== p.title) {
+      parents.push({
+        kind: "project",
+        title: p.title,
+        tags: p.tags || [],
+        info: p.info || { category: "Project" },
+        parent: null
+      });
+    }
+  }
+
+  // Require at least 2 shared tags for a node to appear in the children ring.
   const parentTitles = new Set(parents.map(p => p.title));
   for (const n of TAG_REGISTRY) {
-    if (n.title === centerNode.title) continue;
+    if (n.title === centerTitle) continue;
     if (parentTitles.has(n.title)) continue;
-    if (tagsIntersect(centerTags, n.tags || [])) {
+    if (tagsSharedCount(centerTags, n.tags || []) >= 2) {
       children.push({ ...n });
     }
   }
 
-// Optional: cap the size to avoid visual overload
-const MAX_CHILDREN = LIMITS.tagChildren; 
-return { parents, children: children.slice(0, MAX_CHILDREN) };
-
+  return { parents, children: children.slice(0, LIMITS.tagChildren), directMode: false };
 }
 
 
@@ -320,14 +443,14 @@ function buildExpandedForFocus(focusTitle) {
     .map(c => ({ title: c.title, tags: c.tags || [], info: c.info || { category: "Subnode" } }))
     .slice(0, LIMITS.focusChildren);
 
-  // Related = parent project first, then other projects that share tags with the child
-  const tagPool = new Set(center.tags || []);
+  // Related = parent project first, then other projects that share ≥2 tags with the child.
+  // tagsSharedCount iterates the full tag list of both nodes — no truncation.
+  const centerTagArr = center.tags || [];
   const relatedProjects = [];
   for (const p of PROJECTS) {
     if (p.title === parent.title) continue;
-    const tags = p.tags || [];
-    if (tagsIntersect(tags, Array.from(tagPool))) {
-      relatedProjects.push({ title: p.title, tags: tags.slice(), info: p.info || { category: "Project" } });
+    if (tagsSharedCount(p.tags || [], centerTagArr) >= 2) {
+      relatedProjects.push({ title: p.title, tags: (p.tags || []).slice(), info: p.info || { category: "Project" } });
     }
   }
   // Put parent first; then cap others
@@ -465,11 +588,13 @@ const chosen = scored.length ? scored[0].n : pickBestProject(selectedTags);
       info: clicked.info || { category: "Node" }
     };
   
-    const { parents, children } = getRelativesByTags(center);
+    const { parents, children, directMode } = getRelativesByTags(center);
 
-    // apply global caps
+    // When children come from an explicit parent_title match (directMode), show
+    // ALL of them — do not cap.  The LIMITS cap only applies to the tag-based
+    // fallback, where unbounded results would create visual noise.
     const parentsLim  = (parents  || []).slice(0, LIMITS.tagParents);
-    const childrenLim = (children || []).slice(0, LIMITS.tagChildren);
+    const childrenLim = directMode ? (children || []) : (children || []).slice(0, LIMITS.tagChildren);
     
     // Keep set (use the limited lists!)
     const keep = new Set([center.title, ...parentsLim.map(p => p.title), ...childrenLim.map(c => c.title)]);
