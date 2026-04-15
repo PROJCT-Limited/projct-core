@@ -86,19 +86,21 @@ function rowsToProjects(rows) {
     } else { // child
       if (!parent) continue;
       const p = ensureProject(parent);
+
+      // Also register this node so it can itself be a parent (bidirectional hierarchy).
+      // A node must be allowed to be both a child of another node and a parent of its own children.
+      const self = ensureProject(title);
+      const tagSet = new Set(self.tags);
+      for (const t of tags) tagSet.add(t);
+      self.tags = Array.from(tagSet);
+      for (const [k, v] of Object.entries(info)) if (v !== "") self.info[k] = v;
+      // Store the parent reference so buildTagRegistry can set the correct parent field
+      if (!self.info._parentTitle) self.info._parentTitle = parent;
+
       if (!p.children.some(c => c.title === title)) {
-        p.children.push({
-          title,
-          tags,
-          info: {
-            category: info.category || "Subnode",
-            desc: info.desc || "",
-            year: info.year || "",
-            type: info.type || "",
-            image: info.image || "",
-            link:     info.link || ""
-          }
-        });
+        // Push the registered project entry (not a plain copy) so multi-level
+        // hierarchy is preserved: self.children can be populated by later rows.
+        p.children.push(self);
       }
     }
   }
