@@ -25,6 +25,21 @@ const COLORS = {
 //   { label: "Climate",    tags: ["Context"] },
 // ];
 window.TAGS_READY = false;
+
+// Placeholder tags shown immediately on load — replaced once the sheet arrives
+window.TAGS = [
+  { label: "Design",   tags: ["design"] },
+  { label: "People",   tags: ["people"] },
+  { label: "Process",  tags: ["process"] },
+  { label: "Context",  tags: ["context"] },
+  { label: "Purpose",  tags: ["purpose"] },
+  { label: "Research", tags: ["research"] },
+  { label: "Strategy", tags: ["strategy"] },
+  { label: "Identity", tags: ["identity"] },
+  { label: "Brand",    tags: ["brand"] },
+  { label: "Digital",  tags: ["digital"] },
+  { label: "Space",    tags: ["space"] },
+];
 // const PROJECTS = [
 //   // ——— EXHIBIT / CLIMATE CLUSTER ———
 //   {
