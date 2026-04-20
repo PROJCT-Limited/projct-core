@@ -35,6 +35,11 @@ let activeNode = null;
 
 
 
+// Panel scroll
+let panelScrollY   = 0;
+let panelScrollMax = 0;
+let _panelScrollNode = null; // reset scroll when focused node changes
+
 // NEW: entry/transition flags
 let showBluePanel = false;      // false on entry; true after launch
 let entryCircleAlpha = 255;     // fades out after launch
