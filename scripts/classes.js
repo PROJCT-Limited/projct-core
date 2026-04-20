@@ -52,11 +52,14 @@ function placeNodeNoOverlap(newNode, others, bounds, maxTries = 250, pad = 6) {
   
   /* === Graph Node with birth animation === */
   class GraphNode {
-    constructor(title, x, y, tags = [], isCenter = false, isChild = false, info = {}) {
+    constructor(title, x, y, tags = [], isCenter = false, isChild = false, info = {}, nodeOpacity = 1.0) {
       this.title = title; this.x = x; this.y = y;
       this.tags = tags; this.isCenter = isCenter; this.isChild = isChild;
-  
-      this.baseR = isCenter ? UI.rCenter : isChild ? UI.rChild : UI.rNode;
+      // 1.0 = focused center, 0.65 = direct child, 0.30 = related (2 shared tags)
+      this.nodeOpacity = nodeOpacity;
+
+      // All non-center nodes share the same base radius — size is not used for hierarchy
+      this.baseR = isCenter ? UI.rCenter : UI.rNode;
       this.r = isCenter ? this.baseR : 0;
   
       this.vx = 0; this.vy = 0; this.fx = 0; this.fy = 0; this.fixed = false;
@@ -133,38 +136,41 @@ if (this.y > maxY) { this.y = maxY; this.vy *= -0.7; }
     }
   
     display() {
-      // Fill color from first matching tag color
-      let fillCol = "#CBD5E1";
-      if (Array.isArray(this.tags)) {
-        for (const t of this.tags) {
-          if (typeof TAG_COLORS !== "undefined" && TAG_COLORS && TAG_COLORS[t]) { fillCol = TAG_COLORS[t]; break; }
-        }
-      }
-    
-      // Target radius: bigger if this is the centered node (Archive behaviour)
+      // Base blue — #0E50C8
+      const BR = 14, BG = 80, BB = 200;
 
-// --- pick base radius (desktop vs mobile for the focused node) ---
-const isMobile = (typeof LAYOUT !== "undefined" && LAYOUT === "bottom");
+      // All nodes share the same base radius — focus is shown via 3 concentric circles, not size
+      const targetR = UI?.rNode ?? 20;
 
-const rFocusedDesktop = (UI?.rFocused ?? 30);
-const rFocusedMobile  = (UI?.rFocusedMobile ?? Math.max(14, Math.round(rFocusedDesktop * 0.72)));
-
-let targetR =
-  (this === centerNode)
-    ? (isMobile ? rFocusedMobile : rFocusedDesktop)
-    : (this.isChild
-        ? (UI?.rChild ?? UI?.rNode ?? 20)
-        : (UI?.rNode  ?? 20));
-
-    
-      // Smoothly animate toward the target radius
+      // Smoothly animate toward target radius
       this.r = lerp(this.r || targetR, targetR, 0.2);
-    
-      // Draw the node
+
       noStroke();
-      fill(fillCol);
-      circle(this.x, this.y, Math.max(1, this.r * 2));
-    
+
+      if (this === centerNode) {
+        // Three concentric circles all fitting within rNode diameter:
+        // Scale the inner radius so the outermost ring equals rNode exactly.
+        const cr = this.r / 1.7; // core radius: outer halo (cr*1.7) = rNode
+
+        // Outer halo  30% opacity  — same diameter as other nodes
+        fill(BR, BG, BB, Math.round(255 * 0.30));
+        circle(this.x, this.y, cr * 2 * 1.7);
+
+        // Inner halo  65% opacity
+        fill(BR, BG, BB, Math.round(255 * 0.65));
+        circle(this.x, this.y, cr * 2 * 1.35);
+
+        // Front circle  100% opacity
+        fill(BR, BG, BB, 255);
+        circle(this.x, this.y, cr * 2);
+      } else {
+        // Non-center nodes: same size, opacity encodes relationship
+        //   0.65 → direct child of focused node
+        //   0.30 → related node (2 shared tags)
+        fill(BR, BG, BB, Math.round(255 * (this.nodeOpacity ?? 0.65)));
+        circle(this.x, this.y, this.r * 2);
+      }
+
       // Label
       fill(40);
       textAlign(CENTER, TOP);
@@ -256,8 +262,8 @@ class TagNode {
     this.vx += this.fx * 0.01; this.vy += this.fy * 0.01;
     this.vx *= 0.92; this.vy *= 0.92;
     this.x += this.vx; this.y += this.vy;
-    this.x = constrain(this.x, this.r, baseWidth - this.r);
-    this.y = constrain(this.y, this.r, baseHeight - this.r);
+    // Bounds are enforced by clampTagToRect() in drawSelectScreen, which uses
+    // the actual screen rect — no hard-clamp to baseWidth/baseHeight here.
   }
   display(){
     noStroke(); fill(COLORS.tagFill); ellipse(this.x, this.y, this.r * 2);
