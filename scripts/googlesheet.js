@@ -232,10 +232,7 @@ async function loadProjectsFromSheet(url) {
   try {
     const newTags = randomizedTagButtonsFromProjects(window.PROJECTS, 11);
     window.TAGS = newTags;
-    // If already on the select screen, respawn bubbles
-    if (typeof mode !== 'undefined' && mode === 'select' && typeof spawnFloatingTags === 'function') {
-      spawnFloatingTags();
-    }
+    // Never respawn here — placeholder nodes are already floating and should stay as-is.
     console.log('[TAGS] randomized from sheet:', newTags.map(t => t.label));
   } catch (e) {
     console.warn('[TAGS] randomized build failed:', e);
