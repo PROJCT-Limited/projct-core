@@ -545,6 +545,8 @@ const contentBottom = metaY - GAP_BELOW_CONTENT;
 // available vertical pixels for (image + body) block
 const availForContent = Math.max(0, contentBottom - contentY);
 
+// Reset scroll when the focused node changes
+if (_panelScrollNode !== node) { panelScrollY = 0; _panelScrollNode = node; }
 
 useLightFont();
 const _bodySize = (bodySize / 1.2 || TYPE.body);
@@ -555,6 +557,15 @@ const leftMin  = 180; // min width for the text column (tweak)
 const rightMin = 140; // min width for the image column (tweak)
 const twoColumnOK = (LAYOUT === 'top') && (contentW >= leftMin + rightMin + colGap);
 
+// --- open scroll clip region (shared by both branches) ---
+{
+  const _ctx = drawingContext;
+  _ctx.save();
+  _ctx.beginPath();
+  _ctx.rect(contentX, contentY, contentW, availForContent);
+  _ctx.clip();
+  _ctx.translate(0, -panelScrollY);
+
 if (twoColumnOK) {
 
   const colGap = M.colGap || 16;
@@ -562,11 +573,11 @@ if (twoColumnOK) {
   // Start with a reasonable split
   let rightImgW = Math.min(imageW, Math.round(contentW * 0.45));
   let leftBodyW = contentW - rightImgW - colGap;
-  
+
   // Enforce minimums so two-column works on ~360–400px viewports too
-  const leftMin  = 180; // readable body text
-  const rightMin = 140; // image worth showing
-  
+  const leftMin  = 180;
+  const rightMin = 140;
+
   if (leftBodyW < leftMin) {
     leftBodyW = leftMin;
     rightImgW = Math.max(rightMin, contentW - leftBodyW - colGap);
@@ -575,103 +586,77 @@ if (twoColumnOK) {
     leftBodyW = Math.max(leftMin, contentW - rightImgW - colGap);
   }
 
-  const imgX       = contentX + leftBodyW + colGap;
-  const bodyX      = contentX;
-  const columnH    = availForContent;
+  const imgX    = contentX + leftBodyW + colGap;
+  const bodyX   = contentX;
 
-  // --- Reserve room for text and cap the image ---
-  const minBodyH   = 80;                          // guarantees description appears
-  const imgMaxH    = Math.max(120, columnH - minBodyH);
-
-  // image size (respect orientation)
+  // image size
   let drawImgW = rightImgW;
   let desiredFrameH = img ? frameHeightForImage(img, drawImgW)
                           : Math.round((imageH * rightImgW) / Math.max(1, imageW));
-  let drawImgH = Math.min(Math.max(120, desiredFrameH), imgMaxH);
+  let drawImgH = Math.max(120, desiredFrameH);
 
-  // body gets the rest (never under minBodyH)
-  const bodyH = Math.max(minBodyH, columnH - drawImgH - GAP_ABOVE_CONTENT);
+  // measure body text
+  textSize(_bodySize);
+  const bm = measureWrappedHeight(desc, leftBodyW, _bodySize, 1.25);
+
+  // total scrollable height = tallest column
+  panelScrollMax = Math.max(0, Math.max(drawImgH, bm.height) - availForContent);
 
   // render image
   if (img && typeof img === 'object') {
     drawImageCover(img, imgX, contentY, drawImgW, drawImgH, biasForImage(img));
   }
 
-  // render body
-  textSize(_bodySize);
-  const bm = measureWrappedHeight(desc, leftBodyW, _bodySize, 1.25);
+  // render body — pass large height so p5 never clips; ctx.clip() handles the boundary
   textAlign(LEFT, TOP);
   textLeading(bm.lineH);
   setFill(THEME.white);
   if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
-  text(desc, bodyX, contentY, leftBodyW, bodyH);
+  text(desc, bodyX, contentY, leftBodyW, 9999);
+
 } else {
   // ----- STACKED (desktop / narrow mobile) -----
-// ----- STACKED (desktop / narrow mobile) -----
-// ----- STACKED (desktop / narrow mobile) -----
-let drawImgW = Math.min(imageW, contentW);
-let drawImgH = imageH;
+  let drawImgW = Math.min(imageW, contentW);
+  let drawImgH = imageH;
 
-// compute proper frame height from actual image orientation
-if (img && img.width && img.height) {
-  const desiredH = frameHeightForImage(img, drawImgW);
-  drawImgH = Math.min(desiredH, imageH);
+  if (img && img.width && img.height) {
+    drawImgH = Math.min(frameHeightForImage(img, drawImgW), imageH);
+  }
+
+  // keep aspect if image capped
+  if (img && img.width && img.height) {
+    const ar = img.height / img.width;
+    drawImgW = Math.min(contentW, Math.max(120, Math.round(drawImgH / ar)));
+  }
+
+  const portraitNudge = (isPortraitImage(img) ? Math.round(drawImgH * 0.15) : 0);
+  const imgY  = contentY - portraitNudge;
+  const bodyY = imgY + drawImgH + GAP_ABOVE_CONTENT;
+
+  // measure full body text
+  textSize(_bodySize);
+  const bm = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
+
+  // total scrollable height = image + gap + full body + buffer for rounding
+  const totalH = (drawImgH - portraitNudge) + GAP_ABOVE_CONTENT + bm.height + 32;
+  panelScrollMax = Math.max(0, totalH - availForContent);
+
+  // render image
+  if (img && typeof img === 'object') {
+    drawImageCover(img, contentX, imgY, drawImgW, drawImgH, biasForImage(img));
+  }
+
+  // render body — pass large height so p5 never clips; ctx.clip() handles the boundary
+  textAlign(LEFT, TOP);
+  textLeading(bm.lineH);
+  setFill(THEME.white);
+  if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
+  text(desc, contentX, bodyY, contentW, 9999);
 }
 
-// vertical budget for (image + text)
-const minBodyH = 96;                                // guarantees description appears
-const imgMaxH  = Math.max(120, Math.round(availForContent * 0.45));
-drawImgH       = Math.min(drawImgH, imgMaxH);
-
-// keep aspect if image capped
-if (img && img.width && img.height) {
-  const ar = img.height / img.width; // h/w
-  drawImgW = Math.min(contentW, Math.max(120, Math.round(drawImgH / ar)));
-}
-
-// body gets the remainder (at least minBodyH)
-const bodyH  = Math.max(minBodyH, availForContent - drawImgH - GAP_ABOVE_CONTENT);
-const blockH = drawImgH + GAP_ABOVE_CONTENT + bodyH;
-const startY = Math.max(contentY, contentBottom - blockH);
-
-// light portrait nudge up, but *never* above contentY
-const portraitNudge = (isPortraitImage(img) ? Math.round(Math.min(drawImgH * 0.25, startY - contentY)) : 0);
-
-// positions
-const imgX  = contentX;
-const imgY  = startY - portraitNudge;     
-const bodyY = imgY + drawImgH + GAP_ABOVE_CONTENT;
-
-// render image
-if (img && typeof img === 'object') {
-  drawImageCover(img, imgX, imgY, drawImgW, drawImgH, biasForImage(img));
-}
-
-// render body
-// measure with the same settings we'll draw with
-textSize(_bodySize);
-const bm = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
-
-// tiny guard so rounding never hits the rule
-const GUARD = 3;
-const clipH = Math.max(0, bodyH - GUARD);
-
-// --- HARD CLIP: body cannot render below its box ---
-const ctx = drawingContext;
-ctx.save();
-ctx.beginPath();
-ctx.rect(contentX, bodyY, contentW, clipH);
-ctx.clip();
-
-textAlign(LEFT, TOP);
-textLeading(bm.lineH);
-setFill(THEME.white);
-if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
-
-// draw the full text; the clip keeps it in-bounds
-text(desc, contentX, bodyY, contentW, bm.height);
-
-ctx.restore();
+  // clamp scroll and close clip
+  panelScrollY = Math.min(panelScrollY, panelScrollMax);
+  _ctx.restore();
 }
 
 
