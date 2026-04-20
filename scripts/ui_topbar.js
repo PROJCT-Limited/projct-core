@@ -522,141 +522,93 @@ const contentTopY = tagLayout.nextY + Math.max(8, bodyGap);
 // }
 
 
-// ===== After tags are laid out =====
-// After laying out tags:
+// ===== LAYOUT: tags → scrollable content → share button → meta rows =====
 const tagsBottomY = tagLayout.nextY;
 
-// constant meta height (3 actually changed to 4 rows)
-const blockH = rowH * 4 + 24;
+// --- Bottom area: work up from the bottom ---
+const metaRowCount = [year, cat, type].filter(v => v && v !== "").length + (linkURL ? 1 : 0);
+const metaBlockH   = metaRowCount * (rowH + 6) + 8;  // rows + rule gaps
+const metaY        = innerH - metaBlockH - outerPad;
 
-// spacing controls
-const GAP_ABOVE_CONTENT = 20;  // between tags and content block
-const GAP_BELOW_CONTENT = 20;  // gap above meta rows
-
-// where content starts
-const contentY = tagsBottomY + GAP_ABOVE_CONTENT;
-
-// meta rows are pinned to the bottom inside padding
-const metaY = innerH - blockH - outerPad;
-
-// exact bottom limit the content block is allowed to use
-const contentBottom = metaY - GAP_BELOW_CONTENT;
-
-// available vertical pixels for (image + body) block
+const BTN_H           = (shareNodeButton && shareNodeButton.offsetHeight > 0)
+                        ? shareNodeButton.offsetHeight : 36;
+const BTN_GAP_META    = 12;  // gap between button bottom and first rule
+const BTN_GAP_CONTENT = 14;  // gap between content and button top
+const btnTopY         = metaY - BTN_GAP_META - BTN_H;
+const contentY        = tagsBottomY + 16;
+const contentBottom   = btnTopY - BTN_GAP_CONTENT;
 const availForContent = Math.max(0, contentBottom - contentY);
 
-// Reset scroll when the focused node changes
+// scroll bar track width (reserved on the right of the content area)
+const TRACK_W   = 3;
+const TRACK_GAP = 6;  // gap between text and track
+const textW     = contentW - TRACK_W - TRACK_GAP;
+
+// Reset scroll when focused node changes
 if (_panelScrollNode !== node) { panelScrollY = 0; _panelScrollNode = node; }
 
 useLightFont();
 const _bodySize = (bodySize / 1.2 || TYPE.body);
 
-// two-column when panel is TOP and there’s enough width; otherwise stack
-const colGap = M.colGap || 16;
-const leftMin  = 180; // min width for the text column (tweak)
-const rightMin = 140; // min width for the image column (tweak)
-const twoColumnOK = (LAYOUT === 'top') && (contentW >= leftMin + rightMin + colGap);
+// Measure full body text height (using textW so wrapping matches what we draw)
+textSize(_bodySize);
+const bm = measureWrappedHeight(desc, textW, _bodySize, 1.25);
 
-// --- open scroll clip region (shared by both branches) ---
+// Also account for image if present (stacked above body)
+let totalContentH = bm.height + 32; // +32 buffer for rounding
+let imgBlockH = 0;
+let drawImgW = 0, drawImgH = 0;
+if (img && img.width && img.height) {
+  drawImgW = Math.min(imageW, textW);
+  drawImgH = Math.min(frameHeightForImage(img, drawImgW), Math.round(availForContent * 0.45));
+  const ar = img.height / img.width;
+  drawImgW = Math.min(textW, Math.max(80, Math.round(drawImgH / ar)));
+  imgBlockH = drawImgH + 16; // 16px gap between image and body
+  totalContentH = imgBlockH + bm.height + 32;
+}
+panelScrollMax = Math.max(0, totalContentH - availForContent);
+
+// --- Draw scrollable content inside clip ---
 {
   const _ctx = drawingContext;
   _ctx.save();
   _ctx.beginPath();
-  _ctx.rect(contentX, contentY, contentW, availForContent);
+  _ctx.rect(contentX, contentY, textW + TRACK_GAP + TRACK_W, availForContent);
   _ctx.clip();
   _ctx.translate(0, -panelScrollY);
 
-if (twoColumnOK) {
-
-  const colGap = M.colGap || 16;
-
-  // Start with a reasonable split
-  let rightImgW = Math.min(imageW, Math.round(contentW * 0.45));
-  let leftBodyW = contentW - rightImgW - colGap;
-
-  // Enforce minimums so two-column works on ~360–400px viewports too
-  const leftMin  = 180;
-  const rightMin = 140;
-
-  if (leftBodyW < leftMin) {
-    leftBodyW = leftMin;
-    rightImgW = Math.max(rightMin, contentW - leftBodyW - colGap);
-  } else if (rightImgW < rightMin) {
-    rightImgW = rightMin;
-    leftBodyW = Math.max(leftMin, contentW - rightImgW - colGap);
+  // Image (if present) above body text
+  if (img && typeof img === 'object' && drawImgH > 0) {
+    drawImageCover(img, contentX, contentY, drawImgW, drawImgH, biasForImage(img));
   }
 
-  const imgX    = contentX + leftBodyW + colGap;
-  const bodyX   = contentX;
-
-  // image size
-  let drawImgW = rightImgW;
-  let desiredFrameH = img ? frameHeightForImage(img, drawImgW)
-                          : Math.round((imageH * rightImgW) / Math.max(1, imageW));
-  let drawImgH = Math.max(120, desiredFrameH);
-
-  // measure body text
-  textSize(_bodySize);
-  const bm = measureWrappedHeight(desc, leftBodyW, _bodySize, 1.25);
-
-  // total scrollable height = tallest column
-  panelScrollMax = Math.max(0, Math.max(drawImgH, bm.height) - availForContent);
-
-  // render image
-  if (img && typeof img === 'object') {
-    drawImageCover(img, imgX, contentY, drawImgW, drawImgH, biasForImage(img));
-  }
-
-  // render body — pass large height so p5 never clips; ctx.clip() handles the boundary
+  // Body text — large height so p5 never clips; ctx.clip() handles the boundary
+  const bodyY = contentY + imgBlockH;
   textAlign(LEFT, TOP);
   textLeading(bm.lineH);
   setFill(THEME.white);
   if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
-  text(desc, bodyX, contentY, leftBodyW, 9999);
+  text(desc, contentX, bodyY, textW, 9999);
 
-} else {
-  // ----- STACKED (desktop / narrow mobile) -----
-  let drawImgW = Math.min(imageW, contentW);
-  let drawImgH = imageH;
-
-  if (img && img.width && img.height) {
-    drawImgH = Math.min(frameHeightForImage(img, drawImgW), imageH);
-  }
-
-  // keep aspect if image capped
-  if (img && img.width && img.height) {
-    const ar = img.height / img.width;
-    drawImgW = Math.min(contentW, Math.max(120, Math.round(drawImgH / ar)));
-  }
-
-  const portraitNudge = (isPortraitImage(img) ? Math.round(drawImgH * 0.15) : 0);
-  const imgY  = contentY - portraitNudge;
-  const bodyY = imgY + drawImgH + GAP_ABOVE_CONTENT;
-
-  // measure full body text
-  textSize(_bodySize);
-  const bm = measureWrappedHeight(desc, contentW, _bodySize, 1.25);
-
-  // total scrollable height = image + gap + full body + buffer for rounding
-  const totalH = (drawImgH - portraitNudge) + GAP_ABOVE_CONTENT + bm.height + 32;
-  panelScrollMax = Math.max(0, totalH - availForContent);
-
-  // render image
-  if (img && typeof img === 'object') {
-    drawImageCover(img, contentX, imgY, drawImgW, drawImgH, biasForImage(img));
-  }
-
-  // render body — pass large height so p5 never clips; ctx.clip() handles the boundary
-  textAlign(LEFT, TOP);
-  textLeading(bm.lineH);
-  setFill(THEME.white);
-  if (typeof textWrap === 'function' && typeof WORD !== 'undefined') textWrap(WORD);
-  text(desc, contentX, bodyY, contentW, 9999);
-}
-
-  // clamp scroll and close clip
   panelScrollY = Math.min(panelScrollY, panelScrollMax);
   _ctx.restore();
+}
+
+// --- Scroll indicator (drawn outside clip, always in place) ---
+if (panelScrollMax > 0) {
+  const trackX    = contentX + textW + TRACK_GAP;
+  const trackH    = availForContent;
+  const thumbH    = Math.max(20, Math.round(trackH * (availForContent / totalContentH)));
+  const thumbMaxY = trackH - thumbH;
+  const thumbY    = contentY + Math.round(thumbMaxY * (panelScrollY / panelScrollMax));
+
+  noStroke();
+  // track
+  fill(255, 255, 255, 40);
+  rect(trackX, contentY, TRACK_W, trackH, 2);
+  // thumb
+  fill(255, 255, 255, 180);
+  rect(trackX, thumbY, TRACK_W, thumbH, 2);
 }
 
 
