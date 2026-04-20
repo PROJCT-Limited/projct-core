@@ -33,16 +33,37 @@ function setupSelectUI() {
 
 function spawnFloatingTags() {
   selected = [];
-  tagNodes = [];
 
   const wr = selectPlayableWorldRect(12);
   const bounds = { minX: wr.left, maxX: wr.right, minY: wr.top, maxY: wr.bottom };
+  const newTags = window.TAGS || [];
+  const existing = Array.isArray(tagNodes) && tagNodes.length > 0 ? tagNodes : null;
 
-  for (const t of (window.TAGS || [])) {
-    const n = new TagBubble(t.label, t.tags);
-    placeNodeNoOverlap(n, tagNodes, bounds, 250, 6);
-    clampTagToRect(n, wr);  // ensure inside after placement
-    tagNodes.push(n);
+  if (existing) {
+    // Nodes are already floating — relabel them in-place so there's no flash.
+    // Reuse each live node for a new tag (keeping position & velocity).
+    for (let i = 0; i < Math.min(existing.length, newTags.length); i++) {
+      existing[i].label = newTags[i].label;
+      existing[i].tags  = Array.isArray(newTags[i].tags) ? newTags[i].tags.slice() : [newTags[i].label];
+    }
+    // Add extra nodes if new set is larger
+    for (let i = existing.length; i < newTags.length; i++) {
+      const n = new TagBubble(newTags[i].label, newTags[i].tags);
+      placeNodeNoOverlap(n, existing, bounds, 250, 6);
+      clampTagToRect(n, wr);
+      existing.push(n);
+    }
+    // Trim if new set is smaller
+    tagNodes = existing.slice(0, newTags.length);
+  } else {
+    // First spawn — place nodes fresh
+    tagNodes = [];
+    for (const t of newTags) {
+      const n = new TagBubble(t.label, t.tags);
+      placeNodeNoOverlap(n, tagNodes, bounds, 250, 6);
+      clampTagToRect(n, wr);
+      tagNodes.push(n);
+    }
   }
 }
 
