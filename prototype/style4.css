@@ -1,0 +1,19 @@
+body {
+    background: #ffffff;
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+  }
+  
+  #connectBtn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background: #1470d0;
+    color: white;
+    border: none;
+    font-size: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
