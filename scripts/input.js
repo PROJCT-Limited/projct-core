@@ -571,3 +571,35 @@ function finishPointerGesture() {
   pointer.id = null;
   pointer.dragNode = null;
 }
+
+/* ---- panel scroll (wheel + touch) ---- */
+(function () {
+  // Wheel scroll on desktop
+  document.addEventListener('wheel', function (e) {
+    if (typeof mode === 'undefined' || mode !== 'graph') return;
+    if (!isInPanelScreen(e.clientX, e.clientY)) return;
+    e.preventDefault();
+    panelScrollY = Math.max(0, Math.min(panelScrollMax, panelScrollY + e.deltaY));
+  }, { passive: false });
+
+  // Touch scroll on mobile
+  let _touchStartY = null;
+  document.addEventListener('touchstart', function (e) {
+    if (typeof mode === 'undefined' || mode !== 'graph') return;
+    const t = e.touches[0];
+    if (!isInPanelScreen(t.clientX, t.clientY)) return;
+    _touchStartY = t.clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function (e) {
+    if (_touchStartY === null) return;
+    const t = e.touches[0];
+    if (!isInPanelScreen(t.clientX, t.clientY)) { _touchStartY = null; return; }
+    const dy = _touchStartY - t.clientY;
+    _touchStartY = t.clientY;
+    panelScrollY = Math.max(0, Math.min(panelScrollMax, panelScrollY + dy));
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('touchend', function () { _touchStartY = null; }, { passive: true });
+})();
