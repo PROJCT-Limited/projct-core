@@ -255,7 +255,7 @@ window.focusNodeGraph = function focusNodeGraph(nodeDef) {
         c.title,
         centerNode.x + Math.cos(a) * R,
         centerNode.y + Math.sin(a) * R,
-        c.tags || [], false, true, c.info || { category: "Subnode" }
+        c.tags || [], false, true, c.info || { category: "Subnode" }, 0.65
       );
       child.spawned = true; child.spawnT = 0;
       nodes.push(child);
@@ -649,11 +649,14 @@ const chosen = scored.length ? scored[0].n : pickBestProject(selectedTags);
           centerNode.y + Math.sin(a) * Rpar,
           p.tags || [],
           false, true,
-          p.info || { category: "Project" }
+          p.info || { category: "Project" },
+          0.30
         );
         par.spawned = true; par.spawnT = 0;
         nodes.push(par);
         byTitle.set(p.title, par);
+      } else {
+        par.nodeOpacity = 0.30;
       }
       if (!links.some(L => (L.a === par && L.b === centerNode) || (L.a === centerNode && L.b === par))) {
         const Lnk = new GraphLink(par, centerNode);
@@ -668,6 +671,7 @@ const chosen = scored.length ? scored[0].n : pickBestProject(selectedTags);
     const offC   = random(TWO_PI);
     for (let i = 0; i < childrenLim.length; i++) {
       const c = childrenLim[i];
+      const childOpacity = directMode ? 0.65 : 0.30;
       let child = byTitle.get(c.title);
       if (!child) {
         const a = offC + (TWO_PI * i) / Math.max(1, children.length);
@@ -677,11 +681,14 @@ const chosen = scored.length ? scored[0].n : pickBestProject(selectedTags);
           centerNode.y + Math.sin(a) * Rchild,
           c.tags || [],
           false, true,
-          c.info || { category: c.kind === "project" ? "Project" : "Subnode" }
+          c.info || { category: c.kind === "project" ? "Project" : "Subnode" },
+          childOpacity
         );
         child.spawned = true; child.spawnT = 0;
         nodes.push(child);
         byTitle.set(c.title, child);
+      } else {
+        child.nodeOpacity = childOpacity;
       }
       if (!links.some(L => (L.a === centerNode && L.b === child) || (L.a === child && L.b === centerNode))) {
         const L2 = new GraphLink(centerNode, child);
@@ -791,7 +798,8 @@ window.launchGraphFromNodeTitle = function launchGraphFromNodeTitle(focusTitle) 
         c.tags || [],
         false,
         true,
-        c.info || { category: "Subnode" }
+        c.info || { category: "Subnode" },
+        0.65
       );
       child.spawned = true;
       child.spawnT  = 0;
@@ -1032,7 +1040,8 @@ window.launchTagCluster = function launchTagCluster(tagKey){
       centerNode.y + Math.sin(a)*R,
       d.tags || [],
       false, true,
-      d.info || { category:'Node' }
+      d.info || { category:'Node' },
+      0.30
     );
     n.spawned = true; n.spawnT = 0;
     nodes.push(n);
@@ -1187,7 +1196,7 @@ function captureCurrentGraphState() {
       fixed: !!n.fixed,
       spawned: !!n.spawned,
       hidden: !!n.hidden,
-      // anything else you need
+      nodeOpacity: n.nodeOpacity ?? 1.0,
     })),
 
     links: links.map(L => ({
@@ -1214,7 +1223,7 @@ function restoreGraphState(state) {
 
   // rebuild nodes
   nodes = state.nodes.map(n => {
-    const g = new GraphNode(n.title, n.x, n.y, n.tags, n.fixed, n.spawned, n.info);
+    const g = new GraphNode(n.title, n.x, n.y, n.tags, n.fixed, n.spawned, n.info, n.nodeOpacity ?? 1.0);
     g.hidden = n.hidden;
     return g;
   });
