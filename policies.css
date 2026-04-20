@@ -1,206 +1,204 @@
-/* ===============================
-   Root tokens (matches your “principles” style)
-   =============================== */
-   :root {
-    --bg: #ffffff;
-    --ink: #0b0b0c;
-    --muted: #6a6f76;
-    --rule: #e7e9ec;
-    --accent: #0b0b0c;
-
-    --page-max: 760px;
-    --page-gutter: clamp(16px, 3vw, 28px); /* Local page padding only */
-
-    --radius: 12px;
-
-    --font-sans: "Acumin-Regular", "Acumin-Light", system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
-
-    --h1: clamp(28px, 4.2vw, 42px);
-    --h2: clamp(20px, 3vw, 26px);
-    --h3: clamp(17px, 2.2vw, 20px);
-    --body: clamp(15.5px, 1.6vw, 17px);
-
-
+/* ── Fonts (mirrored from about.css) ─────────────────────────────── */
+@font-face {
+  font-family: "Acumin-Light";
+  src: url('./fonts/Acumin-Pro/Acumin-Pro-Light.otf');
 }
-  *,
-  *::before,
-  *::after { box-sizing: border-box; }
+@font-face {
+  font-family: "Acumin-Regular";
+  src: url('./fonts/Acumin-Pro/Acumin-Pro-Book.otf');
+}
 
-  body {
-    margin: 0;
-    background: var(--bg)!important;
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    /* Align more closely with style.css */
-    font-family: var(--font-sans);
-    font-size: 1rem;      /* roughly 16px, like default */
-    line-height: 1.45;    /* matches style.css body line-height */
-  }
-  
-  body {
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-  }
-  
+/* ── Tokens ───────────────────────────────────────────────────────── */
+:root {
+  --blue:       #0e50c8;
+  --ink:        #0a1a2b;
+  --muted:      #556070;
+  --rule:       #dde1e8;
+  --bg:         #ffffff;
+  --page-max:   720px;
+  --gutter:     clamp(20px, 5vw, 56px);
+  --font-light: "Acumin-Light",   system-ui, sans-serif;
+  --font-reg:   "Acumin-Regular", system-ui, sans-serif;
+}
 
+/* ── Reset ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
+html {
+  background: #fff !important;
+}
 
-  .page {
-    padding-top: clamp(22px, 4vw, 40px);
-  }
+body {
+  margin: 0 !important;
+  background: #fff !important;
+  color: var(--ink) !important;
+  font-family: var(--font-light) !important;
+  font-size: clamp(15px, 1.6vw, 17px);
+  line-height: 1.65;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  padding-top: 0 !important;
+}
 
-  
-  
-  .brand img { height: 26px; width: auto; display: block; }
-  
+/* ── Page wrapper ─────────────────────────────────────────────────── */
+.doc-page {
+  flex: 1 !important;
+  width: 100% !important;
+  max-width: calc(var(--page-max) + var(--gutter) * 2) !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  /* top padding accounts for the fixed 80px header + visual breathing room */
+  padding-top: calc(80px + clamp(24px, 4vw, 48px)) !important;
+  padding-bottom: 64px !important;
+  padding-left: var(--gutter) !important;
+  padding-right: var(--gutter) !important;
+  background: #fff !important;
+  color: var(--ink) !important;
+}
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    height: 34px;
-    padding: 0 12px;
-    border-radius: 999px;
-    border: 1px solid var(--ink);
-    font-size: 14px;
-    text-decoration: none;
-    color: var(--ink);
-  }
-  .btn--ghost { background: transparent; }
-  .btn--ghost:hover { background: #f3f4f6; }
-  
-  .nav-toggle {
-    display: none;
-    font-size: 18px;
-    background: none;
-    border: none;
-    padding: 6px 8px;
-    cursor: pointer;
-  }
-  
-  /* ===============================
-     Page layout
-     =============================== */
-  .page {
-    padding: clamp(22px, 4vw, 40px) var(--gutter);
-    padding-bottom: 40px !important;
-  }
-  
-  .doc {
-    max-width: var(--page-max);
-    margin: 0 auto;
-  }
-  
-  
-  .doc__header { padding-top: 6px; }
-  .doc__lede {
-    color: var(--muted);
-    margin-top: 10px;
-  }
-  
-  /* Headings */
-  h1, h2, h3, h4 {
-    margin: 0;
-    line-height: 1.25;
-    font-weight: 600;
+/* ── Page header ──────────────────────────────────────────────────── */
+.doc-page__label {
+  font-family: var(--font-reg);
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin: 0 0 14px;
+}
 
-  }
-  
-  h1 {
-    font-size: var(--h1);
-    font-family: var(--font-sans);
-    margin-bottom: 12px;
-  }
-  h2 {
-    font-size: var(--h2);
-    margin-top: 26px;
-    margin-bottom: 10px;
-  }
-  h3 {
-    font-size: var(--h3);
-    margin-top: 20px;
-    margin-bottom: 8px;
-  }
-  h4 {
-    font-size: 0.95em;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    margin-top: 14px;
-    margin-bottom: 6px;
-  }
-  
-  /* TOC */
-  .toc {
-    margin-top: 18px;
-    padding: 14px 16px;
-    border: 1px solid var(--rule);
-    border-radius: var(--radius);
-    background: #fafafa;
-  }
-  .toc h2 { margin-top: 0; font-size: 1em; }
-  .toc ol { margin: 8px 0 0 18px; padding: 0; }
+.doc-page__title {
+  font-family: var(--font-light);
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--ink);
+  line-height: 1.1;
+  margin: 0 0 16px;
+}
 
-  .toc a:hover { text-decoration: underline; }
-  
-  /* Text blocks */
+.doc-page__lede {
+  font-family: var(--font-light);
+  font-size: clamp(15px, 1.5vw, 18px);
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 560px;
+}
 
-  strong { font-weight: 600; }
-  
-  /* Lists */
-  ul, ol {
-    margin: 8px 0 14px 20px;
-    padding: 0;
-  }
-  li { margin: 4px 0; }
-  
-  ol.tight > li { margin: 2px 0; }
-  
-  /* Rules like the policy page */
-  hr {
-    border: none;
-    border-top: 1px solid var(--rule);
-    margin: 22px 0;
-  }
-  
-  /* Links inside body */
-  .doc a {
-    color: var(--accent);
-    text-underline-offset: 2px;
-    text-decoration-thickness: 1px;
-  }
+/* ── Table of contents ────────────────────────────────────────────── */
+.doc-toc {
+  margin: 40px 0;
+  padding: 20px 24px;
+  border-left: 3px solid var(--blue);
+  background: #f2f6fd;
+  border-radius: 0 8px 8px 0;
+}
 
-  /* ===============================
-     Responsive tweaks
-     =============================== */
-  @media (max-width: 860px) {
-    .site-header__inner {
-      grid-template-columns: auto 1fr auto;
-    }
-    .site-actions { display: none; }
-    .nav-toggle { display: inline-flex; justify-self: end; }
-  
-    .site-nav {
-      position: absolute;
-      /* left: 0; right: 0; top: 100%; */
-      background: var(--bg);
-      border-bottom: 1px solid var(--rule);
-      display: none;
-      flex-direction: column;
-      padding: 10px var(--gutter);
-      gap: 10px;
-    }
-    .site-nav.site-nav--open { display: flex; }
-  }
-  
-  @media (max-width: 640px) {
-    .toc { padding: 12px; }
+.doc-toc__title {
+  font-family: var(--font-reg);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin: 0 0 12px;
+}
 
-  }
+.doc-toc ol {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
 
+.doc-toc a {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: var(--font-light);
+}
 
-  footer .newsletter-msg {
-    margin-top: 8px !important;
-    min-height: 1em !important;
+.doc-toc a:hover {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Document sections ────────────────────────────────────────────── */
+.doc-section {
+  margin-top: 52px !important;
+  padding-top: 48px !important;
+  border-top: 1px solid var(--rule) !important;
+}
+
+.doc-section:first-of-type {
+  border-top: none !important;
+  padding-top: 0 !important;
+  margin-top: 40px !important;
+}
+
+.doc-section__num {
+  font-family: var(--font-reg);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin: 0 0 8px;
+}
+
+.doc-section h2 {
+  font-family: var(--font-reg);
+  font-size: clamp(18px, 2.2vw, 23px);
+  color: var(--ink);
+  line-height: 1.2;
+  margin: 0 0 18px;
+  font-weight: 600;
+}
+
+.doc-section h3 {
+  font-family: var(--font-reg);
+  font-size: clamp(13px, 1.2vw, 14px);
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 28px 0 8px;
+  font-weight: 600;
+}
+
+.doc-section p {
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.7;
+}
+
+.doc-section p:last-child { margin-bottom: 0; }
+
+.doc-section ul,
+.doc-section ol {
+  color: var(--muted);
+  margin: 0 0 16px 20px;
+  padding: 0;
+  line-height: 1.7;
+}
+
+.doc-section li { margin: 5px 0; }
+
+.doc-section strong {
+  color: var(--ink);
+  font-family: var(--font-reg);
+  font-weight: 600;
+}
+
+.doc-section a {
+  color: var(--blue);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+/* ── Footer passthrough ───────────────────────────────────────────── */
+footer .newsletter-msg {
+  margin-top: 8px !important;
+  min-height: 1em !important;
 }
