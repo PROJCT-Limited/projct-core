@@ -150,14 +150,12 @@ function randomizedTagButtonsFromProjects(projects, limit = 11) {
     ];
   }
 
-  // Sort by frequency DESC, then randomize a shortlist, then cut to limit.
-  items.sort((a, b) => b.count - a.count);
-  const shortlist = items.slice(0, Math.min(items.length, 30));
-  for (let i = shortlist.length - 1; i > 0; i--) { // Fisher–Yates
+  // Shuffle ALL tags randomly (Fisher–Yates), then cut to limit.
+  for (let i = items.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [shortlist[i], shortlist[j]] = [shortlist[j], shortlist[i]];
+    [items[i], items[j]] = [items[j], items[i]];
   }
-  const pick = shortlist.slice(0, Math.min(limit, shortlist.length));
+  const pick = items.slice(0, Math.min(limit, items.length));
 
   // Map to the format used by select_mode.js
   // Each button filters by its single tag value, same as your hard-coded list.
@@ -206,18 +204,21 @@ function buildAllTagsRegistry(projects) {
   return Array.from(counts.values()).sort((a, b) => b.count - a.count);
 }
 
+const _yield = () => new Promise(r => setTimeout(r, 0));
+
 async function loadProjectsFromSheet(url) {
   const res  = await fetch(url, { cache: 'no-store' });
   const csv  = await res.text();
+
+  // Yield to the draw loop before heavy sync work so p5 doesn't freeze
+  await _yield();
   const rows = parseCsv(csv);
   const projects = rowsToProjects(rows);
-
   window.PROJECTS = projects;
 
-  // build registries used by graph + rail
+  await _yield();
   if (typeof rebuildRegistries === "function") rebuildRegistries();
 
-  // kick off image downloads for all nodes immediately
   if (typeof preloadAllImages === "function") preloadAllImages(projects);
 
   // build right-rail data and render it RANDOMIZED
@@ -228,12 +229,17 @@ async function loadProjectsFromSheet(url) {
     console.warn('[tags rail] failed to build:', e);
   }
 
-  // selection bubbles from sheet (11 randomized)
+  // selection bubbles from sheet (11 randomized) — set BEFORE first spawn
   try {
     const newTags = randomizedTagButtonsFromProjects(window.PROJECTS, 11);
     window.TAGS = newTags;
-    // Never respawn here — placeholder nodes are already floating and should stay as-is.
     console.log('[TAGS] randomized from sheet:', newTags.map(t => t.label));
+    // First-time spawn: nodes haven't appeared yet, so this is not a relabel
+    if (typeof spawnFloatingTags === 'function' &&
+        typeof mode !== 'undefined' && mode === 'select' &&
+        Array.isArray(tagNodes) && tagNodes.length === 0) {
+      spawnFloatingTags();
+    }
   } catch (e) {
     console.warn('[TAGS] randomized build failed:', e);
   }
