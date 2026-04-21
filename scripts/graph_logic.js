@@ -584,7 +584,11 @@ const chosen = scored.length ? scored[0].n : pickBestProject(selectedTags);
     //     }
     //   }
     // }
-    
+
+    // Auto-expand related nodes immediately so users see the matrix without needing to click
+    if (typeof refocusToByTags === "function" && centerNode) {
+      refocusToByTags(centerNode);
+    }
   }
   
 
