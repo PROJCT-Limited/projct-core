@@ -477,7 +477,11 @@ body {overflow: auto;}
 }
 
 
-.index-item-text { padding-top: 16px; }
+.index-item-text {
+  padding-top: 16px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
 
 
 .index-item-images img {
@@ -826,11 +830,14 @@ body.menu-open #machine * {
 
 /* Mobile tweaks */
 @media (max-width: 500px) {
-  .index-item-images { 
+  .index-item-images {
+    width: 100%;
     max-width: 100%;
     margin-top: 0;
-    min-height: 240px;       /* smaller height on phones */
-    aspect-ratio: 16 / 11;
+    margin-left: 0;
+    margin-right: 0;
+    min-height: unset;
+    aspect-ratio: 4 / 3;
   }
 }
 
@@ -846,9 +853,9 @@ body.menu-open #machine * {
   visibility: hidden;
   opacity: 0;
   transition: opacity .24s ease, visibility 0s linear .24s;
-  z-index: 9999;
+  z-index: 50000;
   font-family: "Acumin-Light";
-  font-weight: 500;  
+  font-weight: 500;
 }
 .tip-modal.is-open {
   pointer-events: auto;
