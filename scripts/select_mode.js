@@ -56,12 +56,16 @@ function spawnFloatingTags() {
     // Trim if new set is smaller
     tagNodes = existing.slice(0, newTags.length);
   } else {
-    // First spawn — place nodes fresh
+    // First spawn — place nodes fresh with a small random drift
     tagNodes = [];
     for (const t of newTags) {
       const n = new TagBubble(t.label, t.tags);
       placeNodeNoOverlap(n, tagNodes, bounds, 250, 6);
       clampTagToRect(n, wr);
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.4 + Math.random() * 0.6;
+      n.vx = Math.cos(angle) * speed;
+      n.vy = Math.sin(angle) * speed;
       tagNodes.push(n);
     }
   }
@@ -156,7 +160,6 @@ function drawSelectScreen(){
   drawPickedTagPills(padX, startY + titleM.height + 12);
   const rect = selectPlayableWorldRect(12);
 
-  // Physics step: your original float (repulsion only, no center attraction)
   for (const n of tagNodes) n.resetForces();
   for (const n of tagNodes) n.applyRepulsion(tagNodes);
   for (const n of tagNodes) {
