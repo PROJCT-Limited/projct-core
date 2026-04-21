@@ -36,7 +36,6 @@ function setup() {
 
   setupSelectUI();
   textFont(acuminLight);
-  spawnFloatingTags();
   UI.maxChildrenFocus  = 1;
 UI.maxRelatedFocus   = 3;
 UI.maxParents        = 2;
