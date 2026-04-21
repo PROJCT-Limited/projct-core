@@ -268,20 +268,18 @@ const MOBILE_RATIO_DEFAULT = 0.62; // was 0.48
 
 // Mobile metrics (smaller paddings; image sized to a right column)
 function metricsMobile(usableW, usableH) {
-  const imageW = Math.min(Math.round(usableW * 0.40), 180);
-const imageH = pickImageH(imageW);
+  const imageW = Math.round(usableW * 0.44);  // ~44% of panel width for the image column
+  const imageH = pickImageH(imageW);
   const outerPad  = 12;
   const titleY    = outerPad + 6;
   const tagGap    = Math.max(6, Math.round(usableW * 0.01));
   const tagH      = Math.max(16, Math.round(usableW * 0.05));
-  // const imageW    = Math.min(Math.round(usableW * 0.40), 180);
-  // const imageH    = Math.round(imageW * 0.86); // ~3:2
   const bodyGap   = 40;
   const ruleGap   = 80;
   const rowH      = Math.max(14, Math.round(usableW * 0.04));
   const titleSize = Math.max(20, Math.round(usableW * 0.05));
   const bodySize  = Math.max(13, Math.round(usableW * 0.025));
-  const colGap    = 5;  // gap between body and image columns
+  const colGap    = 10;
   const gapAfterTags = 5;
   return { outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize, colGap, gapAfterTags };
 }
@@ -539,10 +537,19 @@ const contentY        = tagsBottomY + 16;
 const contentBottom   = btnTopY - BTN_GAP_CONTENT;
 const availForContent = Math.max(0, contentBottom - contentY);
 
-// scroll bar track width (reserved on the right of the content area)
+// scroll bar track width
 const TRACK_W   = 3;
-const TRACK_GAP = 6;  // gap between text and track
-const textW     = contentW - TRACK_W - TRACK_GAP;
+const TRACK_GAP = 6;
+
+// Two-column on mobile: image fixed on right, text scrolls on left
+const imgReady = img && img.width > 0 && img.height > 0;
+const twoCol   = isMobileLike && imgReady;
+const colGap   = M.colGap ?? 10;
+
+// Column widths
+const imgColW   = twoCol ? imageW : 0;
+const leftZoneW = contentW - (twoCol ? imgColW + colGap : 0);
+const textW     = leftZoneW - TRACK_W - TRACK_GAP;
 
 // Reset scroll when focused node changes
 if (_panelScrollNode !== node) { panelScrollY = 0; _panelScrollNode = node; }
@@ -550,39 +557,50 @@ if (_panelScrollNode !== node) { panelScrollY = 0; _panelScrollNode = node; }
 useLightFont();
 const _bodySize = (bodySize / 1.2 || TYPE.body);
 
-// Measure full body text height (using textW so wrapping matches what we draw)
+// Measure body text height
 textSize(_bodySize);
 const bm = measureWrappedHeight(desc, textW, _bodySize, 1.25);
 
-// Also account for image if present (stacked above body)
-let totalContentH = bm.height + 32; // +32 buffer for rounding
+// Heights depend on layout mode
+let totalContentH = bm.height + 32;
 let imgBlockH = 0;
 let drawImgW = 0, drawImgH = 0;
-if (img && img.width && img.height) {
+
+if (twoCol) {
+  // Two-col: image fills full available height on the right, text independent
+  drawImgW = imgColW;
+  drawImgH = availForContent;
+} else if (imgReady) {
+  // Single-col: image stacked above body text
   drawImgW = Math.min(imageW, textW);
   drawImgH = Math.min(frameHeightForImage(img, drawImgW), Math.round(availForContent * 0.45));
   const ar = img.height / img.width;
   drawImgW = Math.min(textW, Math.max(80, Math.round(drawImgH / ar)));
-  imgBlockH = drawImgH + 16; // 16px gap between image and body
+  imgBlockH = drawImgH + 16;
   totalContentH = imgBlockH + bm.height + 32;
 }
 panelScrollMax = Math.max(0, totalContentH - availForContent);
 
-// --- Draw scrollable content inside clip ---
+// --- Fixed image column (two-col only, not scrolled) ---
+if (twoCol && drawImgH > 0) {
+  const imgX = contentX + leftZoneW + colGap;
+  drawImageCover(img, imgX, contentY, drawImgW, drawImgH, biasForImage(img));
+}
+
+// --- Scrollable text column ---
 {
   const _ctx = drawingContext;
   _ctx.save();
   _ctx.beginPath();
-  _ctx.rect(contentX, contentY, textW + TRACK_GAP + TRACK_W, availForContent);
+  _ctx.rect(contentX, contentY, leftZoneW, availForContent);
   _ctx.clip();
   _ctx.translate(0, -panelScrollY);
 
-  // Image (if present) above body text
-  if (img && typeof img === 'object' && drawImgH > 0) {
+  // Image above text (single-col only)
+  if (!twoCol && imgReady && drawImgH > 0) {
     drawImageCover(img, contentX, contentY, drawImgW, drawImgH, biasForImage(img));
   }
 
-  // Body text — large height so p5 never clips; ctx.clip() handles the boundary
   const bodyY = contentY + imgBlockH;
   textAlign(LEFT, TOP);
   textLeading(bm.lineH);
@@ -594,7 +612,7 @@ panelScrollMax = Math.max(0, totalContentH - availForContent);
   _ctx.restore();
 }
 
-// --- Scroll indicator (drawn outside clip, always in place) ---
+// --- Scroll indicator ---
 if (panelScrollMax > 0) {
   const trackX    = contentX + textW + TRACK_GAP;
   const trackH    = availForContent;
@@ -603,10 +621,8 @@ if (panelScrollMax > 0) {
   const thumbY    = contentY + Math.round(thumbMaxY * (panelScrollY / panelScrollMax));
 
   noStroke();
-  // track
   fill(255, 255, 255, 40);
   rect(trackX, contentY, TRACK_W, trackH, 2);
-  // thumb
   fill(255, 255, 255, 180);
   rect(trackX, thumbY, TRACK_W, thumbH, 2);
 }
