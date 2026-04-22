@@ -71,7 +71,7 @@
     grid-column:1/-1;
     padding-top: 0;
     line-height: 104.5%;
-    font-size:clamp(200px,80.55vw,300px);
+    font-size:clamp(90px,9.55vw,160px);
     font-weight:500}
 
   .hero .headline .hl{
@@ -484,7 +484,7 @@
 @media (min-width: 1366px){
   .hero .headline{
     /* was clamp(50px, 5.55vw, 120px) */
-    font-size: clamp(80px, 7.55vw, 140px);
+    font-size: clamp(80px, 7.55vw, 120px);
   }
   .hero .aside{
     /* was clamp(24px, 1.3vw, 40px) */
@@ -501,7 +501,7 @@
 }
 
 @media (min-width: 1700px){
-  .hero .headline{ font-size: clamp(60px, 5.2vw, 180px); }
+  .hero .headline{ font-size: clamp(60px, 5.2vw, 120px); }
   .hero .aside{    font-size: clamp(26px, 1.5vw, 70px); }
   .section-copy{   font-size: clamp(24px, 1.2vw, 50px); }
 }
