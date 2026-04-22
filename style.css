@@ -69,7 +69,7 @@ body {
   padding-top: 10px;
   padding-bottom: 10px;
    
-  font-size: 1.1em;
+  font-size: 1.1rem;
   color: white;
   align-items: center;
   justify-content: space-between; 
@@ -340,6 +340,9 @@ hr {
 /* style.css (replace the old rule) */
 .header .button-header { color: inherit; }
 
+/* Prevent body font-size / line-height from inflating header height */
+.header p { margin: 0; line-height: 1; }
+
 
 /* Make the links inherit that white and remove underline */
 .button-header a,
@@ -588,6 +591,7 @@ transition-delay: var(--reveal-delay, 0ms);
 html { scrollbar-gutter: stable both-edges; }
 .header {  box-sizing: border-box; }
 .logo-svg { width: 100px; height: 25px; display: block; object-fit: contain; }
+.logo_PROJCT a { display: block; line-height: 0; text-decoration: none; color: inherit; }
 
 #machine {
 flex: 1;            
