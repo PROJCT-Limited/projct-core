@@ -91,15 +91,21 @@
 <div class="main">
   <!-- ===== PANEL 1: HERO (blue) ===== -->
   <section class="panel hero " id="hero">
+
+    <!-- constellation animation -->
+    <svg class="hero-anim" viewBox="0 0 1000 550" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+      <line class="ha-line ha-l1" x1="420" y1="120" x2="140" y2="360"/>
+      <line class="ha-line ha-l2" x1="420" y1="120" x2="785" y2="210"/>
+      <circle class="ha-circle ha-c-center" cx="420" cy="120" r="13"/>
+      <circle class="ha-circle ha-c-left"   cx="140" cy="360" r="13"/>
+      <circle class="ha-circle ha-c-right"  cx="785" cy="210" r="13"/>
+    </svg>
+
     <div class="container">
       <h1 class="headline">
-        PROJCT <span class="hl">spark</span> ideas,<br> <span class="hl">build</span> outcomes and <br><span class="hl">connect</span> to the ecosystem.
+        <img src="images/logo-PROJCT.svg" alt="PROJCT" class="hero-logo"> <span class="hl">spark</span> ideas, <span class="hl">build</span> outcomes and <span class="hl">connect</span> to the ecosystem.
       </h1>
-      <!-- <img src="images/swirl.svg" alt="" class="hero-swirl" loading="lazy"> -->
-      <p class="aside">
-        Although fluid, we focus much energy on product, innovation, and growth with our ecosystem of
-        clients, investors, founders, and thought leaders.<br> <br>We are based in Hong Kong but work globally.
-      </p>
+      <a class="hero-learn" href="#objective">Learn more</a>
     </div>
   </section>
 
@@ -121,7 +127,7 @@
 
 
     <!-- ===== PANEL 2: OBJECTIVE + VENN ===== -->
-    <section class="panel" id="hero">
+    <section class="panel" id="objective">
       <div class="container">
         <div class="kicker">Our Objective</div>
         <div class="objective-copy section-copy">
