@@ -467,7 +467,7 @@ useLightFont();
 textAlign(LEFT, TOP);
 setFill(THEME.white);
 const _titleSize = (titleSize || TYPE.title);
-const titleStr   = `“${title.toUpperCase()}“`;
+const titleStr   = title.toUpperCase();
 
 textSize(_titleSize);
 const titleM = measureWrappedHeight(titleStr, contentW, _titleSize, 1.15);
