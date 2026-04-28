@@ -209,8 +209,9 @@ document.addEventListener('swup:contentReplaced', () => {
         const s = (img.getAttribute('src') || '').trim();
         return s && !s.startsWith('#');
       });
-  
-      if (!hasRealImage) {
+      const hasPlaceholder = Array.from(imgs).some(img => img.classList.contains('img-placeholder'));
+
+      if (!hasRealImage && !hasPlaceholder) {
         // Hide arrows and image wrapper, expand text
         item.classList.add('no-images');
         // optional: remove slider arrows entirely
@@ -279,14 +280,18 @@ document.addEventListener('swup:contentReplaced', () => {
     // ⛔️ No default selection on load:
     clearHighlight();
 
-    // Click => set active, apply highlight
+    // Click => set active, apply highlight (click active button again to clear)
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
-        // single-select appearance
+        const wasActive = btn.classList.contains("active");
         buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
 
-        applyHighlight(btn.dataset.tag);
+        if (!wasActive) {
+          btn.classList.add("active");
+          applyHighlight(btn.dataset.tag);
+        } else {
+          clearHighlight();
+        }
       });
     });
   })();
