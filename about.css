@@ -1085,8 +1085,8 @@ html { scroll-behavior: smooth; }
   .hero .headline,
   .hero .aside,
   .hero-learn { grid-column: 1 / -1; }
-  .hero .headline { font-size: clamp(22px, 6.5vw, 34px); }
-  .hero .aside    { font-size: clamp(14px, 4vw,   17px); }
+  .hero .headline { font-size: clamp(32px, 9vw, 52px); }
+  .hero .aside    { font-size: clamp(15px, 4vw, 19px); }
 }
 
 /* Highlight words: white by default, yellow on hover */
@@ -1113,23 +1113,39 @@ html { scroll-behavior: smooth; }
 /* ── Hero constellation animation ── */
 .panel.hero { position: relative; overflow: hidden; }
 
+/* SVG behind text */
 .hero-anim {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 0;
+}
+
+/* Container always above the SVG */
+.panel.hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* On mobile: confine SVG to upper half so it never overlaps text */
+@media (max-width: 640px) {
+  .hero-anim {
+    height: 48%;
+    bottom: auto;
+  }
 }
 
 .ha-circle {
-  fill: rgba(255,255,255);
+  fill: rgba(255,255,255,.9);
   transform-box:    fill-box;
   transform-origin: center;
   opacity: 0;
 }
 
 .ha-line {
-  stroke: rgba(255,255,255);
+  stroke: rgba(255,255,255,.55);
   stroke-width: 1.2;
   fill: none;
   stroke-dasharray:  420;
@@ -1137,31 +1153,34 @@ html { scroll-behavior: smooth; }
   opacity: 0;
 }
 
-/* ── Sequence: center → left + line → right + line → fade out ── */
+/* ── Sequence: pop in → draw lines → pulse → staggered fade ── */
 .ha-c-center {
   animation:
-    ha-pop  .45s cubic-bezier(.34,1.56,.64,1) .3s  both,
-    ha-gone .7s  ease-in                      3.8s forwards;
+    ha-pop   .45s cubic-bezier(.34,1.56,.64,1) .3s  both,
+    ha-pulse .55s ease-in-out                  3.1s both,
+    ha-gone  .6s  ease-in                      4.0s forwards;
 }
 .ha-c-left {
   animation:
-    ha-pop  .45s cubic-bezier(.34,1.56,.64,1) .95s both,
-    ha-gone .7s  ease-in                      3.8s forwards;
+    ha-pop   .45s cubic-bezier(.34,1.56,.64,1) .95s both,
+    ha-pulse .55s ease-in-out                  3.25s both,
+    ha-gone  .6s  ease-in                      4.15s forwards;
 }
 .ha-l1 {
   animation:
-    ha-draw .55s ease-out                     1.4s both,
-    ha-gone .5s  ease-in                      3.8s forwards;
+    ha-draw .55s ease-out  1.4s  both,
+    ha-gone .45s ease-in   3.7s  forwards;
 }
 .ha-c-right {
   animation:
-    ha-pop  .45s cubic-bezier(.34,1.56,.64,1) 2.1s both,
-    ha-gone .7s  ease-in                      3.8s forwards;
+    ha-pop   .45s cubic-bezier(.34,1.56,.64,1) 2.1s  both,
+    ha-pulse .55s ease-in-out                  3.4s  both,
+    ha-gone  .6s  ease-in                      4.3s  forwards;
 }
 .ha-l2 {
   animation:
-    ha-draw .55s ease-out                     2.55s both,
-    ha-gone .5s  ease-in                      3.8s  forwards;
+    ha-draw .55s ease-out  2.55s both,
+    ha-gone .45s ease-in   3.85s forwards;
 }
 
 @keyframes ha-pop {
@@ -1172,6 +1191,11 @@ html { scroll-behavior: smooth; }
 @keyframes ha-draw {
   from { stroke-dashoffset: 420; opacity: 1; }
   to   { stroke-dashoffset: 0;   opacity: 1; }
+}
+@keyframes ha-pulse {
+  0%   { opacity: 1; transform: scale(1); }
+  50%  { opacity: .5; transform: scale(1.55); }
+  100% { opacity: 1; transform: scale(1); }
 }
 @keyframes ha-gone {
   from { opacity: 1; }
