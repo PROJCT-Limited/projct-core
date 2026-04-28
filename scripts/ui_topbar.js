@@ -277,8 +277,8 @@ function metricsMobile(usableW, usableH) {
   const bodyGap   = 40;
   const ruleGap   = 80;
   const rowH      = Math.max(14, Math.round(usableW * 0.04));
-  const titleSize = Math.max(20, Math.round(usableW * 0.05));
-  const bodySize  = Math.max(13, Math.round(usableW * 0.025));
+  const titleSize = Math.max(20, Math.round(usableW * 0.056));
+  const bodySize  = Math.max(16, Math.round(usableW * 0.042));
   const colGap    = 10;
   const gapAfterTags = 5;
   return { outerPad, titleY, tagGap, tagH, imageW, imageH, bodyGap, ruleGap, rowH, titleSize, bodySize, colGap, gapAfterTags };
