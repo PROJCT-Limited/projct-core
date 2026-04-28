@@ -960,3 +960,225 @@ hr{ width: auto !important; margin-inline: 0 !important; }
     object-fit: cover !important;
   }
 }
+
+/* Space section: full-width images with text overlay (phones) */
+@media (max-width: 640px){
+  .container:has(.space-grid){
+    position: relative !important;
+    display: block !important;
+    padding-inline: 0 !important;
+    gap: 0 !important;
+  }
+  .container:has(.space-grid) .kicker{
+    position: absolute !important;
+    top: 20px !important;
+    left: 20px !important;
+    z-index: 2;
+    color: #fff !important;
+    text-shadow: 0 1px 6px rgba(0,0,0,.35) !important;
+    margin: 0 !important;
+  }
+  .container:has(.space-grid) .address{
+    position: absolute !important;
+    /* 80vw ≈ 60% down a 3:4 portrait image that fills 100vw */
+    top: 80vw !important;
+    left: 20px !important;
+    right: 20px !important;
+    z-index: 2;
+    color: #fff !important;
+    font-size: clamp(22px, 6vw, 30px) !important;
+    line-height: 1.15 !important;
+    text-shadow: 0 1px 8px rgba(0,0,0,.35) !important;
+    margin: 0 !important;
+  }
+  .container:has(.space-grid) .space-grid{
+    display: block !important;
+    grid-column: unset !important;
+  }
+  .container:has(.space-grid) .space-grid img{
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 3/4 !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+}
+
+/* ── Hero: column-aligned, content-height ── */
+
+html { scroll-behavior: smooth; }
+
+/* Blue panel — large top gap, content sits in lower portion */
+.panel.hero {
+  min-height: 80vh;
+  padding-top:    clamp(300px, 40vh, 450px);
+  padding-bottom: clamp(70px,  10vh, 120px);
+}
+
+/* PROJCT logo inline in headline */
+.hero-logo {
+  display: inline;
+  height: 0.72em;
+  width: auto;
+  max-width: none;
+  vertical-align: baseline;
+  position: relative;
+  top: 0.05em;
+  margin-left: 0.13em;   /* nudge right to optically align with text below */
+}
+
+/* Headline: same column as section-copy, at least the same size */
+.hero .headline {
+  grid-column: 5 / -2;
+  font-size:      clamp(36px, 3.8vw, 62px);
+  font-weight:    300;
+  line-height:    1.0;
+  letter-spacing: -0.04em;
+  word-spacing:   -0.02em;
+  text-wrap:      balance;
+  padding-top:    0;
+  margin:         0;
+}
+
+/* Aside: same column, matches section-copy sizing */
+.hero .aside {
+  grid-column: 5 / -2;
+  margin-top: clamp(16px, 2vh, 24px);
+  font-size:  clamp(24px, 1.3vw, 40px);
+  line-height: 1.45;
+  color: rgba(255,255,255,.78);
+}
+
+/* Learn more link */
+.hero-learn {
+  grid-column:    5 / -2;
+  display:        block;
+  width:          fit-content;
+  margin-top:     clamp(20px, 2.5vh, 32px);
+  font-family:    "Acumin-Light";
+  font-size:      clamp(12px, 0.9vw, 15px);
+  letter-spacing: .05em;
+  color:          rgba(255,255,255,.6);
+  text-decoration: none;
+  border-bottom:  1px solid rgba(255,255,255,.3);
+  padding-bottom: 2px;
+  transition: color .18s, border-color .18s;
+}
+.hero-learn:hover {
+  color:        #fff;
+  border-color: rgba(255,255,255,.85);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero .headline,
+  .hero .aside,
+  .hero-learn { grid-column: 6 / -1; }
+}
+@media (max-width: 860px) {
+  .hero .headline,
+  .hero .aside,
+  .hero-learn { grid-column: 4 / -1; }
+}
+@media (max-width: 640px) {
+  .hero .headline,
+  .hero .aside,
+  .hero-learn { grid-column: 1 / -1; }
+  .hero .headline { font-size: clamp(22px, 6.5vw, 34px); }
+  .hero .aside    { font-size: clamp(14px, 4vw,   17px); }
+}
+
+/* Highlight words: white by default, yellow on hover */
+.hero .headline .hl {
+  background: transparent;
+  color: #fff;
+  padding: .006em .05em;
+  transition: background .22s ease, color .22s ease;
+  cursor: default;
+}
+.hero .headline .hl:hover {
+  background: var(--highlight);
+  color: #0e50c8;
+}
+
+/* Quote typography fix */
+.quote {
+  letter-spacing: -0.01em;
+  font-weight:    300;
+  line-height:    1.3;
+  text-wrap:      balance;
+}
+
+/* ── Hero constellation animation ── */
+.panel.hero { position: relative; overflow: hidden; }
+
+.hero-anim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ha-circle {
+  fill: rgba(255,255,255);
+  transform-box:    fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+
+.ha-line {
+  stroke: rgba(255,255,255);
+  stroke-width: 1.2;
+  fill: none;
+  stroke-dasharray:  420;
+  stroke-dashoffset: 420;
+  opacity: 0;
+}
+
+/* ── Sequence: center → left + line → right + line → fade out ── */
+.ha-c-center {
+  animation:
+    ha-pop  .45s cubic-bezier(.34,1.56,.64,1) .3s  both,
+    ha-gone .7s  ease-in                      3.8s forwards;
+}
+.ha-c-left {
+  animation:
+    ha-pop  .45s cubic-bezier(.34,1.56,.64,1) .95s both,
+    ha-gone .7s  ease-in                      3.8s forwards;
+}
+.ha-l1 {
+  animation:
+    ha-draw .55s ease-out                     1.4s both,
+    ha-gone .5s  ease-in                      3.8s forwards;
+}
+.ha-c-right {
+  animation:
+    ha-pop  .45s cubic-bezier(.34,1.56,.64,1) 2.1s both,
+    ha-gone .7s  ease-in                      3.8s forwards;
+}
+.ha-l2 {
+  animation:
+    ha-draw .55s ease-out                     2.55s both,
+    ha-gone .5s  ease-in                      3.8s  forwards;
+}
+
+@keyframes ha-pop {
+  0%   { opacity: 0; transform: scale(0.1); }
+  65%  { opacity: 1; transform: scale(1.18); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes ha-draw {
+  from { stroke-dashoffset: 420; opacity: 1; }
+  to   { stroke-dashoffset: 0;   opacity: 1; }
+}
+@keyframes ha-gone {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim { display: none; }
+}
