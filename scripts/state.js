@@ -6,7 +6,7 @@ let topBarButtons = {
   };
   let deepLinkPending = false;
 // Pointer 
-const pointer = { x: 0, y: 0, worldX: 0, worldY: 0, down: false, justReleased: false, isTouch: false };
+const pointer = { x: 0, y: 0, worldX: 0, worldY: 0, down: false, justReleased: false, isTouch: false, id: null };
 
 // World transform
 let baseWidth = 393;
