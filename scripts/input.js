@@ -376,6 +376,7 @@ function touchStarted(ev) {
 function touchMoved(ev) {
   if (overlayIsOpen() || uiWantsThisTouch(ev)) return true;
   if (pointer.id === null) return true;
+  if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
 
   let t = null;
   for (const tt of touches) if (tt.id === pointer.id) { t = tt; break; }
