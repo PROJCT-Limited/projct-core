@@ -601,12 +601,18 @@ position: relative;
 z-index: 1;
 }
 
-#machine canvas { 
-display: block; 
+#machine canvas {
+display: block;
 position: absolute;
 top: 0;
 left: 0;
 z-index: 1;
+touch-action: none; /* prevent browser scroll/zoom hijacking touch drags */
+}
+
+body.nodes-page {
+  overflow: hidden;
+  touch-action: none;
 }
 
 .team-grid_inner {
