@@ -1138,14 +1138,14 @@ html { scroll-behavior: smooth; }
 }
 
 .ha-circle {
-  fill: rgba(255,255,255,.9);
+  fill: rgba(255,255,255);
   transform-box:    fill-box;
   transform-origin: center;
   opacity: 0;
 }
 
 .ha-line {
-  stroke: rgba(255,255,255,.55);
+  stroke: rgba(255,255,255);
   stroke-width: 1.2;
   fill: none;
   stroke-dasharray:  420;
