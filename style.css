@@ -46,14 +46,14 @@ body {
 }
 
 @font-face {
-  font-family: "Acumin-Light";
-  src: url('./fonts/Acumin-Pro/Acumin-Pro-Light.otf') ;
+  font-family: "Red Hat Display";
+  src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
 
 }
 
 @font-face {
-  font-family: "Acumin-Regular";
-  src: url('./fonts/Acumin-Pro/Acumin-Pro-Book.otf') ;
+  font-family: "Red Hat Display";
+  src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
 
 }
 
@@ -61,7 +61,7 @@ body {
 :root { --header-h: 80px; }
 
 .header {
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   font-weight: 500;
   background-color: #0e50c8;
   display: flex;
@@ -79,7 +79,7 @@ body {
 }
 
 .button-header {
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   font-weight: 500;   
   display: flex;           
   flex-wrap: wrap;        
@@ -112,7 +112,7 @@ body {
 
 
 .index-outer {
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   display: flex; 
   margin-top: 80px;
   padding-bottom: 10px;
@@ -124,7 +124,7 @@ body {
   justify-content: flex-start; 
 }
 .index {
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   color: white;
   height: 100%;
   align-items: center;
@@ -139,7 +139,7 @@ body {
 
 
 .index-item {
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   flex: 1;        /* fills rest of mainbody */
   display: flex;
   background-color: #0e50c8;
@@ -242,7 +242,7 @@ img {
 } */
 
 .list-projects {
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   color: white;
   background-color: #0e50c8;
   flex: 1 1 auto; 
@@ -375,7 +375,7 @@ canvas { display:block; }
 
 /* Fullscreen mobile overlay: CLOSED state */
 .mobile-overlay {
-font-family: 'Acumin-Light';
+font-family: 'Red Hat Display';
 position: fixed;
 inset: 0;                      /* left:0; top:0; right:0; bottom:0 */
 background: #0e50c8;
@@ -674,7 +674,7 @@ object-fit: cover;
 display: block;
 }
   .team-grid_info {
-    font-family: 'Acumin-Light';
+    font-family: 'Red Hat Display';
     flex-flow: column;
     justify-content: center;
     align-items: center;
@@ -864,7 +864,7 @@ body.menu-open #machine * {
   opacity: 0;
   transition: opacity .24s ease, visibility 0s linear .24s;
   z-index: 50000;
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   font-weight: 500;
 }
 .tip-modal.is-open {
@@ -882,7 +882,7 @@ body.menu-open #machine * {
 
 /* --- Panel --- */
 .tip-panel {
-  font-family: 'Acumin-Light';
+  font-family: 'Red Hat Display';
   position: relative;
   width: min(60vw, 980px);
   background: #124fc7;          /* brand blue */
@@ -971,7 +971,7 @@ body.menu-open #machine * {
 
 .highlighted-text {
 font-size: 1.25em;
-font-family: 'Acumin-Light';
+font-family: 'Red Hat Display';
 }
 
 .index-item.no-images .index-item-images {
@@ -1039,7 +1039,7 @@ font-family: 'Acumin-Light';
   --text: #ffffff;
   --text-active: #ffffff;         
   --chip-bg-hover: rgba(255,255,255,0.12);
-  font-family: 'Acumin-Light';
+  font-family: 'Red Hat Display';
   font-weight: 300;           
   font-size: 1rem;              
   letter-spacing: .02em;
@@ -1177,7 +1177,7 @@ font-family: 'Acumin-Light';
 
 .newsletter-title{
   margin: 0 0 .5rem 0;
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   font-weight: 400;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -1224,7 +1224,7 @@ font-family: 'Acumin-Light';
   align-items: center;
   gap: 1rem;
   padding: 10px var(--page-pad);
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   font-size: .85rem;
   padding-block: clamp(12px, 2.6vh, 24px);
 }
