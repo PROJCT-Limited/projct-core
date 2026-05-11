@@ -1,7 +1,7 @@
 /* ====== FOOTER: lock to About-page look (override everything) ====== */
 .site-footer,
 .footer-legal { 
-  font-family: "Acumin-Light" !important;
+  font-family: "Red Hat Display" !important;
   color: #fff !important;
 }
 
