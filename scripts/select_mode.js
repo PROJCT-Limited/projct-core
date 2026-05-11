@@ -197,7 +197,7 @@ function drawPickedTagPills(x0, y0){
     rect(x, y, w, h, 14);
     fill(COLORS.blue);
     textFont(acuminLight);
-    text(label, x + padX, y + h / 2);
+    text(label, x + padX, y + h / 2 - 1);
     x += w + gap;
     if (x > baseWidth - 200) { x = x0; y += h + 10; }
   }
@@ -252,7 +252,7 @@ function drawPlayCircle() {
   fill(ready ? 255 : 80, ready ? 255 : 120);
   textAlign(CENTER, CENTER);
   textSize(32);
-  text(`${selected.length}/${maxSel}`, 0, 0);
+  text(`${selected.length}/${maxSel}`, 0, -3);
   pop();
 }
 
