@@ -153,15 +153,15 @@ function positionShareNodeButton(screenX, screenY, visible) {
       rrect(x, y, w, h, h / 2);
       setFill(THEME.blue);
       textAlign(CENTER, CENTER);
-      text(label, x + w / 2, y + h / 2 + 1);
+      text(label, x + w / 2, y + h / 2 - 2);
       return w;
     }
-  
+
     function drawRule(x, y, w) { setStroke(THEME.line); strokeWeight(1); line(x, y, x + w, y); noStroke(); }
     function drawKVRow(x, y, w, key, value, rowH) {
       textSize(14);
-      textAlign(LEFT,  CENTER); setFill(THEME.white); text(key,  x,      y + rowH / 2);
-      textAlign(RIGHT, CENTER);                       text(value || "—", x + w, y + rowH / 2);
+      textAlign(LEFT,  CENTER); setFill(THEME.white); text(key,  x,      y + rowH / 2 - 1);
+      textAlign(RIGHT, CENTER);                       text(value || "—", x + w, y + rowH / 2 - 1);
     }
   
     const currentNode = () =>
@@ -894,7 +894,7 @@ function drawPill(x, y, label, h, padX, THEME) {
   rrect(x, y, w, h, h / 2);
   setFill(THEME.blue);
   textAlign(CENTER, CENTER);
-  text(label, x + w / 2, y + h / 2 + 1);
+  text(label, x + w / 2, y + h / 2 - 2);
   return w;
 }
 
@@ -927,8 +927,8 @@ function drawRule(x, y, w, THEME) {
 }
 function drawKVRow(x, y, w, key, value, rowH, THEME) {
   textSize(14);
-  textAlign(LEFT,  CENTER); setFill(THEME.white); text(key,  x,      y + rowH / 2);
-  textAlign(RIGHT, CENTER);                         text(value || "—", x + w, y + rowH / 2);
+  textAlign(LEFT,  CENTER); setFill(THEME.white); text(key,  x,      y + rowH / 2 - 1);
+  textAlign(RIGHT, CENTER);                         text(value || "—", x + w, y + rowH / 2 - 1);
 }
 
 // choose the target frame height for a given dest width, per-image
