@@ -19,18 +19,18 @@ html, body {
     cursor: none; 
   }
   @font-face {
-    font-family: "Acumin-Light";
-    src: url('./fonts/Acumin-Pro/Acumin-Pro-Light.otf') ;
+    font-family: "Red Hat Display";
+    src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
   
   }
   
   @font-face {
-    font-family: "Acumin-Regular";
-    src: url('./fonts/Acumin-Pro/Acumin-Pro-Book.otf') ;
+    font-family: "Red Hat Display";
+    src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
   
   }
   body {
-    font-family: 'Acumin-Light';
+    font-family: 'Red Hat Display';
     background-color: white;
 
 
@@ -184,7 +184,7 @@ body { padding-top: var(--header-h) !important; }
   align-items: center;
   gap: 8px;                   /* space between svg and text */
   /* text-transform: uppercase; */
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   font-size: 1em;
   max-height: 110px;
 }
@@ -255,7 +255,7 @@ body { padding-top: var(--header-h) !important; }
   position: fixed; inset: 0; display: grid; place-items: center;
   visibility: hidden; opacity: 0; pointer-events: none;
   transition: opacity .22s ease, visibility 0s linear .22s;
-  z-index: 1000002; font-family: "Acumin-Light";
+  z-index: 1000002; font-family: "Red Hat Display";
   font-weight: 500;  
 }
 .tip-modal.is-open{ visibility: visible; opacity: 1; pointer-events: auto; transition: opacity .22s ease; }
@@ -270,7 +270,7 @@ body { padding-top: var(--header-h) !important; }
 }
 
 .tip-title{
-  font-family: "Acumin-Light";
+  font-family: "Red Hat Display";
   font-weight: 500;  
   margin: 0 0 12px;
   text-align: center;
