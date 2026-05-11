@@ -1,12 +1,12 @@
 @font-face {
-    font-family: "Acumin-Light";
-    src: url('./fonts/Acumin-Pro/Acumin-Pro-Light.otf') ;
+    font-family: "Red Hat Display";
+    src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
 
   }
   
   @font-face {
-    font-family: "Acumin-Regular";
-    src: url('./fonts/Acumin-Pro/Acumin-Pro-Book.otf') ;
+    font-family: "Red Hat Display";
+    src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
   
   }
   canvas, #sketch, .p5Canvas {
@@ -63,14 +63,14 @@
   
 
   .panel.hero{
-    font-family: "Acumin-Light";
+    font-family: "Red Hat Display";
     background:var(--brand-blue);
     color:#fff}
 
   .hero .headline{
     grid-column:1/-1;
     padding-top: 0;
-    line-height: 104.5%;
+    line-height: 112%;
     font-size:clamp(90px,9.55vw,160px);
     font-weight:500}
 
@@ -80,7 +80,7 @@
     padding:.006em .05em;
 }
   .hero .aside{
-    font-family: "Acumin-Light";
+    font-family: "Red Hat Display";
     grid-column:5/-3;
     margin-top:0.5rem;
     color:rgba(255,255,255,.85);
@@ -89,7 +89,7 @@
 
   .kicker{grid-column:1/4;
     font-size:clamp(20px,1.3vw,36px);
-    font-family: "Acumin-Light";
+    font-family: "Red Hat Display";
     letter-spacing:.05em;
     text-transform:uppercase;
     color:var(--brand-blue);
@@ -97,7 +97,7 @@
   .section-copy{
     grid-column:5/-2;
     color:var(--brand-blue);
-    font-family: "Acumin-Light";
+    font-family: "Red Hat Display";
     font-size:clamp(24px,1.3vw,40px);
     margin:0}
   .objective-copy,.team-intro,.address{
@@ -174,10 +174,10 @@
   .quote{
     grid-column:1/9;
     font-size:clamp(30px,3.2vw,50px);
-    line-height: 120%;
+    line-height: 125%;
     font-weight: 10;
-    font-family: "Acumin-Regular";
-    letter-spacing: 2%;
+    font-family: "Red Hat Display";
+    letter-spacing: 0.01em;
     margin: 0;
     color:var(--brand-blue)}
 
@@ -190,7 +190,7 @@
     flex-wrap:wrap
   }
   .btn{    
-    font-family: "Acumin-Light";
+    font-family: "Red Hat Display";
     padding:10px 14px;
     border:1px solid var(--brand-blue);
     font-size:20px;
@@ -612,7 +612,7 @@
 
 .site-footer,
 .footer-legal { 
-  font-family: "Acumin-Light" !important;
+  font-family: "Red Hat Display" !important;
   color: #fff !important;
 }
 
@@ -979,9 +979,8 @@ html { scroll-behavior: smooth; }
   grid-column: 5 / -2;
   font-size:      clamp(36px, 3.8vw, 62px);
   font-weight:    300;
-  line-height:    1.0;
-  letter-spacing: -0.04em;
-  word-spacing:   -0.02em;
+  line-height:    1.12;
+  letter-spacing: -0.015em;
   text-wrap:      balance;
   padding-top:    0;
   margin:         0;
@@ -1002,7 +1001,7 @@ html { scroll-behavior: smooth; }
   display:        block;
   width:          fit-content;
   margin-top:     clamp(20px, 2.5vh, 32px);
-  font-family:    "Acumin-Light";
+  font-family:    "Red Hat Display";
   font-size:      clamp(12px, 0.9vw, 15px);
   letter-spacing: .05em;
   color:          rgba(255,255,255,.6);
