@@ -4,27 +4,27 @@
     --shadow:0 10px 24px rgba(0,0,0,.15);
     --ring:rgba(13,80,200,.35);
     --radius:999px;
-    font-family: "Acumin-Light";
+    font-family: "Red Hat Display";
   }
 
   @font-face {
-    font-family: "Acumin-Light";
-    src: url('./fonts/Acumin-Pro/Acumin-Pro-Light.otf') ;
+    font-family: "Red Hat Display";
+    src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
 
   }
   
   @font-face {
-    font-family: "Acumin-Regular";
-    src: url('./fonts/Acumin-Pro/Acumin-Pro-Book.otf') ;
+    font-family: "Red Hat Display";
+    src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
   
   }
 
   *{box-sizing:border-box}
-  body{margin:0;font-family: "Acumin-Light";
+  body{margin:0;font-family: "Red Hat Display";
     color:var(--text)}
   
   /* FAB container */
-  #suggestion-fab{position:fixed;right:24px;bottom:24px;z-index:1000;font-family: "Acumin-Light";}
+  #suggestion-fab{position:fixed;right:24px;bottom:24px;z-index:1000;font-family: "Red Hat Display";}
   
   /* FAB button */
   .fab{
@@ -45,7 +45,7 @@
     padding-right:40px; /* space for chip */
   }
   .fab-label{
-    font-family: "Acumin-Light";
+    font-family: "Red Hat Display";
     font-size:15px;letter-spacing:.1px;white-space:nowrap;user-select:none;
     opacity:0;transform:translateX(8px);
     transition:opacity .2s ease,transform .2s ease;
@@ -83,7 +83,7 @@
   .modal-root.open .backdrop{opacity:1}
   
   .card{
-    font-family: "Acumin-Light";
+    font-family: "Red Hat Display";
     position:relative;width:min(680px,calc(100% - 32px));
     background:#fff; box-shadow:var(--shadow);
     transform:translateY(16px);opacity:0;
@@ -95,7 +95,7 @@
     display:flex;align-items:center;justify-content:space-between;gap:8px;
     padding:16px 20px;border-bottom:1px solid #e5e7eb;background:var(--brand);color:#fff
   }
-  .card-title{margin:0;font-size:18px; font-family: "Acumin-Light";}
+  .card-title{margin:0;font-size:18px; font-family: "Red Hat Display";}
   .icon-btn{border:0;background:transparent;padding:8px;border-radius:8px;cursor:pointer;color:#fff}
   .icon-btn:hover{background:rgba(255,255,255,.15)}
   
