@@ -1,11 +1,11 @@
 /* ── Fonts (mirrored from about.css) ─────────────────────────────── */
 @font-face {
-  font-family: "Acumin-Light";
-  src: url('./fonts/Acumin-Pro/Acumin-Pro-Light.otf');
+  font-family: "Red Hat Display";
+  src: url('./fonts/static/RedHatDisplay-Regular.ttf');
 }
 @font-face {
-  font-family: "Acumin-Regular";
-  src: url('./fonts/Acumin-Pro/Acumin-Pro-Book.otf');
+  font-family: "Red Hat Display";
+  src: url('./fonts/static/RedHatDisplay-Regular.ttf');
 }
 
 /* ── Tokens ───────────────────────────────────────────────────────── */
@@ -17,8 +17,8 @@
   --bg:         #ffffff;
   --page-max:   720px;
   --gutter:     clamp(20px, 5vw, 56px);
-  --font-light: "Acumin-Light",   system-ui, sans-serif;
-  --font-reg:   "Acumin-Regular", system-ui, sans-serif;
+  --font-light: "Red Hat Display", system-ui, sans-serif;
+  --font-reg:   "Red Hat Display", system-ui, sans-serif;
 }
 
 /* ── Reset ────────────────────────────────────────────────────────── */
