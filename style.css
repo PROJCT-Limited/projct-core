@@ -47,14 +47,18 @@ body {
 
 @font-face {
   font-family: "Red Hat Display";
-  src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
-
+  src: url('./fonts/static/RedHatDisplay-Regular.ttf');
+  ascent-override: 76%;
+  descent-override: 25%;
+  line-gap-override: 0%;
 }
 
 @font-face {
   font-family: "Red Hat Display";
-  src: url('./fonts/static/RedHatDisplay-Regular.ttf') ;
-
+  src: url('./fonts/static/RedHatDisplay-Regular.ttf');
+  ascent-override: 76%;
+  descent-override: 25%;
+  line-gap-override: 0%;
 }
 
 
