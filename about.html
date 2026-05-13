@@ -11,9 +11,61 @@
   <!-- Page-scoped styles for About -->
   <link rel="stylesheet" href="about.css">
   <script src="subscribe.js" defer></script>
+
+  <!-- Intro: hide overlay immediately on repeat visits (runs before paint) -->
+  <script>try{if(sessionStorage.getItem('projct-intro-done'))document.documentElement.classList.add('intro-seen');}catch(e){}</script>
+
+  <style>
+    /* ===== LOGO INTRO OVERLAY ===== */
+    .intro-seen #intro-overlay { display: none !important; }
+
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999999;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #intro-video-wrap {
+      width: clamp(220px, 38vw, 480px);
+      aspect-ratio: 5.011;
+      will-change: transform, opacity;
+    }
+
+    #intro-video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* Progress line at bottom of overlay */
+    #intro-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: rgba(14, 80, 200, 0.35);
+      transition: width 0.1s linear;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- ===== INTRO ANIMATION OVERLAY ===== -->
+  <div id="intro-overlay" aria-hidden="true" role="presentation">
+    <div id="intro-video-wrap">
+      <video id="intro-video" autoplay muted playsinline preload="auto">
+        <source src="images/logo-revel-updated.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div id="intro-progress"></div>
+  </div>
 
     <div class="header"> 
         <div class="logo_PROJCT">
@@ -486,4 +538,95 @@ the end result.
 </body>
 <script src="./about.js"></script>
 <script src="./interaction.js"></script>
+
+<script>
+(function () {
+  var overlay    = document.getElementById('intro-overlay');
+  if (!overlay) return;
+
+  // Already seen this session — overlay hidden via CSS, nothing to do
+  try { if (sessionStorage.getItem('projct-intro-done')) return; } catch (e) {}
+
+  var video      = document.getElementById('intro-video');
+  var wrap       = document.getElementById('intro-video-wrap');
+  var progress   = document.getElementById('intro-progress');
+  var headerLogo = document.querySelector('.logo_PROJCT .logo-svg');
+
+  // Prevent body scroll during intro
+  document.body.style.overflow = 'hidden';
+
+  // Hide the real header logo — it will fade in after the fly animation
+  if (headerLogo) headerLogo.style.opacity = '0';
+
+  var done = false;
+
+  // ── Progress bar driven by video currentTime ────────────────────
+  video.addEventListener('timeupdate', function () {
+    if (!video.duration) return;
+    progress.style.width = (video.currentTime / video.duration * 100) + '%';
+  });
+
+  // ── Core: fly logo to header corner and reveal ──────────────────
+  function flyToHeader() {
+    if (done) return;
+    done = true;
+
+    try { sessionStorage.setItem('projct-intro-done', '1'); } catch (e) {}
+    document.body.style.overflow = '';
+
+    if (!headerLogo) {
+      overlay.style.transition = 'opacity 0.5s ease';
+      overlay.style.opacity    = '0';
+      setTimeout(function () { overlay.remove(); }, 600);
+      return;
+    }
+
+    var dest = headerLogo.getBoundingClientRect();
+    var src  = wrap.getBoundingClientRect();
+
+    var scale = dest.width / src.width;
+    var tx    = (dest.left + dest.width  / 2) - (src.left + src.width  / 2);
+    var ty    = (dest.top  + dest.height / 2) - (src.top  + src.height / 2);
+
+    // Animate logo: fly + shrink + fade near the end
+    wrap.style.transition = [
+      'transform 0.95s cubic-bezier(0.16, 1, 0.3, 1)',
+      'opacity   0.3s  ease 0.6s'
+    ].join(', ');
+    wrap.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+    wrap.style.opacity   = '0';
+
+    // Simultaneously fade out the white backdrop (slight delay for drama)
+    overlay.style.transition = 'opacity 0.65s ease 0.1s';
+    overlay.style.opacity    = '0';
+
+    // Fade header logo in as the video fades out
+    headerLogo.style.transition = 'opacity 0.35s ease 0.72s';
+    headerLogo.style.opacity    = '1';
+
+    setTimeout(function () {
+      overlay.style.pointerEvents = 'none';
+      overlay.remove();
+    }, 1200);
+  }
+
+  // ── Fallback: fire after 7 s if video stalls ────────────────────
+  var fallback = setTimeout(flyToHeader, 7000);
+
+  video.addEventListener('ended', function () {
+    clearTimeout(fallback);
+    setTimeout(flyToHeader, 180); // brief hold after last frame
+  });
+
+  video.addEventListener('error', function () {
+    clearTimeout(fallback);
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+    if (headerLogo) headerLogo.style.opacity = '1';
+    try { sessionStorage.setItem('projct-intro-done', '1'); } catch (e) {}
+  });
+
+
+})();
+</script>
 </html>
