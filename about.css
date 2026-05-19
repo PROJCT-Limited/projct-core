@@ -1151,3 +1151,101 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .hero-anim { display: none; }
 }
+
+/* ===== SERVICES ACCORDION ===== */
+.services-accordion {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.svc-item {
+  border-top: 1px solid var(--brand-blue);
+  padding-block: 1.25rem;
+}
+.svc-item:last-child {
+  border-bottom: 1px solid var(--brand-blue);
+  padding-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .svc-item:last-child {
+    padding-bottom: 2.5rem;
+  }
+}
+
+/* Remove native <details>/<summary> browser styling */
+.svc-item[open] > .svc-header,
+.svc-header {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: "Red Hat Display";
+  color: var(--brand-blue);
+  gap: 1.5rem;
+  transition: opacity .15s;
+}
+.svc-header::-webkit-details-marker { display: none; }
+.svc-header::marker { display: none; }
+.svc-header:hover { opacity: .65; }
+
+.svc-num {
+  font-size: clamp(24px, 1.3vw, 40px);
+  font-weight: 400;
+  min-width: 2rem;
+  flex-shrink: 0;
+}
+
+.svc-title {
+  flex: 1;
+  font-size: clamp(24px, 1.3vw, 40px);
+  font-weight: 400;
+}
+
+.svc-toggle {
+  flex-shrink: 0;
+  font-size: clamp(24px, 1.3vw, 40px);
+  font-weight: 700;
+  display: inline-block;
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+}
+.svc-item[open] .svc-toggle {
+  transform: rotate(180deg);
+}
+
+.svc-body {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svc-body { transition: none; }
+}
+
+.svc-body ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem 0 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 3rem;
+}
+
+.svc-body li {
+  font-family: "Red Hat Display";
+  font-size: clamp(0.9rem, 0.8rem + 0.3vw, 1rem);
+  font-weight: 400;
+  color: var(--brand-blue);
+  padding: .25rem 0;
+}
+
+@media (max-width: 640px) {
+  .svc-body ul {
+    grid-template-columns: 1fr;
+  }
+}
