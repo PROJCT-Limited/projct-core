@@ -1,3 +1,40 @@
+
+// Services accordion — animated
+document.querySelectorAll('.svc-item').forEach(function (details) {
+  var summary = details.querySelector('.svc-header');
+  var body    = details.querySelector('.svc-body');
+
+  summary.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    if (!details.open) {
+      // Open: set height from 0 → scrollHeight, then release to auto
+      details.setAttribute('open', '');
+      var target = body.scrollHeight;
+      body.style.height = '0px';
+      requestAnimationFrame(function () {
+        body.style.height = target + 'px';
+        function onOpen() {
+          body.removeEventListener('transitionend', onOpen);
+          body.style.height = 'auto';
+        }
+        body.addEventListener('transitionend', onOpen);
+      });
+    } else {
+      // Close: lock height → 0, then remove open
+      body.style.height = body.scrollHeight + 'px';
+      body.getBoundingClientRect(); // force reflow so transition fires
+      body.style.height = '0px';
+      function onClose() {
+        body.removeEventListener('transitionend', onClose);
+        details.removeAttribute('open');
+        body.style.height = '0px';
+      }
+      body.addEventListener('transitionend', onClose);
+    }
+  });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.header');
     const mobileOverlay = document.getElementById('mobileOverlay');
