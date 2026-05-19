@@ -140,19 +140,60 @@ document.addEventListener('swup:contentReplaced', () => {
 (function () {
   function initSlider(root) {
     const track = root.querySelector('.slides');
+    if (!track) return;
     const slides = Array.from(track.children);
-    const prev = root.querySelector('.slider-arrow.prev');
-    const next = root.querySelector('.slider-arrow.next');
+    if (!slides.length) return;
+
+    // Hide arrow buttons
+    root.querySelectorAll('.slider-arrow').forEach(b => b.style.display = 'none');
+
+    // Prevent drag ghost on images
+    slides.forEach(slide => {
+      const img = slide.tagName === 'IMG' ? slide : slide.querySelector('img');
+      if (img) {
+        img.setAttribute('draggable', 'false');
+        img.addEventListener('dragstart', e => e.preventDefault());
+      }
+    });
+    track.addEventListener('dragstart', e => e.preventDefault());
+
     let index = 0;
 
+    // Build dots inside the slider (absolute-positioned over image)
+    const dotsWrap = document.createElement('div');
+    dotsWrap.className = 'slider-dots';
+    root.appendChild(dotsWrap);
+
+    const dots = slides.map((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'slider-dot';
+      d.setAttribute('aria-label', 'Slide ' + (i + 1));
+      d.addEventListener('click', e => { e.stopPropagation(); go(i); });
+      dotsWrap.appendChild(d);
+      return d;
+    });
+
     function go(i) {
-      index = (i + slides.length) % slides.length;   // wrap around
-      track.style.transform = `translateX(${-index * 100}%)`;
+      index = ((i % slides.length) + slides.length) % slides.length;
+      track.style.transform = 'translateX(' + (-index * 100) + '%)';
+      dots.forEach((d, j) => d.classList.toggle('active', j === index));
     }
 
-    prev.addEventListener('click', () => go(index - 1));
-    next.addEventListener('click', () => go(index + 1));
-    window.addEventListener('resize', () => go(index)); // keep position on resize
+    // Click anywhere on the image advances to next slide
+    root.addEventListener('click', e => {
+      if (e.target.closest('.slider-dot')) return;
+      go(index + 1);
+    });
+
+    // Touch swipe
+    let touchX = 0;
+    track.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 40) go(dx < 0 ? index + 1 : index - 1);
+    }, { passive: true });
+
+    window.addEventListener('resize', () => go(index));
     go(0);
   }
 
