@@ -137,7 +137,7 @@
 
     <div class="list-projects">
         <hr>
-    <p class="list-projects1" data-tag="Practice">Lightbox Gallery</p> 
+    <p class="list-projects1" data-tag="Practice">Marketing Activation | Lightbox Gallery</p> 
     <div class="index-item is-hidden">
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
@@ -146,6 +146,11 @@
           <!-- <img src="./images/lightbox.jpeg" alt=""> -->
           <img src="./images/LIGHTBOX2.jpg.webp" alt="">
           <img src="./images/LIGHTBOX.png.webp" alt="">
+          <img src="./images/Lightbox Gallery/LG0.jpg" alt="">
+          <img src="./images/Lightbox Gallery/LG1.jpg" alt="">
+          <img src="./images/Lightbox Gallery/LG2.jpg" alt="">
+          <img src="./images/Lightbox Gallery/LG3.jpg" alt="">
+          <img src="./images/Lightbox Gallery/LG4.jpg" alt="">
         </div>
       
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
@@ -170,7 +175,7 @@
         
     </div>
     <hr>
-    <p class="list-projects1" data-tag="Case-studies">Chubb Life 'Last wishes'</p>
+    <p class="list-projects1" data-tag="Case-studies">Innovative Campaign | Chubb Life ‘Last Wishes’</p>
     
 
     <div class="index-item is-hidden">
@@ -356,7 +361,7 @@
     <hr>
    
    
-    <p class="list-projects1" data-tag="Articles">2028 | 01, SKWAT, Tokyo</p>
+    <p class="list-projects1" data-tag="Articles">2028 Research | SKWAT, Tokyo</p>
 
     <div class="index-item is-hidden">
       <div class="index-item-images slider">
@@ -461,6 +466,7 @@
     <hr>
     <p class="list-projects1" data-tag="Case-studies">Strategy + New Business Model | Van Alen Institute</p>
     <div class="index-item is-hidden">
+
       <div class="index-item-text">
         <p>Entering 2020, Van Alen Institute — a 125-year-old heritage organization in architecture and urbanism — was already evolving its program. The pandemic, social unrest, and pressures on their endowment accelerated the need for change. We set out to empower VAI to: understand their future context, align on their ambition, co-create the strategy to get there, activate the strategy, and consider organizational and governance shifts.
           <br><br>
@@ -508,6 +514,15 @@
     <hr>
     <p class="list-projects1" data-tag="Case-studies">Corporate Innovation | Explorium, Fung Group</p>
     <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+      
+        <div class="slides">
+          <img src="./images/Explorium/Screenshot 2026-05-20 at 20.51.01.png" alt="">
+        </div>
+      
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
       <div class="index-item-text">
         <p>Explorium is the Fung Group innovation platform — a collaboration hub empowering communities of innovation in supply chain, retail, and beyond, to co-create the future. The experiment ended in Hong Kong in 2021.
           <br><br>
@@ -621,7 +636,21 @@
 
 
 
-  
+
+<!-- Mode toggle button -->
+<button class="idx-mode-toggle" id="modeToggle" aria-label="Toggle colour mode" title="Toggle colour mode"></button>
+
+<script>
+  (function () {
+    var btn  = document.getElementById('modeToggle');
+    var root = document.documentElement;
+    var dark = false;
+    btn.addEventListener('click', function () {
+      dark = !dark;
+      root.classList.toggle('idx-white-mode', dark);
+    });
+  })();
+</script>
 </body>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
