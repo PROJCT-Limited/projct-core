@@ -1013,6 +1013,15 @@ font-size: 1.25em;
 font-family: 'Red Hat Display';
 }
 
+.index-item-text a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.index-item-text a:hover {
+  opacity: .75;
+}
+
 .index-item.no-images .index-item-images {
   display: none;
 }
