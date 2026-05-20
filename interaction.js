@@ -175,7 +175,7 @@ document.addEventListener('swup:contentReplaced', () => {
 
     function go(i) {
       index = ((i % slides.length) + slides.length) % slides.length;
-      track.style.transform = 'translateX(' + (-index * 100) + '%)';
+      track.style.transform = 'translateX(' + (-index * root.offsetWidth) + 'px)';
       dots.forEach((d, j) => d.classList.toggle('active', j === index));
     }
 
