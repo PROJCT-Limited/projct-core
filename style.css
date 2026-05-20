@@ -792,34 +792,38 @@ body.menu-open #machine * {
   position: relative;
   flex: 1;
   max-width: 70%;
-  background: #000;     /* neutral backdrop so no yellow peeks */
-  padding: 0;           /* remove inner gutter */
-  margin-top: 100px;    /* your desired offset (or 0) */
+  background: #000;
+  padding: 0;
+  margin-top: 100px;
   overflow: hidden;
-  min-height: 360px;
-  aspect-ratio: 16 / 10;
   margin-left: 10px;
   margin-right: 10px;
+  align-self: flex-start; /* don't stretch — height follows the image */
 }
 
 /* Slider track */
 .index-item-images .slides {
   width: 100%;
-  height: 100%;
+  height: auto;
   display: flex;
+  align-items: flex-start;
   gap: 0;
   margin: 0;
   padding: 0;
   transition: transform 360ms ease;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-/* Each slide covers the whole area */
+/* Full image, no cropping — each image shows at its natural proportions */
 .index-item-images img {
   flex: 0 0 100%;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;   /* remove inline-image whitespace */
+  height: auto;
+  max-height: 75vh;
+  object-fit: contain;
+  display: block;
 }
 .slider { background: transparent; padding: 0; overflow: hidden; }
 
@@ -845,7 +849,7 @@ body.menu-open #machine * {
 /* Dot navigation — overlaid on image */
 .slider-dots {
   position: absolute;
-  bottom: 14px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
@@ -886,7 +890,7 @@ body.menu-open #machine * {
     margin-left: 0;
     margin-right: 0;
     min-height: unset;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: unset;
   }
 }
 
@@ -1861,3 +1865,259 @@ body.nodes-page #mobileOverlay .mobile-close {
   }
 }
 
+
+
+/* ── Index page mode toggle ── */
+.idx-mode-toggle {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: #fff;
+  cursor: pointer;
+  z-index: 9999;
+  transition: background .3s ease, border-color .3s ease;
+  box-shadow: 0 2px 12px rgba(0,0,0,.2);
+}
+.idx-mode-toggle::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: #0e50c8;
+  transition: background .3s ease;
+}
+:root.idx-white-mode body { background-color: #fff !important; }
+:root.idx-white-mode .mainbody,
+:root.idx-white-mode .list-projects,
+:root.idx-white-mode .index-item,
+:root.idx-white-mode .index-outer,
+:root.idx-white-mode .search-filter { background-color: #fff !important; color: #0e50c8 !important; }
+:root.idx-white-mode hr { background-color: #0e50c8; }
+:root.idx-white-mode .list-projects1 { color: #0e50c8; }
+:root.idx-white-mode .list-projects1:hover { background-color: #0e50c8; color: #fff; }
+:root.idx-white-mode .index { color: #0e50c8 !important; }
+:root.idx-white-mode .idx-mode-toggle { background: #0e50c8; border-color: #0e50c8; }
+:root.idx-white-mode .idx-mode-toggle::after { background: #fff; }
+
+/* ── White mode: search filter ── */
+:root.idx-white-mode .filter-item {
+  --text: #0e50c8;
+  --text-active: #0e50c8;
+  --chip-bg-hover: rgba(14,80,200,0.1);
+}
+:root.idx-white-mode .filter-item .square {
+  border-color: rgba(14,80,200,.7);
+}
+:root.idx-white-mode .filter-item:hover .square,
+:root.idx-white-mode .filter-item.active .square {
+  background: #0e50c8;
+  border-color: #0e50c8;
+}
+:root.idx-white-mode .filter-item:hover,
+:root.idx-white-mode .filter-item.active {
+  color: #0e50c8;
+}
+
+/* ── White mode: list title rows & separators ── */
+:root.idx-white-mode .list-projects1 {
+  color: #0e50c8 !important;
+}
+:root.idx-white-mode hr {
+  background-color: #0e50c8 !important;
+}
+
+/* ── White mode: entry metadata boxes ── */
+:root.idx-white-mode .box {
+  border-top-color: #0e50c8;
+  color: #0e50c8;
+}
+
+/* ── White mode: #container background fix ── */
+:root.idx-white-mode #container {
+  background: #fff !important;
+  color: #0e50c8 !important;
+}
+
+/* ── Survey stats & pull quotes ── */
+.survey-stats-row {
+  display: flex;
+  gap: 2rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.survey-stat {
+  flex: 1;
+  min-width: 120px;
+  border-top: 1px solid rgba(255,255,255,.35);
+  padding-top: .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.survey-stat--wide {
+  flex: 2;
+}
+.survey-stat-num {
+  font-family: "Red Hat Display";
+  font-size: clamp(28px, 3vw, 48px);
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: -.01em;
+}
+.survey-stat-label {
+  font-family: "Red Hat Display";
+  font-size: clamp(14px, 1vw, 18px);
+  color: rgba(255,255,255,.7);
+  line-height: 1.4;
+}
+.survey-quote {
+  margin: 1.5rem 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid rgba(255,255,255,.5);
+  font-family: "Red Hat Display";
+  font-size: clamp(16px, 1.1vw, 22px);
+  font-style: italic;
+  color: rgba(255,255,255,.85);
+  line-height: 1.55;
+}
+
+/* White mode overrides */
+:root.idx-white-mode .survey-stat { border-top-color: rgba(14,80,200,.3); }
+:root.idx-white-mode .survey-stat-num { color: #0e50c8; }
+:root.idx-white-mode .survey-stat-label { color: rgba(14,80,200,.65); }
+:root.idx-white-mode .survey-quote { border-left-color: rgba(14,80,200,.4); color: rgba(14,80,200,.8); }
+
+/* ── Survey document layout ── */
+.survey-section-head {
+  font-family: "Red Hat Display";
+  font-size: clamp(15px, 1.05vw, 20px);
+  font-weight: 700;
+  color: #fff;
+  margin: 1.75rem 0 .5rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* Figure placeholders */
+.survey-figure {
+  margin: 1.25rem 0;
+  width: 100%;
+}
+.survey-figure img {
+  width: calc(100% - 1.5rem);
+  height: auto;
+  display: block;
+  object-fit: contain;
+  background: #fff;
+  padding: 0.75rem;
+}
+
+/* Figures stacked full width */
+.survey-figures-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 1.25rem 0;
+}
+.survey-figures-pair .survey-figure {
+  width: 100%;
+  margin: 0;
+}
+
+/* Two-column callout layout (8in10 / 5in10, 63%, 95%/98%) */
+.survey-callout-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 1.75rem 0;
+  align-items: start;
+}
+.survey-callout {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.survey-callout-stat {
+  font-family: "Red Hat Display";
+  font-size: clamp(24px, 2.5vw, 40px);
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1;
+}
+.survey-callout-body {
+  font-family: "Red Hat Display";
+  font-size: clamp(15px, 1.05vw, 20px);
+  color: rgba(255,255,255,.85);
+  margin: 0;
+  line-height: 1.45;
+}
+.survey-callout-sub {
+  font-family: "Red Hat Display";
+  font-size: clamp(13px, 0.85vw, 16px);
+  color: rgba(255,255,255,.55);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Inline quote inside callout */
+.survey-quote--inline {
+  font-size: clamp(14px, 1vw, 18px);
+  margin: .75rem 0 0;
+}
+
+/* Two quotes side by side */
+.survey-quotes-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.25rem 0;
+}
+
+/* White mode */
+:root.idx-white-mode .survey-section-head { color: #0e50c8; }
+:root.idx-white-mode .survey-callout-stat { color: #0e50c8; }
+:root.idx-white-mode .survey-callout-body { color: rgba(14,80,200,.85); }
+:root.idx-white-mode .survey-callout-sub  { color: rgba(14,80,200,.55); }
+
+/* Collapse to single column on mobile */
+@media (max-width: 640px) {
+  .survey-callout-pair,
+  .survey-figures-pair,
+  .survey-quotes-pair { grid-template-columns: 1fr; }
+}
+
+/* Survey figure caption label */
+.survey-fig-label {
+  font-family: "Red Hat Display";
+  font-size: clamp(11px, 0.75vw, 13px);
+  color: rgba(255,255,255,.45);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-top: .4rem;
+  padding-top: .35rem;
+  border-top: 1px solid rgba(255,255,255,.15);
+}
+:root.idx-white-mode .survey-fig-label {
+  color: rgba(14,80,200,.4);
+  border-top-color: rgba(14,80,200,.15);
+}
+
+/* Figures 3 & 4 — two columns side by side */
+.survey-figures-pair--two-col {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  flex-direction: unset;
+}
+
+/* White mode: links visible */
+:root.idx-white-mode .index-item-text a {
+  color: #0e50c8;
+}
