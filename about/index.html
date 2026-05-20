@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About Us — PROJCT</title>
+
+  <!-- Your global site styles -->
+  <link rel="stylesheet" href="../style.css">
+
+  <!-- Page-scoped styles for About -->
+  <link rel="stylesheet" href="../about.css">
+  <script src="../subscribe.js" defer></script>
+
+  <!-- Intro: hide overlay immediately on repeat visits (runs before paint) -->
+  <script>try{if(sessionStorage.getItem('projct-intro-done'))document.documentElement.classList.add('intro-seen');}catch(e){}</script>
+
+  <style>
+    /* ===== LOGO INTRO OVERLAY ===== */
+    .intro-seen #intro-overlay { display: none !important; }
+
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999999;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #intro-video-wrap {
+      width: clamp(220px, 38vw, 480px);
+      aspect-ratio: 5.011;
+      will-change: transform, opacity;
+    }
+
+    @media (max-width: 640px) {
+      #intro-video-wrap {
+        width: 82vw;
+      }
+    }
+
+    #intro-video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* Progress line at bottom of overlay */
+    #intro-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: rgba(14, 80, 200, 0.35);
+      transition: width 0.1s linear;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== INTRO ANIMATION OVERLAY ===== -->
+  <div id="intro-overlay" aria-hidden="true" role="presentation">
+    <div id="intro-video-wrap">
+      <video id="intro-video" autoplay muted playsinline preload="auto">
+        <source src="../images/logo-revel-updated.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div id="intro-progress"></div>
+  </div>
+
+    <div class="header"> 
+        <div class="logo_PROJCT">
+          <a href="../about/">
+          <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 239.57" aria-label="PROJCT" role="img">
+            <title>PROJCT</title>
+            <g>
+              <g>
+                <path d="M173.62,84.3c0,49.75-17.05,83.16-92.2,83.16H13.92v70.63H0V1.49h81.42c75.15,0,92.2,33.05,92.2,82.81ZM159.7,84.3c0-60.19-30.97-68.89-78.29-68.89H13.92v138.13h67.5c47.32,0,78.29-10.09,78.29-69.24Z" fill="currentColor"/>
+                <path d="M340.62,141.36h37.92v96.73h-13.92v-88.03h-142.31v88.03h-13.92V1.49h77.94c75.15,0,92.2,33.05,92.2,75.85,0,36.53-20.53,52.54-37.92,58.45v5.57ZM286.35,136.14c50.8,0,78.29-10.09,78.29-58.8,0-53.24-30.97-61.93-78.29-61.93h-64.02v120.73h64.02Z" fill="currentColor"/>
+                <path d="M759.18,1.49v236.6h-107.86v-13.92h93.94V1.49h13.92Z" fill="currentColor"/>
+                <path d="M902.52,1.49c64.72,0,97.77,41.4,99.86,90.12h-13.92c-9.39-58.45-38.62-76.2-85.94-76.2-50.1,0-91.16,30.97-91.16,104.38s41.06,104.38,91.16,104.38c47.32,0,76.55-17.74,85.94-76.2h13.92c-2.09,48.71-35.14,90.11-99.86,90.11-75.85,0-105.08-59.15-105.08-118.3S826.67,1.49,902.52,1.49Z" fill="currentColor"/>
+                <path d="M1200,15.4h-83.16v222.68h-13.92V15.4h-83.16V1.49h180.23v13.92Z" fill="currentColor"/>
+              </g>
+              <path d="M530.28,239.57c-66.04,0-119.78-53.74-119.78-119.78S464.24,0,530.28,0s119.79,53.74,119.79,119.79-53.74,119.78-119.79,119.78ZM530.28,12.65c-59.08,0-107.13,48.06-107.13,107.14s48.06,107.13,107.13,107.13,107.14-48.06,107.14-107.13-48.06-107.14-107.14-107.14Z" fill="currentColor"/>
+            </g>
+          </svg>
+          </a>
+        </div>
+        <div class="nav-right"> 
+    
+               <button class="mobile" id="mobileTrigger"
+          aria-controls="mobileOverlay"
+          aria-expanded="false"
+          aria-label="Open menu"
+          style="background:none;border:0;padding:0;cursor:pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg"
+          width="28" height="28"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="hamburger">
+          
+       <path stroke-linecap="round"
+             stroke-linejoin="round"
+             d="M4 6h16M4 12h16M4 18h16"/>
+     </svg>
+        </button>
+    
+        <div class="button-header button_header1 desktop">
+            <div class="nav-arrow"><p><a href="../about/">About us</a></p></div>
+            <div class="nav-arrow"><p><a href="../projects/">Projects</a></p></div>
+            <div class="nav-arrow"><p><a href="../nodes/">The world we live in</a></p></div>
+            <div class="nav-text"><p><a href="../">Index</a></p></div>
+        </div>
+      </div>
+    </div>
+    
+ 
+    <nav class="mobile-overlay" id="mobileOverlay">
+      <button id="mobileClose" class="mobile-close" aria-label="Close menu">
+        <!-- X icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+          <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    
+      <div class="overlay-inner">
+        <div class="row1">
+          <img src="../SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/>
+          <a class="overlay-link" href="../about/">About</a>
+        </div>
+        <div class="row2">
+          <img src="../SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/>
+          <a class="overlay-link" href="../nodes/">The world we live in</a>
+        </div>
+        <div class="row3">
+          <img src="../SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/>
+          <a class="overlay-link" href="../">Index</a>
+        </div>
+      </div>
+      </nav>
+
+<div class="main">
+  <!-- ===== PANEL 1: HERO (blue) ===== -->
+  <section class="panel hero " id="hero">
+
+    <!-- constellation animation -->
+    <svg class="hero-anim" viewBox="0 0 1000 550" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+      <line class="ha-line ha-l1" x1="420" y1="120" x2="140" y2="360"/>
+      <line class="ha-line ha-l2" x1="420" y1="120" x2="785" y2="210"/>
+      <circle class="ha-circle ha-c-center" cx="420" cy="120" r="13"/>
+      <circle class="ha-circle ha-c-left"   cx="140" cy="360" r="13"/>
+      <circle class="ha-circle ha-c-right"  cx="785" cy="210" r="13"/>
+    </svg>
+
+    <div class="container">
+      <h1 class="headline">
+        <img src="../images/logo-PROJCT.svg" alt="PROJCT" class="hero-logo"> <span class="hl">spark</span> ideas, <span class="hl">build</span> outcomes and <span class="hl">connect</span> our ecosystem to shared value.
+      </h1>
+      <a class="hero-learn" href="#objective">Learn more</a>
+    </div>
+  </section>
+
+ 
+
+    <!-- ===== PANEL 2: OBJECTIVE + VENN ===== -->
+    <section class="panel" id="objective">
+      <div class="container">
+        <div class="kicker">Our Objective</div>
+        <div class="objective-copy section-copy">
+          <p>The PROJCT platform is focused on helping founders, investors
+            and corporates build and scale their ventures in a sustainable way. We
+            partner in those journeys by going all in and bringing our network of diverse and global talent.</p>
+          <p>We believe the future doesn’t just happen to us, we actively shape it with
+            research, experimentation, and purpose. Unleashing the creativity and
+            potential of partners is at our core to enable people, projects, and society to grow.</p>
+        </div>
+  
+    
+        <!-- <div class="venn" aria-hidden="true">
+          <img src="../images/venn.png">
+        </div> -->
+      </div>
+    </section>
+
+       
+
+  <!-- ===== PANEL: SERVICES ===== -->
+  <section class="panel" id="services">
+    <div class="container">
+      <div class="kicker">Services</div>
+      <div class="services-accordion section-copy">
+
+        <details class="svc-item">
+          <summary class="svc-header">
+            <span class="svc-num">01</span>
+            <span class="svc-title">Innovation Consultancy</span>
+            <span class="svc-toggle" aria-hidden="true">∨</span>
+          </summary>
+          <div class="svc-body">
+            <ul>
+              <li>Discovery Workshop</li>
+              <li>'Whitespace' Market Research</li>
+              <li>Go-to-Market Strategy</li>
+              <li>Product Strategy</li>
+              <li>Customer Experience Strategy</li>
+              <li>Campaigns</li>
+              <li>Brand Experiences and Activations</li>
+              <li>Brand Positioning and Strategy</li>
+              <li>Visual Identity</li>
+              <li>Culture and Team Building</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="svc-item">
+          <summary class="svc-header">
+            <span class="svc-num">02</span>
+            <span class="svc-title">Venture Building</span>
+            <span class="svc-toggle" aria-hidden="true">∨</span>
+          </summary>
+          <div class="svc-body">
+            <ul>
+              <li>Product Build 0→1</li>
+              <li>Pivot Programs</li>
+              <li>Launch Sprint</li>
+              <li>Investment Scouting</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="svc-item">
+          <summary class="svc-header">
+            <span class="svc-num">03</span>
+            <span class="svc-title">Ecosystem</span>
+            <span class="svc-toggle" aria-hidden="true">∨</span>
+          </summary>
+          <div class="svc-body">
+            <ul>
+              <li>Community-as-a-Service</li>
+              <li>Private Events</li>
+              <li>Collab Community Space</li>
+            </ul>
+          </div>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PANEL 3: TEAM ===== -->
+  <section class="panel" id="hero">
+    <div class="container">
+      <div class="kicker">Our Team</div>
+      <div class="team-intro section-copy">
+        The PROJCT core team is mainly based in Hong Kong, with
+individual members based in Shanghai, London, and San Francisco. We have
+built a portfolio of complementary skills across strategy, creativity, research
+and tech. Passion is inherent to our work, and a commitment to quality drives
+the end result.
+      </div>
+      <div class="team-grid">
+        <div class="team-grid_inner">
+
+              <!-- 1 -->
+              <div class="team-grid_item">
+                <div class="team-grid_image-wrapper">
+                  <div class="team-grid_outline"></div>
+                  <img src="../SVG/arrows/PROJCT_ARROWS-3-13.svg" class="team-grid_image-up" loading="lazy" alt="">
+                  <img src="../images/Mikkel.md.jpg" class="team-grid_image-down" loading="lazy" alt="">
+                </div>
+                <div class="team-grid_info">
+                  <p class="team-grid_name">Mikkel Hansen</p>
+                  <p class="team-grid_post">Managing Director</p>
+                </div>
+              </div>
+
+                   <!-- 2 -->
+          <div class="team-grid_item">
+            <div class="team-grid_image-wrapper">
+              <div class="team-grid_outline"></div>
+              <img src="../SVG/arrows/PROJCT_ARROWS-3-14.svg" class="team-grid_image-up" loading="lazy" alt="">
+              <img src="../images/Celine-Husada.png" class="team-grid_image-down" loading="lazy" alt="">
+            </div>
+            <div class="team-grid_info">
+              <p class="team-grid_name">Celine Husada</p>
+              <p class="team-grid_post">Head of Innovation</p>
+            </div>
+          </div>
+      
+   <!-- 3 -->
+   <div class="team-grid_item">
+    <div class="team-grid_image-wrapper">
+      <div class="team-grid_outline"></div>
+      <img src="../SVG/arrows/PROJCT_ARROWS-3-15.svg" class="team-grid_image-up" loading="lazy" alt="">
+      <img src="../images/Nik.jpg" class="team-grid_image-down" loading="lazy" alt="">
+    </div>
+    <div class="team-grid_info">
+      <p class="team-grid_name">Nikhil Nagarkar</p>
+      <p class="team-grid_post">Creative Lead</p>
+    </div>
+  </div>
+
+
+     <!-- 4 -->
+     <div class="team-grid_item">
+      <div class="team-grid_image-wrapper">
+        <div class="team-grid_outline"></div>
+        <img src="../SVG/arrows/PROJCT_ARROWS-3-16.svg" class="team-grid_image-up" loading="lazy" alt="">
+        <img src="../images/Robert.jpg" class="team-grid_image-down" loading="lazy" alt="">
+      </div>
+      <div class="team-grid_info">
+        <p class="team-grid_name">Robert Pietrzyk</p>
+        <p class="team-grid_post">Brand Strategy Consultant</p>
+      </div>
+    </div>
+
+          <!-- 5 -->
+          <div class="team-grid_item">
+            <div class="team-grid_image-wrapper">
+              <div class="team-grid_outline"></div>
+              <img src="../SVG/arrows/PROJCT_ARROWS-3-17.svg" class="team-grid_image-up" loading="lazy" alt="">
+              <img src="../images/Gladys-Suen.jpg"     class="team-grid_image-down" loading="lazy" alt="">
+            </div>
+            <div class="team-grid_info">
+              <p class="team-grid_name">Gladys Suen</p>
+              <p class="team-grid_post">Design Lead</p>
+            </div>
+          </div>
+      
+    
+          <!-- 6 -->
+          <div class="team-grid_item">
+            <div class="team-grid_image-wrapper">
+              <div class="team-grid_outline"></div>
+              <img src="../SVG/arrows/PROJCT_ARROWS-3-18.svg" class="team-grid_image-up" loading="lazy" alt="">
+              <img src="../images/Hollis.jpg" class="team-grid_image-down" loading="lazy" alt="">
+            </div>
+            <div class="team-grid_info">
+              <p class="team-grid_name">Hollis Hui</p>
+              <p class="team-grid_post">Special Projects</p>
+            </div>
+          </div>
+
+      
+          <!-- 7 -->
+          <div class="team-grid_item">
+            <div class="team-grid_image-wrapper">
+              <div class="team-grid_outline"></div>
+              <img src="../SVG/arrows/PROJCT_ARROWS-3-19.svg" class="team-grid_image-up" loading="lazy" alt="">
+              <img src="../images/Valerie.jpg" class="team-grid_image-down" loading="lazy" alt="">
+            </div>
+            <div class="team-grid_info">
+              <p class="team-grid_name">Valeria Kvon</p>
+              <p class="team-grid_post">Special Projects</p>
+            </div>
+          </div>
+      
+          <!-- 8 -->
+          <div class="team-grid_item">
+            <div class="team-grid_image-wrapper">
+              <div class="team-grid_outline"></div>
+              <img src="../SVG/arrows/PROJCT_ARROWS-3-20.svg" class="team-grid_image-up" loading="lazy" alt="">
+              <img src="../images/Yun1.jpg" class="team-grid_image-down" loading="lazy" alt="">
+            </div>
+            <div class="team-grid_info">
+              <p class="team-grid_name">Yun Ling</p>
+              <p class="team-grid_post">Sensemaker</p>
+            </div>
+          </div>
+      
+      
+      
+          <!-- 8 -->
+          <div class="team-grid_item">
+            <div class="team-grid_image-wrapper">
+              <div class="team-grid_outline"></div>
+              <img src="../SVG/arrows/PROJCT_ARROWS-3-13.svg" class="team-grid_image-up" loading="lazy" alt="">
+              <img src="../images/Mia.md.jpg" class="team-grid_image-down" loading="lazy" alt="">
+            </div>
+            <div class="team-grid_info">
+              <p class="team-grid_name">Mia Kim</p>
+              <p class="team-grid_post">Designer</p>
+            </div>
+          </div>
+      
+       
+
+             <!-- 10 -->
+             <div class="team-grid_item">
+              <div class="team-grid_image-wrapper">
+                <div class="team-grid_outline"></div>
+                <img src="../SVG/arrows/PROJCT_ARROWS-3-14.svg" class="team-grid_image-up" loading="lazy" alt="">
+                <img src="../images/Jodee.jpg" class="team-grid_image-down" loading="lazy" alt="">
+              </div>
+              <div class="team-grid_info">
+                <p class="team-grid_name">Jodee Fok</p>
+                <p class="team-grid_post">Impact Researcher</p>
+              </div>
+            </div>
+      
+
+    <!-- 10 -->
+    <div class="team-grid_item">
+      <div class="team-grid_image-wrapper">
+        <div class="team-grid_outline"></div>
+        <img src="../SVG/arrows/PROJCT_ARROWS-3-15.svg" class="team-grid_image-up" loading="lazy" alt="">
+        <img src="../images/Cynthia.jpg" class="team-grid_image-down" loading="lazy" alt="">
+      </div>
+      <div class="team-grid_info">
+        <p class="team-grid_name">Cynthia Cheng</p>
+        <p class="team-grid_post">Organisational Development Consultant</p>
+      </div>
+    </div>
+
+
+
+        <!-- 11 -->
+        <div class="team-grid_item">
+          <div class="team-grid_image-wrapper">
+            <div class="team-grid_outline"></div>
+            <img src="../SVG/arrows/PROJCT_ARROWS-3-16.svg" class="team-grid_image-up" loading="lazy" alt="">
+            <img src="" class="team-grid_image-down" loading="lazy" alt="">
+          </div>
+          <div class="team-grid_info">
+            <p class="team-grid_name">Zoe Poon Thiesen</p>
+            <p class="team-grid_post">Studio Manager</p>
+          </div>
+        </div>
+
+
+
+
+        </div>
+      </div>
+      
+
+  </section>
+
+  
+  <section class="panel" id="hero">
+    <div class="container">
+      <div class="kicker">Space</div>
+     
+      <div class="address section-copy"> <p>PROJCT spaces are evolving with the function of the team.
+        From the beginnings in the 2nd floor of an apartment building to two ground
+        floor event and creative spaces, to our current location in a former super
+        market on Queens Road West in Hong Kong. </p> <p> Each space fosters strategic work,
+        co-creation and an open invitation to all communities.</p> <p><a href="https://docs.google.com/document/d/1dLrZzuiBnS8z_XNyE4cz8v4e3k8VCbwpI1pkzK0VDlU/edit?tab=t.0" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">Interested in our space?</a> Let's talk — we're happy to provide and co-create.</p></div>
+
+      <div class="space-grid">
+        <!-- Replace src paths with your real images -->
+        <img src="../images/JPG_2735.jpg" alt="Studio interior">
+        <img src="../images/Projct-front.png" alt="Studio entrance">
+      </div>
+    </div>
+  </section>
+
+
+<!-- ===== ADVISORY BOARD ===== -->
+<section class="panel" id="hero">
+  <div class="container">
+  <div class="kicker">Advisory board</div>
+  <div class="team-intro section-copy">
+    Our strategic council and domain expertise helps our company
+    chart a path towards a future with more access to resources and value realised
+    for all partners we work with and beyond.
+  </div>
+  <div class="team-grid">
+    <div class="team-grid_inner">
+  
+      <!-- 1 -->
+      <div class="team-grid_item">
+        <div class="team-grid_image-wrapper">
+          <div class="team-grid_outline"></div>
+          <img src="../SVG/arrows/PROJCT_ARROWS-3-17.svg" class="team-grid_image-up" loading="lazy" alt="">
+          <img src="../images/Eri Tsutsumi.jpeg" class="team-grid_image-down" loading="lazy" alt="">
+        </div>
+        <div class="team-grid_info">
+          <p class="team-grid_name">Eri Tsutsumi</p>
+          <p class="team-grid_post">GM at Boundless life, ex-IDEO, MUJI</p>
+        </div>
+      </div>
+  
+      <!-- 2 -->
+      <div class="team-grid_item">
+        <div class="team-grid_image-wrapper">
+          <div class="team-grid_outline"></div>
+          <img src="../SVG/arrows/PROJCT_ARROWS-3-18.svg" class="team-grid_image-up" loading="lazy" alt="">
+          <img src="../images/richard-kelly.jpg" class="team-grid_image-down" loading="lazy" alt="">
+        </div>
+        <div class="team-grid_info">
+          <p class="team-grid_name">Richard Kelly</p>
+          <p class="team-grid_post">Founding Partner, da/rk</p>
+        </div>
+      </div>
+  
+      <!-- 3 -->
+      <div class="team-grid_item">
+        <div class="team-grid_image-wrapper">
+          <div class="team-grid_outline"></div>
+          <img src="../SVG/arrows/PROJCT_ARROWS-3-19.svg" class="team-grid_image-up" loading="lazy" alt="">
+          <img src="../images/Robert.jpg" class="team-grid_image-down" loading="lazy" alt="">
+        </div>
+        <div class="team-grid_info">
+          <p class="team-grid_name">Robert Pietrzyk</p>
+          <p class="team-grid_post">Brand & Design Strategy Director</p>
+        </div>
+      </div>
+  
+     
+  
+    </div>
+  </div>
+  
+  
+  </section>
+
+
+
+<!-- ===== PANEL 2: OBJECTIVE + VENN ===== -->
+<section class="panel" id="hero">
+<div class="container">
+<div class="kicker">Code of ethics</div>
+<div class="objective-copy section-copy">
+  <p> At Projct, our commitment to integrity, quality and respect is
+    the cornerstone of our work. As a company dedicated to empowering people
+    and communities, we recognise that our success is built on the trust and
+    confidence of our clients, partners, investors and employees. We hold
+    ourselves accountable not just to financial profit, but also to our social and
+    environmental impact.</p>
+
+</div>
+</section>
+
+
+
+
+  <hr>
+
+  <!-- ===== PANEL 5: QUOTE + CTAs ===== -->
+  <section class="panel " id="hero">
+    <div class="container">
+      <blockquote class="quote">
+        “We enable people to live the life they want through co-creating better experiences, ventures, policies,
+        networks, and financial models — while taking care of others and the planet.”
+      </blockquote>
+  
+      <div class="ctas">
+        <a class="btn" href="mailto:hi@projct.co">Let’s discuss a project</a>
+        <a class="btn" href="../">Explore our practice</a>
+      </div>
+  
+      <!-- Footer lives inside the same container and is pinned to the bottom row -->
+    
+    </div>
+  </section>
+  <footer class="site-footer footer-content">
+    <div class="footer-meta">
+      <p>Unit 8-10, GF, 189 Queen's Road West<br>Sai Ying Pun, Hong Kong</p>
+      <p>General inquiries<br><a href="mailto:hi@projct.co">hi@projct.co</a></p>
+      <p>Office number<br>+852 5727 1122</p>
+  
+    </div>
+
+    <div class="footer-brand">
+      <img src="../SVG/logo-white.svg" alt="PROJCT" class="footer-logo">
+    </div>
+  
+    <!-- NEW: newsletter as a sibling so it can span wider -->
+    <form class="footer-newsletter newsletter" action="#" method="post" onsubmit="event.preventDefault();">
+      <h3 class="newsletter-title">Get the news</h3>
+      <label class="newsletter-row">
+        <input type="email" name="email" placeholder="Your email address" required aria-label="Email address">
+        <button type="submit" class="newsletter-submit" aria-label="Subscribe">→ Subscribe</button>
+      </label>
+    </form>
+  
+
+    <nav class="footer-social" aria-label="Social">
+      <a  href="https://www.are.na/projct/channels" target="_blank" rel="noopener noreferrer">Are.na</a>
+      <a  href="https://www.linkedin.com/company/projct/?originalSubdomain=hk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://www.instagram.com/projct_co/?igshid=NTdlMDg3MTY%3D" target="_blank" rel="noopener noreferrer">Instagram</a>
+
+    </nav>
+  </footer>
+  <div class="footer-legal">
+    <a href="../Policies-and-Governance.html">Policies &amp; Governance</a>
+    <a href="../non-lobbying-statement copy.html">
+      Non-lobbying statement
+    </a>
+    <a href="../Policies-and-Governance.html#grievance-handling">Grievance handling</a>
+    <span>© PROJCT 2026</span>
+  </div>
+
+</div>
+
+ 
+
+
+</body>
+<script src="../about.js"></script>
+<script src="../interaction.js"></script>
+
+<script>
+(function () {
+  var overlay    = document.getElementById('intro-overlay');
+  if (!overlay) return;
+
+  // Already seen this session — overlay hidden via CSS, nothing to do
+  try { if (sessionStorage.getItem('projct-intro-done')) return; } catch (e) {}
+
+  var video      = document.getElementById('intro-video');
+  var wrap       = document.getElementById('intro-video-wrap');
+  var progress   = document.getElementById('intro-progress');
+  var headerLogo = document.querySelector('.logo_PROJCT .logo-svg');
+
+  // Prevent body scroll during intro
+  document.body.style.overflow = 'hidden';
+
+  // Hide the real header logo — it will fade in after the fly animation
+  if (headerLogo) headerLogo.style.opacity = '0';
+
+  var done = false;
+
+  // ── Progress bar driven by video currentTime ────────────────────
+  video.addEventListener('timeupdate', function () {
+    if (!video.duration) return;
+    progress.style.width = (video.currentTime / video.duration * 100) + '%';
+  });
+
+  // ── Core: fly logo to header corner and reveal ──────────────────
+  function flyToHeader() {
+    if (done) return;
+    done = true;
+
+    try { sessionStorage.setItem('projct-intro-done', '1'); } catch (e) {}
+    document.body.style.overflow = '';
+
+    if (!headerLogo) {
+      overlay.style.transition = 'opacity 0.5s ease';
+      overlay.style.opacity    = '0';
+      setTimeout(function () { overlay.remove(); }, 600);
+      return;
+    }
+
+    var dest = headerLogo.getBoundingClientRect();
+    var src  = wrap.getBoundingClientRect();
+
+    var scale = dest.width / src.width;
+    var tx    = (dest.left + dest.width  / 2) - (src.left + src.width  / 2);
+    var ty    = (dest.top  + dest.height / 2) - (src.top  + src.height / 2);
+
+    // Animate logo: fly + shrink + fade near the end
+    wrap.style.transition = [
+      'transform 0.95s cubic-bezier(0.16, 1, 0.3, 1)',
+      'opacity   0.3s  ease 0.6s'
+    ].join(', ');
+    wrap.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+    wrap.style.opacity   = '0';
+
+    // Simultaneously fade out the white backdrop (slight delay for drama)
+    overlay.style.transition = 'opacity 0.65s ease 0.1s';
+    overlay.style.opacity    = '0';
+
+    // Fade header logo in as the video fades out
+    headerLogo.style.transition = 'opacity 0.35s ease 0.72s';
+    headerLogo.style.opacity    = '1';
+
+    setTimeout(function () {
+      overlay.style.pointerEvents = 'none';
+      overlay.remove();
+    }, 1200);
+  }
+
+  // ── Fallback: fire after 7 s if video stalls ────────────────────
+  var fallback = setTimeout(flyToHeader, 7000);
+
+  video.addEventListener('ended', function () {
+    clearTimeout(fallback);
+    setTimeout(flyToHeader, 180); // brief hold after last frame
+  });
+
+  video.addEventListener('error', function () {
+    clearTimeout(fallback);
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+    if (headerLogo) headerLogo.style.opacity = '1';
+    try { sessionStorage.setItem('projct-intro-done', '1'); } catch (e) {}
+  });
+
+
+})();
+</script>
+</html>
