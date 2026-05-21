@@ -276,7 +276,12 @@
 .mobile-overlay { color: #fff; }
 
 /* When scrolled onto white background */
-.header.on-white { color: var(--brand-blue); }
+.header.on-white {
+  color: var(--brand-blue);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
 
 /* Hamburger lines follow text color */
 .hamburger path {
