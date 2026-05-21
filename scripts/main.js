@@ -4,8 +4,8 @@ let acuminLight;
 
 
 function preload() {
-  acuminLight = loadFont('../fonts/static/RedHatDisplay-Regular.ttf');
- acuminRegular  = loadFont('../fonts/static/RedHatDisplay-Regular.ttf');
+  acuminLight = loadFont('/fonts/static/RedHatDisplay-Regular.ttf');
+ acuminRegular  = loadFont('/fonts/static/RedHatDisplay-Regular.ttf');
 }
 
 function setup() {
