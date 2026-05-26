@@ -40,14 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileOverlay = document.getElementById('mobileOverlay');
     if (!header) return;
   
-    let lastY = window.scrollY;
+    const scroller = document.body;
+    let lastY = scroller.scrollTop;
     let ticking = false;
     const SOLID_AT = 10;     // add .is-solid after 10px
     const SHOW_ZONE = 60;    // never hide near the very top
     const MIN_DELTA = 8;     // ignore tiny scroll jitter
-  
+
     function update() {
-      const y = window.scrollY;
+      const y = scroller.scrollTop;
       const goingDown = y > lastY;
       const delta = Math.abs(y - lastY);
       const overlayOpen = mobileOverlay?.classList.contains('open');
@@ -78,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
-    window.addEventListener('scroll', onScroll, { passive: true });
+    scroller.addEventListener('scroll', onScroll, { passive: true });
     update(); // set initial state
   });
 
@@ -87,12 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const header = document.querySelector('.header');
 
-const hero   = document.querySelector('.panel.hero'); // was '#hero'
+const hero = document.querySelector('.panel.hero');
 
-const io = new IntersectionObserver(([entry]) => {
-  if (!entry.isIntersecting) header.classList.add('on-white');
-  else header.classList.remove('on-white');
-}, { threshold: 0.01 });
-
-io.observe(hero);
+if (hero) {
+  const io = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) header.classList.add('on-white');
+    else header.classList.remove('on-white');
+  }, { threshold: 0.01 });
+  io.observe(hero);
+}
 
