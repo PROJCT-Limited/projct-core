@@ -354,9 +354,24 @@ hr {
 .button-header a:visited {
   color: inherit;
   text-decoration: none;
+  position: relative;
 }
-
-/* Keep underline off on hover/focus/active too */
+.button-header a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.button-header a:hover::after,
+.button-header a:focus::after {
+  transform: scaleX(1);
+}
 .button-header a:hover,
 .button-header a:focus,
 .button-header a:active {
@@ -438,8 +453,21 @@ color: #fff;
 font-size: 1.4rem;
 color: #fff;
 text-decoration: none;
+position: relative;
 }
-.mobile-overlay a:hover { text-decoration: underline; }
+.mobile-overlay a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-overlay a:hover::after { transform: scaleX(1); }
 
 /* Hide desktop items on small screens, show hamburger */
 .desktop { display: none; }
@@ -771,7 +799,6 @@ body.menu-open #machine * {
 .header.is-solid{
   background: var(--header-bg);
   backdrop-filter: blur(6px);
-  box-shadow: 0 6px 20px rgba(0,0,0,.08);
 }
 
 /* Hidden state */
@@ -785,7 +812,7 @@ body.menu-open #machine * {
 
 /* Optional hover */
 .header a:hover,
-.header a:focus { text-decoration: underline; }
+.header a:focus { text-decoration: none; }
 
 /* Make the image column a fixed-ratio box the image fully covers */
 .index-item-images {
@@ -1216,6 +1243,27 @@ font-family: 'Red Hat Display';
   gap: clamp(20px, 6vw, 80px);
   margin: 0;
 }
+.footer-social a,
+.footer-meta a {
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+.footer-social a::after,
+.footer-meta a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.footer-social a:hover::after,
+.footer-meta a:hover::after { transform: scaleX(1); }
 
 /* ===== NEWSLETTER (right side) =====
    Put the newsletter as a SIBLING of .footer-brand so it can be wider.
@@ -1264,7 +1312,20 @@ font-family: 'Red Hat Display';
   white-space: nowrap;
   padding: .35rem 0;
 }
-.newsletter-submit:hover{ text-decoration: underline; }
+.newsletter-submit{ position: relative; }
+.newsletter-submit::after{
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.newsletter-submit:hover::after{ transform: scaleX(1); }
 
 /* ===== LEGAL STRIP (bottom bar) ===== */
 .footer-legal{
@@ -1280,8 +1341,21 @@ font-family: 'Red Hat Display';
   font-size: .85rem;
   padding-block: clamp(12px, 2.6vh, 24px);
 }
-.footer-legal a{ color: inherit; text-decoration: none; }
-.footer-legal a:hover{ text-decoration: underline; }
+.footer-legal a{ color: inherit; text-decoration: none; position: relative; }
+.footer-legal a::after{
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.footer-legal a:hover{ text-decoration: none; }
+.footer-legal a:hover::after{ transform: scaleX(1); }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width:1024px){
