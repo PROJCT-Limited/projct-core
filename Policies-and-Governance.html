@@ -442,7 +442,26 @@
     <span>© PROJCT 2026</span>
   </div>
 
-
+<script>
+  (function () {
+    var header = document.querySelector('.header');
+    if (!header) return;
+    var scroller = document.body;
+    var lastY = scroller.scrollTop;
+    var ticking = false;
+    function update() {
+      var y = scroller.scrollTop;
+      var delta = y - lastY;
+      if (y < 80) { header.classList.remove('is-hidden'); }
+      else if (delta > 6) { header.classList.add('is-hidden'); }
+      else if (delta < -6) { header.classList.remove('is-hidden'); }
+      lastY = y; ticking = false;
+    }
+    scroller.addEventListener('scroll', function () {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+  })();
+</script>
 </body>
 
 <script src="./interaction.js" defer></script>
