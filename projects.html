@@ -70,9 +70,49 @@
       <p class="inv-kicker">Current project</p>
       <h1 class="inv-title">Infinite Maze 189<br><span class="inv-title-by">with Wit Pimkanchanapong</span></h1>
 
-      <div class="inv-image-wrap">
-        <img src="./images/Event images/wit_maze.jpg.avif" alt="189 Maze — Wit Pimkanchanapong">
+      <div class="inv-image-wrap" id="inv-slideshow" role="button" tabindex="0" aria-label="Click to advance image">
+        <div class="inv-slide-track" id="inv-track">
+          <img src="./images/Wit installation/IMG_1221.JPG" alt="189 Maze — Wit Pimkanchanapong" class="inv-slide">
+          <img src="./images/Wit installation/IMG_1212.JPG" alt="189 Maze — Wit Pimkanchanapong" class="inv-slide">
+          <img src="./images/Wit installation/IMG_1214.JPG" alt="189 Maze — Wit Pimkanchanapong" class="inv-slide">
+        </div>
+        <div class="inv-slide-dots">
+          <span class="inv-dot active"></span>
+          <span class="inv-dot"></span>
+          <span class="inv-dot"></span>
+        </div>
       </div>
+      <script>
+        (function () {
+          var wrap = document.getElementById('inv-slideshow');
+          var track = document.getElementById('inv-track');
+          var dots = wrap.querySelectorAll('.inv-dot');
+          var total = dots.length;
+          var current = 0;
+          var timer;
+
+          function goTo(n) {
+            dots[current].classList.remove('active');
+            current = (n + total) % total;
+            track.style.transform = 'translateX(-' + (current * 100) + '%)';
+            dots[current].classList.add('active');
+          }
+
+          function next() { goTo(current + 1); }
+
+          function resetTimer() {
+            clearInterval(timer);
+            timer = setInterval(next, 3500);
+          }
+
+          wrap.addEventListener('click', function () { next(); resetTimer(); });
+          wrap.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); resetTimer(); }
+          });
+
+          resetTimer();
+        })();
+      </script>
 
       <p class="inv-description">
         Wit Pimkanchanapong’s 4th edition of the Infinite Maze emerges as an expanding network of infinite combinations. Located in Sai Ying Pun 189 Queen’s street, the installation shows panels shift, lines of light reconfigure, and the grid itself breathes. Each movement alters the possible routes through the space, creating a living maze that is constantly rewriting its own map.
