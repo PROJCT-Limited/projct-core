@@ -249,6 +249,35 @@
     <span>© PROJCT 2026</span>
   </div>
 
+<script>
+  (function () {
+    var header = document.querySelector('.header');
+    if (!header) return;
+    var scroller = document.body;
+    var lastY = scroller.scrollTop;
+    var ticking = false;
+    var HIDE_AFTER = 80;
+    var MIN_DELTA = 6;
+
+    function update() {
+      var y = scroller.scrollTop;
+      var delta = y - lastY;
+      if (y < HIDE_AFTER) {
+        header.classList.remove('is-hidden');
+      } else if (delta > MIN_DELTA) {
+        header.classList.add('is-hidden');
+      } else if (delta < -MIN_DELTA) {
+        header.classList.remove('is-hidden');
+      }
+      lastY = y;
+      ticking = false;
+    }
+
+    scroller.addEventListener('scroll', function () {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+  })();
+</script>
 </body>
 <script src="./about.js"></script>
 <script src="./interaction.js"></script>
