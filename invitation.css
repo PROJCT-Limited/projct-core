@@ -47,7 +47,7 @@ html, body {
 .inv-title {
   font-family: "Red Hat Display";
   font-size: clamp(36px, 3.8vw, 62px);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.15;
   color: var(--brand-blue);
   margin: 0 0 2.5rem;
@@ -60,17 +60,45 @@ html, body {
   font-weight: inherit;
 }
 
-/* Main event image */
+/* Main event image — slideshow */
 .inv-image-wrap {
+  position: relative;
   width: 100%;
   margin-bottom: 2.5rem;
+  cursor: pointer;
+  overflow: hidden;
 }
-.inv-image-wrap img {
+.inv-slide-track {
+  display: flex;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+.inv-slide {
+  flex: 0 0 100%;
   width: 100%;
-  height: auto;
-  display: block;
+  height: 560px;
   object-fit: cover;
-  max-height: 560px;
+  display: block;
+  user-select: none;
+}
+.inv-slide-dots {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  pointer-events: none;
+}
+.inv-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  transition: background 0.3s;
+}
+.inv-dot.active {
+  background: rgba(255,255,255,0.95);
 }
 
 /* Matches .section-copy / .objective-copy in about.css exactly */
