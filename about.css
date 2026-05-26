@@ -280,7 +280,6 @@
   color: var(--brand-blue);
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(6px);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
 }
 
 /* Hamburger lines follow text color */
@@ -310,6 +309,7 @@
 
 
 .is-hidden { display: none; }
+.header.is-hidden { display: flex; transform: translateY(-100%); }
 
 /* Make the description block align with your grid if it's inside .container */
 .container .description-text { grid-column: 1 / -1; }
@@ -453,7 +453,7 @@
 
 /* Optional hover */
 .header a:hover,
-.header a:focus { text-decoration: underline; }
+.header a:focus { text-decoration: none; }
 
 /* Ensure the hamburger lines follow the color too */
 .header .hamburger path { stroke: currentColor; }
@@ -640,7 +640,7 @@
   color: rgba(255,255,255,.95) !important; 
   text-decoration: none !important; 
 }
-.site-footer a:hover{ text-decoration: underline !important; }
+.site-footer a:hover{ text-decoration: none !important; }
 
 /* left column content (3 blocks + privacy link row) */
 .footer-meta{
@@ -714,7 +714,7 @@
   white-space: nowrap !important;
   padding: .35rem 0 !important;
 }
-.newsletter-submit:hover{ text-decoration: underline !important; }
+.newsletter-submit:hover{ text-decoration: none !important; }
 
 /* social row matches About look */
 .footer-social{
@@ -737,7 +737,7 @@
   padding-block: clamp(12px, 2.6vh, 24px) !important;
 }
 .footer-legal a{ color: inherit !important; text-decoration: none !important; }
-.footer-legal a:hover{ text-decoration: underline !important; }
+.footer-legal a:hover{ text-decoration: none !important; }
 
 /* responsive matches About */
 @media (max-width:1024px){
