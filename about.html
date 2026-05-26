@@ -677,8 +677,18 @@ the end result.
     }, 1200);
   }
 
-  // ── Fallback: fire after 7 s if video stalls ────────────────────
-  var fallback = setTimeout(flyToHeader, 7000);
+  // ── Fallback: shorter on mobile in case video loads slowly ────────────────────
+  var isMobile = ('ontouchstart' in window) || window.innerWidth <= 768;
+  var fallback = setTimeout(flyToHeader, isMobile ? 2000 : 7000);
+
+  // Force play — if the browser blocks autoplay, dismiss the overlay immediately
+  var playPromise = video.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(function () {
+      clearTimeout(fallback);
+      flyToHeader();
+    });
+  }
 
   video.addEventListener('ended', function () {
     clearTimeout(fallback);
