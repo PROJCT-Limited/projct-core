@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Work — PROJCT</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="about.css">
+  <style>
+    /* ─── Grid page ─── */
+    .w2-page { background: #fff; color: var(--brand-blue,#0e50c8); padding-top: var(--header-h,80px); min-height: 100vh; }
+
+    .w2-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 32px clamp(20px,5vw,64px) 24px;
+    }
+    .w2-filter-btn {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      padding: 8px 18px;
+      border-radius: 100px;
+      border: 1px solid rgba(14,80,200,0.25);
+      background: transparent;
+      color: var(--brand-blue,#0e50c8);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .w2-filter-btn:hover { border-color: var(--brand-blue,#0e50c8); }
+    .w2-filter-btn.active {
+      background: var(--brand-blue,#0e50c8);
+      color: #fff;
+      border-color: var(--brand-blue,#0e50c8);
+    }
+
+    .w2-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(16px,2.5vw,36px);
+      padding: 0 clamp(20px,5vw,64px) 80px;
+    }
+    @media (max-width: 900px) { .w2-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 560px) { .w2-grid { grid-template-columns: 1fr; } }
+
+    .w2-card {
+      cursor: pointer;
+      position: relative;
+    }
+    .w2-card.hidden { display: none; }
+    .w2-card-img-wrap {
+      width: 100%;
+      aspect-ratio: 16/11;
+      overflow: hidden;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      background: #e8edf8;
+    }
+    .w2-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .w2-card:hover .w2-card-img { transform: scale(1.04); }
+
+    .w2-card-title {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: clamp(16px,1.5vw,20px);
+      font-weight: 500;
+      margin: 0 0 5px;
+      line-height: 1.2;
+    }
+    .w2-card-sub {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.83rem;
+      color: rgba(14,80,200,0.55);
+      margin: 0 0 12px;
+    }
+    .w2-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .w2-card-tag {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      border: 1px solid rgba(14,80,200,0.35);
+      color: rgba(14,80,200,0.65);
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    /* ─── Case study overlay ─── */
+    .w2-overlay {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      z-index: 8000;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+      visibility: hidden;
+    }
+    .w2-overlay.open {
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    .w2-back {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px clamp(20px,5vw,64px);
+      background: #fff;
+      border-bottom: 1px solid rgba(14,80,200,0.1);
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--brand-blue,#0e50c8);
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+    .w2-back:hover { opacity: 0.6; }
+    .w2-back-arrow { font-size: 1rem; }
+
+    /* Case study hero: two columns */
+    .w2-cs-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(32px,5vw,80px);
+      padding: clamp(40px,6vh,80px) clamp(20px,5vw,64px);
+      align-items: start;
+    }
+    @media (max-width: 700px) { .w2-cs-hero { grid-template-columns: 1fr; gap: 28px; } }
+
+    .w2-cs-headline {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: clamp(32px,5vw,64px);
+      font-weight: 300;
+      line-height: 1.1;
+      margin: 0;
+      color: var(--brand-blue,#0e50c8);
+    }
+    .w2-cs-headline em { font-style: italic; }
+
+    .w2-cs-right { padding-top: 8px; }
+    .w2-cs-client {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin: 0 0 20px;
+    }
+    .w2-cs-intro {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: clamp(15px,1.2vw,18px);
+      line-height: 1.65;
+      color: var(--brand-blue,#0e50c8);
+      margin: 0 0 28px;
+    }
+    .w2-cs-services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0;
+    }
+    .w2-cs-service-tag {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(14,80,200,0.4);
+      padding: 5px 14px;
+      border-radius: 100px;
+      color: rgba(14,80,200,0.7);
+    }
+
+    /* Case study body */
+    .w2-cs-body {
+      padding: 0 clamp(20px,5vw,64px) clamp(40px,6vh,80px);
+    }
+    .w2-cs-divider {
+      border: none;
+      border-top: 1px solid rgba(14,80,200,0.12);
+      margin: 0 0 clamp(32px,5vh,60px);
+    }
+    .w2-cs-imgs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(12px,2vw,24px);
+      margin-bottom: clamp(32px,5vh,60px);
+    }
+    .w2-cs-imgs.full { grid-template-columns: 1fr; }
+    .w2-cs-img {
+      width: 100%;
+      height: clamp(200px,40vw,520px);
+      object-fit: cover;
+      display: block;
+      border-radius: 4px;
+    }
+    .w2-cs-imgs.full .w2-cs-img { height: clamp(280px,50vw,620px); }
+
+    .w2-cs-text-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(32px,5vw,80px);
+      margin-bottom: clamp(32px,5vh,60px);
+    }
+    @media (max-width: 700px) { .w2-cs-text-block { grid-template-columns: 1fr; } .w2-cs-imgs { grid-template-columns: 1fr; } }
+
+    .w2-cs-label {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin: 0 0 16px;
+    }
+    .w2-cs-text {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: clamp(14px,1.1vw,16px);
+      line-height: 1.7;
+      color: var(--brand-blue,#0e50c8);
+      margin: 0;
+    }
+    .w2-cs-text b { font-weight: 600; }
+    .w2-cs-text em { font-style: italic; }
+
+    .w2-cs-stat-row {
+      display: flex;
+      gap: clamp(24px,4vw,60px);
+      flex-wrap: wrap;
+      margin-bottom: clamp(32px,5vh,60px);
+      padding: clamp(24px,3vh,40px) 0;
+      border-top: 1px solid rgba(14,80,200,0.12);
+      border-bottom: 1px solid rgba(14,80,200,0.12);
+    }
+    .w2-cs-stat { flex: 1; min-width: 120px; }
+    .w2-cs-stat-num {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: clamp(28px,4vw,48px);
+      font-weight: 300;
+      line-height: 1;
+      margin: 0 0 6px;
+    }
+    .w2-cs-stat-label {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.75rem;
+      opacity: 0.5;
+      margin: 0;
+    }
+
+    /* next/prev nav at bottom of case study */
+    .w2-cs-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: clamp(24px,4vh,48px) clamp(20px,5vw,64px);
+      border-top: 1px solid rgba(14,80,200,0.12);
+    }
+    .w2-cs-nav-btn {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: none;
+      border: none;
+      color: var(--brand-blue,#0e50c8);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .w2-cs-nav-btn:hover { opacity: 0.6; }
+    .w2-cs-nav-title { font-size: clamp(14px,1.5vw,18px); font-weight: 400; text-transform: none; letter-spacing: 0; margin-top: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Header ─── -->
+  <div class="header">
+    <div class="logo_PROJCT">
+      <a href="about.html">
+        <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 239.57" aria-label="PROJCT" role="img">
+          <title>PROJCT</title>
+          <g><g>
+            <path d="M173.62,84.3c0,49.75-17.05,83.16-92.2,83.16H13.92v70.63H0V1.49h81.42c75.15,0,92.2,33.05,92.2,82.81ZM159.7,84.3c0-60.19-30.97-68.89-78.29-68.89H13.92v138.13h67.5c47.32,0,78.29-10.09,78.29-69.24Z" fill="currentColor"/>
+            <path d="M340.62,141.36h37.92v96.73h-13.92v-88.03h-142.31v88.03h-13.92V1.49h77.94c75.15,0,92.2,33.05,92.2,75.85,0,36.53-20.53,52.54-37.92,58.45v5.57ZM286.35,136.14c50.8,0,78.29-10.09,78.29-58.8,0-53.24-30.97-61.93-78.29-61.93h-64.02v120.73h64.02Z" fill="currentColor"/>
+            <path d="M759.18,1.49v236.6h-107.86v-13.92h93.94V1.49h13.92Z" fill="currentColor"/>
+            <path d="M902.52,1.49c64.72,0,97.77,41.4,99.86,90.12h-13.92c-9.39-58.45-38.62-76.2-85.94-76.2-50.1,0-91.16,30.97-91.16,104.38s41.06,104.38,91.16,104.38c47.32,0,76.55-17.74,85.94-76.2h13.92c-2.09,48.71-35.14,90.11-99.86,90.11-75.85,0-105.08-59.15-105.08-118.3S826.67,1.49,902.52,1.49Z" fill="currentColor"/>
+            <path d="M1200,15.4h-83.16v222.68h-13.92V15.4h-83.16V1.49h180.23v13.92Z" fill="currentColor"/>
+          </g>
+          <path d="M530.28,239.57c-66.04,0-119.78-53.74-119.78-119.78S464.24,0,530.28,0s119.79,53.74,119.79,119.79-53.74,119.78-119.79,119.78ZM530.28,12.65c-59.08,0-107.13,48.06-107.13,107.14s48.06,107.13,107.13,107.13,107.14-48.06,107.14-107.13-48.06-107.14-107.14-107.14Z" fill="currentColor"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+    <div class="nav-right">
+      <button class="mobile" id="mobileTrigger" aria-controls="mobileOverlay" aria-expanded="false" aria-label="Open menu" style="background:none;border:0;padding:0;cursor:pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" stroke="currentColor" class="hamburger"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="button-header button_header1 desktop">
+        <div class="nav-arrow"><p><a href="about.html">About us</a></p></div>
+        <div class="nav-arrow"><p><a href="projects.html">Projects</a></p></div>
+        <div class="nav-arrow"><p><a href="nodes.html">The world we live in</a></p></div>
+        <div class="nav-text"><p><a href="index.html">Index</a></p></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="mobile-overlay" id="mobileOverlay">
+    <button id="mobileClose" class="mobile-close" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="overlay-inner">
+      <div class="row1"><img src="SVG/Asset 1.svg" alt="" class="nav-svg-mobile"/><a class="overlay-link" href="about.html">About</a></div>
+      <div class="row2"><img src="SVG/Asset 1.svg" alt="" class="nav-svg-mobile"/><a class="overlay-link" href="projects.html">Projects</a></div>
+      <div class="row3"><img src="SVG/Asset 1.svg" alt="" class="nav-svg-mobile"/><a class="overlay-link" href="nodes.html">The world we live in</a></div>
+      <div class="row4"><img src="SVG/Asset 1.svg" alt="" class="nav-svg-mobile"/><a class="overlay-link" href="index.html">Index</a></div>
+    </div>
+  </nav>
+
+  <!-- ─── Grid page ─── -->
+  <div class="w2-page" id="w2Grid">
+
+    <div class="w2-filters">
+      <button class="w2-filter-btn active" data-filter="all">All</button>
+      <button class="w2-filter-btn" data-filter="Case-studies">Case Studies</button>
+      <button class="w2-filter-btn" data-filter="Practice">Practice</button>
+      <button class="w2-filter-btn" data-filter="Articles">Articles</button>
+      <button class="w2-filter-btn" data-filter="Research">Research</button>
+    </div>
+
+    <div class="w2-grid" id="w2CardGrid">
+
+      <div class="w2-card" data-tag="Practice" data-id="0">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/LIGHTBOX2.jpg.webp" alt="Lightbox Gallery"></div>
+        <h2 class="w2-card-title">Community Activation</h2>
+        <p class="w2-card-sub">Lightbox Gallery</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Practice</span><span class="w2-card-tag">Community</span><span class="w2-card-tag">Exhibition</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Case-studies" data-id="1">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/1-4.jpg" alt="Last Wishes"></div>
+        <h2 class="w2-card-title">Last Wishes Campaign</h2>
+        <p class="w2-card-sub">Chubb Life Insurance</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Case Study</span><span class="w2-card-tag">Strategy</span><span class="w2-card-tag">Experiential</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Case-studies" data-id="2">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_001.jpg" alt="Life Insurance Strategy"></div>
+        <h2 class="w2-card-title">Discovery → Build</h2>
+        <p class="w2-card-sub">Life Insurance Company</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Case Study</span><span class="w2-card-tag">Strategy</span><span class="w2-card-tag">Brand</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Case-studies" data-id="3">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/STRAATOS/IMG_5231.JPG" alt="STRAATOS"></div>
+        <h2 class="w2-card-title">Product Strategy + Launch</h2>
+        <p class="w2-card-sub">STRAATOS</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Case Study</span><span class="w2-card-tag">Strategy</span><span class="w2-card-tag">UI/UX</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Case-studies" data-id="4">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/hoka0.jpg" alt="HOKA Runner's High"></div>
+        <h2 class="w2-card-title">Runner's High</h2>
+        <p class="w2-card-sub">HOKA — Art Basel HK 2026</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Case Study</span><span class="w2-card-tag">Experiential</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Case-studies" data-id="5">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/Van Alen/Screenshot 2026-05-21 at 22.47.19.png" alt="Van Alen Institute"></div>
+        <h2 class="w2-card-title">Strategy + New Business Model</h2>
+        <p class="w2-card-sub">Van Alen Institute</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Case Study</span><span class="w2-card-tag">Strategy</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Case-studies" data-id="6">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/AIA/Screenshot 2026-05-21 at 23.18.35.png" alt="AIA"></div>
+        <h2 class="w2-card-title">Experience + Workplace Strategy</h2>
+        <p class="w2-card-sub">AIA — 1 Stubbs Road</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Case Study</span><span class="w2-card-tag">Experience</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Case-studies" data-id="7">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/TSG/Screenshot 2026-05-21 at 23.20.25.png" alt="TSG Entertainment"></div>
+        <h2 class="w2-card-title">Brand Extension Strategy</h2>
+        <p class="w2-card-sub">TSG Entertainment</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Case Study</span><span class="w2-card-tag">Brand</span><span class="w2-card-tag">IP</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Case-studies" data-id="8">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/Explorium/Screenshot 2026-05-20 at 20.51.01.png" alt="Explorium"></div>
+        <h2 class="w2-card-title">Corporate Innovation</h2>
+        <p class="w2-card-sub">Explorium, Fung Group</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Case Study</span><span class="w2-card-tag">Innovation</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Articles" data-id="9">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/SKWAT0.jpg" alt="SKWAT Tokyo"></div>
+        <h2 class="w2-card-title">2028 Research</h2>
+        <p class="w2-card-sub">SKWAT, Tokyo</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Article</span></div>
+      </div>
+
+      <div class="w2-card" data-tag="Research" data-id="10">
+        <div class="w2-card-img-wrap"><img class="w2-card-img" src="./images/World Report Survey/Screenshot 2026-05-21 at 23.35.44.png" alt="World Survey"></div>
+        <h2 class="w2-card-title">It's The World We Live In</h2>
+        <p class="w2-card-sub">2020 World Survey</p>
+        <div class="w2-card-tags"><span class="w2-card-tag">Research</span></div>
+      </div>
+
+    </div>
+  </div><!-- /w2-page -->
+
+  <!-- ─── Case study overlay ─── -->
+  <div class="w2-overlay" id="w2Overlay" aria-modal="true" role="dialog">
+
+    <button class="w2-back" id="w2BackBtn">
+      <span class="w2-back-arrow">←</span> Back to work
+    </button>
+
+    <!-- Hero: headline left, desc right -->
+    <div class="w2-cs-hero">
+      <h1 class="w2-cs-headline" id="csHeadline"></h1>
+      <div class="w2-cs-right">
+        <p class="w2-cs-client" id="csClient"></p>
+        <p class="w2-cs-intro" id="csIntro"></p>
+        <div class="w2-cs-services" id="csServices"></div>
+      </div>
+    </div>
+
+    <!-- First hero image(s) -->
+    <div class="w2-cs-body">
+      <hr class="w2-cs-divider">
+      <div class="w2-cs-imgs" id="csHeroImgs"></div>
+
+      <!-- Stats row (shown when data exists) -->
+      <div class="w2-cs-stat-row" id="csStats" style="display:none"></div>
+
+      <!-- Body text block -->
+      <div class="w2-cs-text-block" id="csTextBlock"></div>
+
+      <!-- Secondary images -->
+      <div class="w2-cs-imgs" id="csSecondImgs"></div>
+    </div>
+
+    <!-- Next / Prev nav -->
+    <div class="w2-cs-nav">
+      <button class="w2-cs-nav-btn" id="csPrev">
+        <span>← Previous</span>
+        <span class="w2-cs-nav-title" id="csPrevTitle"></span>
+      </button>
+      <button class="w2-cs-nav-btn" id="csNext" style="text-align:right">
+        <span>Next →</span>
+        <span class="w2-cs-nav-title" id="csNextTitle"></span>
+      </button>
+    </div>
+
+  </div><!-- /overlay -->
+
+  <script>
+  (function () {
+    /* ── Data ── */
+    var projects = [
+      {
+        id: 0,
+        headline: 'Community\nActivation',
+        client: 'Lightbox Gallery — 2025',
+        intro: 'A collaborative initiative by PROJCT and EJAR that transforms Hong Kong\'s public spaces into a living gallery. By utilising places not traditionally seen as artistic venues, the initiative uncovers the creative potential embedded within everyday urban spaces.',
+        services: ['Practice', 'Community', 'Exhibition', 'Art'],
+        stats: [],
+        body: [
+          { label: 'About', text: 'The gallery came to life through the inaugural collaboration of four talented artists — Au Kin Wai Johnny, Chan Man Yi, Yeung Shu Nga Emma, and Yuen An Tung Ariel. Since then, it has evolved into a dynamic exhibition platform that celebrates cross-disciplinary collaboration and international exchange.' },
+          { label: 'Approach', text: 'By turning the city itself into a canvas, streets become more than routes of movement; they evolve into spaces of interaction, reflection, and social engagement. Unlike traditional galleries, LIGHTBOX also features a month-long auction, bridging Hong Kong\'s vibrant urban culture with global artistic networks.' }
+        ],
+        heroImgs: ['./images/LIGHTBOX2.jpg.webp', './images/LIGHTBOX.png.webp'],
+        secondImgs: ['./images/Lightbox Gallery/LG0.jpg', './images/Lightbox Gallery/LG1.jpg', './images/Lightbox Gallery/LG2.jpg', './images/Lightbox Gallery/LG3.jpg']
+      },
+      {
+        id: 1,
+        headline: 'Every Wish\nLasts',
+        client: 'Chubb Life Insurance — 2024–25',
+        intro: '71% of Hong Kong residents had never shared their final wishes. We transformed end-of-life planning from a taboo into a meaningful, city-wide human-centric dialogue — culminating in an immersive installation at Art Basel Hong Kong 2025.',
+        services: ['Strategic Advisory', 'Content Storytelling', 'Experiential Design', 'OOH'],
+        stats: [
+          { num: 'HK$124M', label: 'PR Value' },
+          { num: '785M', label: 'Impressions' },
+          { num: '455', label: 'Media pieces' },
+          { num: '3.4K', label: 'In-person attendees' }
+        ],
+        body: [
+          { label: 'The Challenge', text: 'In a society where death is a profound taboo, our challenge was to help position our client not just as an insurer, but as a compassionate leader in life\'s most important conversations.' },
+          { label: 'What we did', text: 'We began with anonymous "teaser" walls posing, "When you\'re no longer here… what\'s your wish?" The overwhelming public response was painted back onto the walls. The campaign expanded to film screenings, a "Last Wishes" magazine, 40 question cards, and a Wishing Well at Art Basel.' }
+        ],
+        heroImgs: ['./images/1-4.jpg', './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0092-Edit.jpg'],
+        secondImgs: ['./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0160-Edit.jpg', './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_060.jpg', './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_093.jpg', './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_154.jpg']
+      },
+      {
+        id: 2,
+        headline: 'Discovery\n→ Build',
+        client: 'Life Insurance Company — 2023–2026',
+        intro: 'From #27 to #15 in brand recognition. Over three years, we led Strategy, Brand, Campaigns, and Experiential work — including three consecutive Art Basel Hong Kong installations that redefined how the brand speaks to Hong Kong.',
+        services: ['Strategy', 'Brand', 'Campaigns', 'Experiential Marketing'],
+        stats: [
+          { num: '#27→#15', label: 'Brand ranking' },
+          { num: 'HK$8M', label: 'PR value (Life Forest)' },
+          { num: '6.33M', label: 'People reached' },
+          { num: '516%', label: 'Social media increase' }
+        ],
+        body: [
+          { label: 'Starting point', text: 'In late 2022, this company ranked #27 in industry name recognition and held less than 1% market share. We were engaged to help with a new positioning strategy through a Discovery project — gathering market insights, defining brand opportunities, and setting strategic directions.' },
+          { label: 'Recognition', text: 'Fast Company World\'s Most Innovative Company (2025), Winner of HKFI Awards Outstanding Integrated Marketing, Bloomberg Awards in Integrated Marketing, 6 Marketing Event Awards, Creative Review shortlist. We don\'t just hand over decks. We stay in the room and build together.' }
+        ],
+        heroImgs: ['./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_001.jpg', './images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_006.jpg'],
+        secondImgs: ['./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_025.jpg', './images/Art%20Basel%20Chubb%20Life%20Chapters/0327_Chubb_063.jpg', './images/Art%20Basel%20Chubb%20Life%20Chapters/HKL_0378.jpg', './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0078-Edit.jpg']
+      },
+      {
+        id: 3,
+        headline: 'Product\nStrategy +\nLaunch',
+        client: 'STRAATOS — 2022–2025',
+        intro: 'Rebuilding trust in climate data. A two-year journey from a stakeholder gathering in Senegal to a working platform launched at New York Climate Week 2025. The fastest way to build trust in a system is to make the system itself visible.',
+        services: ['Strategy', 'Product', 'UI/UX Design', 'Launch Campaign'],
+        stats: [],
+        body: [
+          { label: 'The platform', text: 'STRAATOS is the "Operating System" of the voluntary carbon market — built on Hedera Guardian, an open-source decentralised infrastructure that anchors every data point to a public ledger, making each claim traceable from the ground to the credit.' },
+          { label: 'What we did', text: 'We led UI/UX design, facilitated workshops in Madrid with regulators and developers, and designed the NYCW booth experience — a phone prop with pain point recordings, a thick stack of PDDs to illustrate manual inefficiencies, and a live platform demo.' }
+        ],
+        heroImgs: ['./images/STRAATOS/IMG_5231.JPG', './images/STRAATOS/IMG_5215.JPG'],
+        secondImgs: ['./images/STRAATOS/IMG_5338.JPG', './images/STRAATOS/IMG_5557.JPG', './images/STRAATOS/IMG_5613%202.JPG', './images/STRAATOS/IMG_5620%202.JPG']
+      },
+      {
+        id: 4,
+        headline: 'Runner\'s\nHigh',
+        client: 'HOKA — Art Basel Hong Kong 2026',
+        intro: 'An immersive installation exploring the psychological and sensory thresholds of endurance. Rooted in the brand\'s ethos of movement as transformation, the work draws from the lived experiences of ultra-marathon runners where reality begins to shift.',
+        services: ['Experiential Design', 'Design', 'Production'],
+        stats: [],
+        body: [
+          { label: 'The Bright Side', text: 'The first environment evokes the external world of the run — expansive, luminous, and exhilarating. It captures sensations of velocity, openness, and elevation, where the body feels light and the landscape unfolds in rhythm with breath and stride.' },
+          { label: 'The Dark Space', text: 'The second environment turns inward. Visitors encounter the mental terrain of endurance: disorientation, repetition, and hallucination. Light fragments, sound distorts, and tactile cues blur the boundary between body and space.' }
+        ],
+        heroImgs: ['./images/hoka0.jpg', './images/hoka1.jpg'],
+        secondImgs: ['./images/hoka2.jpg']
+      },
+      {
+        id: 5,
+        headline: 'Strategy +\nNew Business\nModel',
+        client: 'Van Alen Institute — 2020–21',
+        intro: 'Entering 2020, Van Alen Institute — a 125-year-old heritage organization in architecture and urbanism — wanted to evolve its mission. We helped co-create the strategy, not by telling them where to go, but by shifting mindsets and behaviours.',
+        services: ['Strategy', 'New Business Model', 'Organizational Design'],
+        stats: [],
+        body: [
+          { label: 'The approach', text: 'We took a holistic and adaptive approach centered on co-creation: developing a clear strategy that guides actions ahead, while building confidence through defined pilots that facilitate learning. We focused on what was actionable and applicable — pushing their thinking while ensuring the future was attainable.' },
+          { label: 'The result', text: '"VAI shares its core assets — an interdisciplinary network and deep community-driven knowledge — with historically under-resourced communities to strengthen social infrastructure in the built environment." A set of guiding principles translates this strategy into action: Center with communities. Learn and create tools. Diversify.' }
+        ],
+        heroImgs: ['./images/Van Alen/Screenshot 2026-05-21 at 22.47.19.png'],
+        secondImgs: []
+      },
+      {
+        id: 6,
+        headline: 'Experience +\nWorkplace\nStrategy',
+        client: 'AIA — 1 Stubbs Road, 2024',
+        intro: 'AIA — the largest publicly traded life insurance group in Asia-Pacific — set out to transform its workplace into a platform for cultural and operational change. A campaign to drive adoption of the future of AIA\'s culture.',
+        services: ['Experience Strategy', 'Workplace Design', 'Facilitation'],
+        stats: [],
+        body: [
+          { label: 'What we discovered', text: 'Through workshops and ideation, we found strong alignment between executive vision and staff aspirations. Employees want the new building to be outstanding. They want ownership of choices — because choice demonstrates trust. And they want deeper engagement with colleagues and the organization.' },
+          { label: 'What we overcame', text: 'Concerns about returning to the office. Fixed desk models that no longer fit hybrid norms. Unconnected spaces that limit collaboration. The need to embed ESG and D&I into the building\'s touchpoints — not as an afterthought, but as a core expression of a responsible organization.' }
+        ],
+        heroImgs: ['./images/AIA/Screenshot 2026-05-21 at 23.18.35.png', './images/AIA/Screenshot 2026-05-21 at 23.19.06.png'],
+        secondImgs: ['./images/AIA/Screenshot 2026-05-21 at 23.19.30.png']
+      },
+      {
+        id: 7,
+        headline: 'Brand\nExtension\nStrategy',
+        client: 'TSG Entertainment',
+        intro: 'TSG has financed Avatar, Jojo Rabbit, Ford v Ferrari, The Shape of Water, and many others — over US$3 billion across 140 projects. We helped extend key IP beyond the expected, bringing emotional moments from the screen into the hands of fans.',
+        services: ['Brand Extension', 'Narrative Strategy', 'IP Strategy'],
+        stats: [],
+        body: [
+          { label: 'Ron\'s Gone Wrong', text: 'We defined themes, opportunities, and initial ideas based on research. Our strategy led toward developing products that extend the movie\'s narrative beyond the theatre. We proposed 7 merchandise concepts, each designed to bring key emotional moments from the film into the hands of fans.' },
+          { label: 'Lethal Lit', text: 'We focused on bringing Tig Torres to life through narrative extensions. Through desk research, interviews, and co-design sessions, we identified key opportunity spaces: expanding the Lethal Lit universe, building the fan base from the ground up, and driving revenue and user growth.' }
+        ],
+        heroImgs: ['./images/TSG/Screenshot 2026-05-21 at 23.20.25.png', './images/TSG/Screenshot 2026-05-21 at 23.20.52.png'],
+        secondImgs: ['./images/TSG/Screenshot 2026-05-21 at 23.21.11.png', './images/TSG/Screenshot 2026-05-21 at 23.24.22.png']
+      },
+      {
+        id: 8,
+        headline: 'Corporate\nInnovation',
+        client: 'Explorium, Fung Group — 2019–21',
+        intro: 'Explorium is the Fung Group innovation platform — a collaboration hub empowering communities of innovation in supply chain, retail, and beyond, to co-create the future. A community-driven experiment that ended in Hong Kong in 2021.',
+        services: ['Corporate Innovation', 'Community Building', 'Ecosystem Strategy'],
+        stats: [],
+        body: [
+          { label: 'About', text: 'As an experiment in community-driven corporate innovation, Explorium HK served its purpose as a place to inform, inspire, and facilitate creating new value by engaging a community of champions, innovators, and business leaders for change.' },
+          { label: 'Legacy', text: 'The Explorium community and the spirit of innovating through exploration continues. Many experiments proving the merits of ecosystem thinking were carried out. The open-sourced Ecosystem Innovation Playbook remains freely available.' }
+        ],
+        heroImgs: ['./images/Explorium/Screenshot 2026-05-20 at 20.51.01.png'],
+        secondImgs: []
+      },
+      {
+        id: 9,
+        headline: '2028\nResearch',
+        client: 'SKWAT, Tokyo — January 2023',
+        intro: 'In 2028, the LA Olympics aims to be the first global sports event to use existing structures rather than building new stadiums. SKWAT, a Tokyo-based collective, is a model for how to reimagine space as experiment — a way to revive the city at large.',
+        services: ['Article', 'Research', 'Interview'],
+        stats: [],
+        body: [
+          { label: 'The collective', text: '"Reconstructing things according to the zeitgeist, instead of copy-and-pasting, will lead to new values." SKWAT has been transforming spaces around Tokyo and beyond since the early 2010s — a bookshop run by twelvebooks, a Lemaire store, and the experimental space PARK.' },
+          { label: 'The idea', text: '"It\'s about expressing inclusiveness. Architecture and design can have a visual language that is very intimidating in material choice. We don\'t really touch the base of the space and we use what we have at hand. Materials that are familiar to everyone." — Keisuke Nakamura' }
+        ],
+        heroImgs: ['./images/SKWAT0.jpg', './images/SKWAT1.jpg'],
+        secondImgs: ['./images/SKWAT2.png', './images/SKWAT3.jpg', './images/SKWAT4.jpg', './images/SKWAT5.jpg']
+      },
+      {
+        id: 10,
+        headline: 'It\'s The World\nWe Live In',
+        client: '2020 World Survey — Global',
+        intro: '101 responses from 25 countries and territories. A survey exploring how confined pandemic life changed people\'s experiences and feelings — and an open, intimate exhibit in a tong lau apartment on Sun Street in Wan Chai.',
+        services: ['Research', 'Survey Design', 'Community'],
+        stats: [
+          { num: '101', label: 'Respondents' },
+          { num: '25', label: 'Countries' },
+          { num: '60+', label: 'Questions' },
+          { num: '15', label: 'Zoom interviews' }
+        ],
+        body: [
+          { label: 'The question', text: 'We had endless, heated discussions about what we wanted to know most — structured around six key themes: Experience and Attitude Towards Opportunities, Observations on the World, The Future of Work and Skills, Life and Preferences, Feelings at the Moment and Mental Wellness, and Great Life Moments.' },
+          { label: 'What we found', text: '8 in 10 respondents picked up new skills during the pandemic. 5 in 10 pursued a side gig or business. 95% believe taking care of mental health is essential. 63% believe the world is staying the same or getting worse. No matter what, the pandemic gave many of us pause: what\'s truly important?' }
+        ],
+        heroImgs: ['./images/World Report Survey/Screenshot 2026-05-21 at 23.35.44.png'],
+        secondImgs: ['./images/World Survey/Figure 1.png', './images/World Survey/Figure 2.png', './images/World Survey/Figure 3.png', './images/World Survey/Figure 4.png']
+      }
+    ];
+
+    var currentId = 0;
+    var overlay = document.getElementById('w2Overlay');
+    var body = document.body;
+
+    function renderOverlay(id) {
+      var p = projects[id];
+      currentId = id;
+
+      /* headline */
+      document.getElementById('csHeadline').innerHTML = p.headline.replace(/\n/g, '<br>');
+      document.getElementById('csClient').textContent = p.client;
+      document.getElementById('csIntro').textContent = p.intro;
+
+      /* services */
+      var svc = document.getElementById('csServices');
+      svc.innerHTML = p.services.map(function(s){ return '<span class="w2-cs-service-tag">'+s+'</span>'; }).join('');
+
+      /* hero images */
+      var hi = document.getElementById('csHeroImgs');
+      hi.innerHTML = p.heroImgs.map(function(src){ return '<img class="w2-cs-img" src="'+src+'" alt="">'; }).join('');
+      hi.className = 'w2-cs-imgs' + (p.heroImgs.length === 1 ? ' full' : '');
+
+      /* stats */
+      var statsEl = document.getElementById('csStats');
+      if (p.stats && p.stats.length) {
+        statsEl.style.display = 'flex';
+        statsEl.innerHTML = p.stats.map(function(s){ return '<div class="w2-cs-stat"><p class="w2-cs-stat-num">'+s.num+'</p><p class="w2-cs-stat-label">'+s.label+'</p></div>'; }).join('');
+      } else {
+        statsEl.style.display = 'none';
+        statsEl.innerHTML = '';
+      }
+
+      /* body text */
+      var tb = document.getElementById('csTextBlock');
+      tb.innerHTML = p.body.map(function(b){ return '<div><p class="w2-cs-label">'+b.label+'</p><p class="w2-cs-text">'+b.text+'</p></div>'; }).join('');
+
+      /* secondary images */
+      var si = document.getElementById('csSecondImgs');
+      if (p.secondImgs && p.secondImgs.length) {
+        si.innerHTML = p.secondImgs.map(function(src){ return '<img class="w2-cs-img" src="'+src+'" alt="">'; }).join('');
+        si.style.display = 'grid';
+        si.className = 'w2-cs-imgs' + (p.secondImgs.length === 1 ? ' full' : '');
+      } else {
+        si.style.display = 'none';
+        si.innerHTML = '';
+      }
+
+      /* prev / next */
+      var prev = projects[(id - 1 + projects.length) % projects.length];
+      var next = projects[(id + 1) % projects.length];
+      document.getElementById('csPrevTitle').textContent = prev.headline.replace(/\n/g, ' ');
+      document.getElementById('csNextTitle').textContent = next.headline.replace(/\n/g, ' ');
+
+      overlay.scrollTop = 0;
+    }
+
+    function openOverlay(id) {
+      renderOverlay(id);
+      overlay.classList.add('open');
+      body.style.overflow = 'hidden';
+    }
+
+    function closeOverlay() {
+      overlay.classList.remove('open');
+      body.style.overflow = '';
+    }
+
+    /* card clicks */
+    document.querySelectorAll('.w2-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        openOverlay(parseInt(card.dataset.id, 10));
+      });
+    });
+
+    document.getElementById('w2BackBtn').addEventListener('click', closeOverlay);
+
+    document.getElementById('csPrev').addEventListener('click', function() {
+      openOverlay((currentId - 1 + projects.length) % projects.length);
+    });
+    document.getElementById('csNext').addEventListener('click', function() {
+      openOverlay((currentId + 1) % projects.length);
+    });
+
+    /* keyboard esc */
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeOverlay();
+    });
+
+    /* ── Filters ── */
+    document.querySelectorAll('.w2-filter-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.w2-filter-btn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        var filter = btn.dataset.filter;
+        document.querySelectorAll('.w2-card').forEach(function(card) {
+          card.classList.toggle('hidden', filter !== 'all' && card.dataset.tag !== filter);
+        });
+      });
+    });
+
+    /* ── Header scroll ── */
+    var header = document.querySelector('.header');
+    if (header) {
+      var scroller = document.body;
+      var lastY = 0, ticking = false;
+      function updateH() {
+        var y = scroller.scrollTop, d = y - lastY;
+        if (y < 80) header.classList.remove('is-hidden');
+        else if (d > 6) header.classList.add('is-hidden');
+        else if (d < -6) header.classList.remove('is-hidden');
+        lastY = y; ticking = false;
+      }
+      scroller.addEventListener('scroll', function(){ if (!ticking){ requestAnimationFrame(updateH); ticking = true; } }, { passive: true });
+    }
+
+    /* ── Mobile nav ── */
+    var trigger = document.getElementById('mobileTrigger');
+    var navOverlay = document.getElementById('mobileOverlay');
+    var closeBtn = document.getElementById('mobileClose');
+    if (trigger) trigger.addEventListener('click', function(){ navOverlay.classList.add('open'); });
+    if (closeBtn) closeBtn.addEventListener('click', function(){ navOverlay.classList.remove('open'); });
+
+  })();
+  </script>
+  <script src="./about.js"></script>
+</body>
+</html>
