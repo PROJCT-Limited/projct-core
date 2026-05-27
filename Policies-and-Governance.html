@@ -408,37 +408,73 @@
   </main>
 
   <footer class="site-footer footer-content">
-    <div class="footer-meta">
-      <p>Unit 8-10, GF, 189 Queen's Road West<br>Sai Ying Pun, Hong Kong</p>
-      <p>General inquiries<br><a href="mailto:hi@projct.co">hi@projct.co</a></p>
-      <p>Office number<br>+852 5727 1122</p>
-
+    <div class="f-split">
+      <div class="f-brand">
+        <img src="SVG/logo-white.svg" alt="PROJCT" class="f-logo">
+        <p class="f-addr">Unit 8-10, GF, 189 Queen's Road West<br>Sai Ying Pun, Hong Kong</p>
+      </div>
+      <div class="f-info">
+        <div class="f-links">
+          <span class="f-col-label">Contact</span>
+          <a href="mailto:hi@projct.co">hi@projct.co</a>
+          <a href="tel:+85257271122">+852 5727 1122</a>
+        </div>
+        <div class="f-links">
+          <span class="f-col-label">Follow</span>
+          <a href="https://www.are.na/projct/channels" target="_blank" rel="noopener noreferrer">Are.na</a>
+          <a href="https://www.linkedin.com/company/projct/?originalSubdomain=hk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://www.instagram.com/projct_co/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </div>
+        <div>
+          <span class="f-col-label">Newsletter</span>
+          <form action="#" method="post" onsubmit="event.preventDefault();">
+            <input type="email" class="f-newsletter-input" name="email" placeholder="Your email address" required aria-label="Email address">
+            <button type="submit" class="f-newsletter-submit" aria-label="Subscribe">Subscribe →</button>
+          </form>
+        </div>
+      </div>
     </div>
-
-    <div class="footer-brand">
-      <img src="SVG/logo-white.svg" alt="PROJCT" class="footer-logo">
+    <div class="f-clocks">
+      <div class="clock-item">
+        <span class="clock-city">HONG KONG</span>
+        <svg class="clock-face" data-tz="Asia/Hong_Kong" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="Asia/Hong_Kong">00:00:00</span>
+      </div>
+      <span class="clock-sep">•</span>
+      <div class="clock-item">
+        <span class="clock-city">LONDON</span>
+        <svg class="clock-face" data-tz="Europe/London" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="Europe/London">00:00:00</span>
+      </div>
+      <span class="clock-sep">•</span>
+      <div class="clock-item">
+        <span class="clock-city">SAN FRANCISCO</span>
+        <svg class="clock-face" data-tz="America/Los_Angeles" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="America/Los_Angeles">00:00:00</span>
+      </div>
     </div>
-  
-    <form class="footer-newsletter newsletter" action="#" method="post" onsubmit="event.preventDefault();">
-      <h3 class="newsletter-title">Get the news</h3>
-      <label class="newsletter-row">
-        <input type="email" name="email" placeholder="Your email address" required aria-label="Email address">
-        <button type="submit" class="newsletter-submit" aria-label="Subscribe">→ Subscribe</button>
-      </label>
-    </form>
-  
-
-    <nav class="footer-social" aria-label="Social">
-      <a href="https://www.are.na/projct/channels" target="_blank" rel="noopener noreferrer">Are.na</a>
-      <a href="https://www.linkedin.com/company/projct/?originalSubdomain=hk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <a href="https://www.instagram.com/projct_co/?igshid=NTdlMDg3MTY%3D" target="_blank" rel="noopener noreferrer">Instagram</a>
-
-    </nav>
   </footer>
   <div class="footer-legal">
-    <a href="Policies-and-Governance.html">Policies &amp; Governance</a>
-    <a href="non-lobbying-statement copy.html">Non-lobbying statement</a>
-    <a href="Policies-and-Governance.html#grievance-handling">Grievance handling</a>
+    <div class="f-legal-links">
+      <a href="Policies-and-Governance.html">Policies &amp; Governance</a>
+      <a href="non-lobbying-statement copy.html">Non-lobbying statement</a>
+      <a href="Policies-and-Governance.html#grievance-handling">Grievance handling</a>
+    </div>
     <span>© PROJCT 2026</span>
   </div>
 
