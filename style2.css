@@ -308,3 +308,141 @@ body{
 
 /* Footer *after* the full-height swup block */
 .site-footer{ margin-top: 0 !important; }
+
+/* ── NEW FOOTER — Bold Split layout ── */
+.site-footer {
+  display: block !important;
+  padding-top: clamp(24px, 3vw, 48px) !important;
+  padding-bottom: clamp(20px, 2.5vw, 36px) !important;
+  border-top: none !important;
+}
+.site-footer a:hover { text-decoration: none !important; }
+
+.f-split {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: clamp(32px, 5vw, 80px);
+  padding-bottom: clamp(28px, 3.5vw, 48px);
+  align-items: start;
+}
+.f-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.f-logo {
+  display: block !important;
+  width: clamp(110px, 14vw, 180px) !important;
+  height: auto !important;
+}
+.f-addr {
+  font-size: clamp(13px, 1vw, 15px);
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+}
+.f-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: clamp(20px, 3.5vw, 48px);
+}
+.f-col-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 14px;
+  display: block;
+}
+.f-links a {
+  display: block !important;
+  width: fit-content !important;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-size: clamp(13px, 1vw, 15px);
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  position: relative !important;
+}
+.f-links a:hover { text-decoration: none !important; }
+.f-links a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 1px;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s ease;
+}
+.f-links a:hover::after { transform: scaleX(1); }
+.f-newsletter-input {
+  display: block;
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255,255,255,0.35) !important;
+  color: #fff !important;
+  font-family: "Red Hat Display", sans-serif !important;
+  font-size: clamp(13px, 1vw, 15px) !important;
+  padding: 6px 0 8px !important;
+  outline: none !important;
+  transition: border-color 0.2s;
+}
+.f-newsletter-input::placeholder { color: rgba(255,255,255,0.45) !important; }
+.f-newsletter-input:focus { border-bottom-color: #fff !important; }
+.f-newsletter-submit {
+  margin-top: 12px;
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.4) !important;
+  color: rgba(255,255,255,0.9) !important;
+  font-family: "Red Hat Display", sans-serif !important;
+  font-size: 12px !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  padding: 8px 16px !important;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  text-decoration: none !important;
+}
+.f-newsletter-submit:hover {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: #fff !important;
+  color: #fff !important;
+  text-decoration: none !important;
+}
+.f-clocks {
+  padding: clamp(20px, 2.5vw, 30px) 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(12px, 3vw, 44px);
+  font-size: clamp(11px, 0.9vw, 14px);
+  letter-spacing: 0.05em;
+  color: #fff;
+}
+.f-clocks .clock-item { display: flex; align-items: center; gap: 9px; }
+.f-clocks .clock-city { font-weight: 500; letter-spacing: 0.08em; }
+.f-clocks .clock-face { width: 18px; height: 18px; flex-shrink: 0; }
+.f-clocks .clock-sep { opacity: 0.3; }
+.f-clocks .clock-time { font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+.f-legal-links {
+  display: flex;
+  gap: clamp(16px, 2.5vw, 36px);
+  flex-wrap: wrap;
+}
+@media (max-width: 860px) {
+  .f-split { grid-template-columns: 1fr; gap: clamp(28px, 5vw, 48px); }
+  .f-info { grid-template-columns: 1fr 1fr; }
+  .f-brand { gap: 20px; }
+}
+@media (max-width: 600px) {
+  .f-info { grid-template-columns: 1fr 1fr; row-gap: 28px; }
+  .f-info > div:last-child { grid-column: 1 / -1; }
+  .f-clocks { gap: 14px 24px; }
+  .f-legal-links { gap: 16px; }
+}
+@media (max-width: 400px) {
+  .f-info { grid-template-columns: 1fr; }
+}
