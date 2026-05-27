@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Work — PROJCT</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="about.css">
+  <style>
+    /* ── Layout ── */
+    .work-page {
+      display: flex;
+      min-height: 100vh;
+      padding-top: var(--header-h, 80px);
+      background: var(--paper, #fff);
+      color: var(--brand-blue, #0e50c8);
+    }
+
+    /* Left: sticky image preview */
+    .work-preview {
+      position: sticky;
+      top: var(--header-h, 80px);
+      width: 44%;
+      height: calc(100vh - var(--header-h, 80px));
+      flex-shrink: 0;
+      overflow: hidden;
+      background: #e8edf8;
+    }
+    .work-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.45s ease;
+    }
+    .work-preview-img.visible {
+      opacity: 1;
+    }
+    .work-preview-label {
+      position: absolute;
+      bottom: 28px;
+      left: 28px;
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      pointer-events: none;
+    }
+
+    /* Right: scrollable list */
+    .work-list-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    /* Filter bar */
+    .work-filters {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid currentColor;
+      padding: 0 clamp(20px, 4vw, 52px);
+      flex-wrap: wrap;
+      position: sticky;
+      top: var(--header-h, 80px);
+      background: var(--paper, #fff);
+      z-index: 10;
+    }
+    .wf-btn {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: inherit;
+      background: none;
+      border: none;
+      padding: 16px 20px 14px;
+      cursor: pointer;
+      position: relative;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+    }
+    .wf-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 2px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .wf-btn:hover { opacity: 0.75; }
+    .wf-btn.active { opacity: 1; }
+    .wf-btn.active::after { transform: scaleX(1); }
+
+    /* Project rows */
+    .work-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 26px clamp(20px, 4vw, 52px);
+      border-bottom: 1px solid rgba(14,80,200,0.15);
+      cursor: pointer;
+      transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease;
+      position: relative;
+    }
+    .work-row:first-child { border-top: 1px solid rgba(14,80,200,0.15); }
+    .work-row:hover {
+      background: var(--brand-blue, #0e50c8);
+      color: #fff;
+      border-color: transparent;
+    }
+    .work-row.hidden { display: none; }
+
+    .work-num {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      opacity: 0.35;
+      width: 2.2rem;
+      flex-shrink: 0;
+    }
+    .work-info { flex: 1; min-width: 0; }
+    .work-title {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: clamp(17px, 2vw, 26px);
+      font-weight: 400;
+      margin: 0;
+      line-height: 1.2;
+    }
+    .work-sub {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.82rem;
+      margin: 5px 0 0;
+      opacity: 0.55;
+    }
+    .work-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .work-tag {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid currentColor;
+      padding: 3px 9px;
+      opacity: 0.6;
+      white-space: nowrap;
+    }
+    .work-year {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.72rem;
+      opacity: 0.4;
+    }
+
+    /* Expanded detail panel */
+    .work-detail {
+      display: none;
+      padding: 36px clamp(20px, 4vw, 52px) 36px calc(2.2rem + 20px + clamp(20px, 4vw, 52px));
+      border-bottom: 1px solid rgba(14,80,200,0.15);
+      background: rgba(14,80,200,0.03);
+    }
+    .work-detail.open { display: block; }
+    .work-detail-body {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: clamp(14px, 1.1vw, 17px);
+      line-height: 1.65;
+      color: var(--brand-blue, #0e50c8);
+      max-width: 680px;
+    }
+    .work-detail-body b { font-weight: 600; }
+    .work-detail-body em { font-style: italic; }
+    .work-detail-body a { text-decoration: underline; }
+    .work-detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .work-detail-box {
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid currentColor;
+      padding: 5px 12px;
+      opacity: 0.55;
+    }
+    .work-close {
+      display: inline-block;
+      margin-top: 24px;
+      font-family: "Red Hat Display", sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0.5;
+      background: none;
+      border: none;
+      color: inherit;
+      padding: 0;
+    }
+    .work-close:hover { opacity: 1; }
+
+    /* Mobile: stack vertically */
+    @media (max-width: 768px) {
+      .work-page { flex-direction: column; }
+      .work-preview { display: none; }
+      .work-list-pane { overflow-y: visible; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo_PROJCT">
+      <a href="about.html">
+        <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 239.57" aria-label="PROJCT" role="img">
+          <title>PROJCT</title>
+          <g><g>
+            <path d="M173.62,84.3c0,49.75-17.05,83.16-92.2,83.16H13.92v70.63H0V1.49h81.42c75.15,0,92.2,33.05,92.2,82.81ZM159.7,84.3c0-60.19-30.97-68.89-78.29-68.89H13.92v138.13h67.5c47.32,0,78.29-10.09,78.29-69.24Z" fill="currentColor"/>
+            <path d="M340.62,141.36h37.92v96.73h-13.92v-88.03h-142.31v88.03h-13.92V1.49h77.94c75.15,0,92.2,33.05,92.2,75.85,0,36.53-20.53,52.54-37.92,58.45v5.57ZM286.35,136.14c50.8,0,78.29-10.09,78.29-58.8,0-53.24-30.97-61.93-78.29-61.93h-64.02v120.73h64.02Z" fill="currentColor"/>
+            <path d="M759.18,1.49v236.6h-107.86v-13.92h93.94V1.49h13.92Z" fill="currentColor"/>
+            <path d="M902.52,1.49c64.72,0,97.77,41.4,99.86,90.12h-13.92c-9.39-58.45-38.62-76.2-85.94-76.2-50.1,0-91.16,30.97-91.16,104.38s41.06,104.38,91.16,104.38c47.32,0,76.55-17.74,85.94-76.2h13.92c-2.09,48.71-35.14,90.11-99.86,90.11-75.85,0-105.08-59.15-105.08-118.3S826.67,1.49,902.52,1.49Z" fill="currentColor"/>
+            <path d="M1200,15.4h-83.16v222.68h-13.92V15.4h-83.16V1.49h180.23v13.92Z" fill="currentColor"/>
+          </g>
+          <path d="M530.28,239.57c-66.04,0-119.78-53.74-119.78-119.78S464.24,0,530.28,0s119.79,53.74,119.79,119.79-53.74,119.78-119.79,119.78ZM530.28,12.65c-59.08,0-107.13,48.06-107.13,107.14s48.06,107.13,107.13,107.13,107.14-48.06,107.14-107.13-48.06-107.14-107.14-107.14Z" fill="currentColor"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+    <div class="nav-right">
+      <button class="mobile" id="mobileTrigger" aria-controls="mobileOverlay" aria-expanded="false" aria-label="Open menu" style="background:none;border:0;padding:0;cursor:pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" stroke="currentColor" class="hamburger">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <div class="button-header button_header1 desktop">
+        <div class="nav-arrow"><p><a href="about.html">About us</a></p></div>
+        <div class="nav-arrow"><p><a href="projects.html">Projects</a></p></div>
+        <div class="nav-arrow"><p><a href="nodes.html">The world we live in</a></p></div>
+        <div class="nav-text"><p><a href="index.html">Index</a></p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile overlay -->
+  <nav class="mobile-overlay" id="mobileOverlay">
+    <button id="mobileClose" class="mobile-close" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+        <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+    <div class="overlay-inner">
+      <div class="row1"><img src="SVG/Asset 1.svg" alt="" class="nav-svg-mobile"/><a class="overlay-link" href="about.html">About</a></div>
+      <div class="row2"><img src="SVG/Asset 1.svg" alt="" class="nav-svg-mobile"/><a class="overlay-link" href="projects.html">Projects</a></div>
+      <div class="row3"><img src="SVG/Asset 1.svg" alt="" class="nav-svg-mobile"/><a class="overlay-link" href="nodes.html">The world we live in</a></div>
+      <div class="row4"><img src="SVG/Asset 1.svg" alt="" class="nav-svg-mobile"/><a class="overlay-link" href="index.html">Index</a></div>
+    </div>
+  </nav>
+
+  <!-- Main work layout -->
+  <div class="work-page">
+
+    <!-- Left: sticky image preview -->
+    <div class="work-preview" id="workPreview" aria-hidden="true">
+      <img src="" alt="" class="work-preview-img" id="previewImg">
+      <span class="work-preview-label" id="previewLabel"></span>
+    </div>
+
+    <!-- Right: list -->
+    <div class="work-list-pane">
+
+      <!-- Filters -->
+      <div class="work-filters">
+        <button class="wf-btn active" data-filter="all">All</button>
+        <button class="wf-btn" data-filter="Case-studies">Case Studies</button>
+        <button class="wf-btn" data-filter="Practice">Practice</button>
+        <button class="wf-btn" data-filter="Articles">Articles</button>
+        <button class="wf-btn" data-filter="Research">Research</button>
+      </div>
+
+      <!-- Project list -->
+      <div class="work-list" id="workList">
+
+        <!-- 01 -->
+        <div class="work-row" data-tag="Practice" data-img="./images/LIGHTBOX2.jpg.webp">
+          <span class="work-num">01</span>
+          <div class="work-info">
+            <h2 class="work-title">Community Activation</h2>
+            <p class="work-sub">Lightbox Gallery</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Practice</span>
+            <span class="work-year">2025</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p><b>LIGHTBOX Gallery</b> is a collaborative initiative by PROJCT and EJAR that transforms Hong Kong's public spaces into a living gallery, where creativity can emerge and thrive when it is nurtured carefully. By utilising places not traditionally seen as artistic venues, the initiative uncovers the creative potential embedded within everyday urban spaces and cultivates environments where creativity can take root and grow.</p>
+            <br>
+            <p>The gallery came to life through the inaugural collaboration of four talented artists — Au Kin Wai Johnny, Chan Man Yi, Yeung Shu Nga Emma, and Yuen An Tung Ariel. Since then, this project has evolved into a dynamic exhibition platform that celebrates cross disciplinary collaboration and international exchange.</p>
+            <br>
+            <p>By turning the city itself into a canvas, streets become more than routes of movement; they evolve into spaces of interaction, reflection, and social engagement. Unlike traditional galleries, LIGHTBOX Gallery also features a month-long auction, inviting participation from local audiences and art enthusiasts around the world.</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Exhibition, art, community</span>
+            <span class="work-detail-box">2025</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 02 -->
+        <div class="work-row" data-tag="Case-studies" data-img="./images/1-4.jpg">
+          <span class="work-num">02</span>
+          <div class="work-info">
+            <h2 class="work-title">Innovative Campaign</h2>
+            <p class="work-sub">'Last Wishes' — Chubb Life</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Case Study</span>
+            <span class="work-year">2024–25</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p><b>Every Wish Lasts: Having the toughest conversation.</b> In a society where death is a profound taboo, our challenge was to help position our client not just as an insurer, but as a compassionate leader in life's most important conversations. Research revealed a critical insight: 71% of Hong Kong residents had never shared their final wishes, leaving families in emotional and financial uncertainty.</p>
+            <br>
+            <p>We began with a city-wide prototype: anonymous "teaser" walls posing, <em>"When you're no longer here… what's your wish?"</em> The overwhelming public response provided authentic content for the next phase. The campaign culminated in an immersive art installation at Art Basel Hong Kong 2025 — guiding visitors on a two-act journey through a Reflection Lounge and a Wishing Well.</p>
+            <br>
+            <p>Results: HK$124.4M in PR value, 455 media coverage pieces, &gt;25k organic engagements, 785M impressions.</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Strategic Advisor, Content, Design + Production</span>
+            <span class="work-detail-box">2024–25</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 03 -->
+        <div class="work-row" data-tag="Case-studies" data-img="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_001.jpg">
+          <span class="work-num">03</span>
+          <div class="work-info">
+            <h2 class="work-title">Strategy — Discovery → Build</h2>
+            <p class="work-sub">Life Insurance Company</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Case Study</span>
+            <span class="work-year">2023–26</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p>In late 2022, this company ranked #27 in industry name recognition and held less than 1% market share in Hong Kong. Over three years, we led Strategy, Brand, Campaigns, and Experiential work — including three consecutive Art Basel Hong Kong installations.</p>
+            <br>
+            <p>Brand ranking moved from #27 → #21 → #16 → #15. The "Life Forest" installation in 2024 reached 6.33 million people, generating HK$8.097 million in PR value. Recognised globally: Fast Company World's Most Innovative Company (2025), Winner of HKFI Awards, Bloomberg Awards, 6 Marketing Event Awards.</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Strategy, Brand, Campaigns, Experiential</span>
+            <span class="work-detail-box">2023–2026, Hong Kong</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 04 -->
+        <div class="work-row" data-tag="Case-studies" data-img="./images/STRAATOS/IMG_5231.JPG">
+          <span class="work-num">04</span>
+          <div class="work-info">
+            <h2 class="work-title">Product Strategy + Launch</h2>
+            <p class="work-sub">STRAATOS</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Case Study</span>
+            <span class="work-year">2022–25</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p><b>Rebuilding trust in climate data.</b> A two-year journey from a gathering in Senegal to a working platform launched at New York Climate Week 2025. STRAATOS is the 'Operating System' of the voluntary carbon market — built around transparency, community equity, and real-time traceability.</p>
+            <br>
+            <p>We led UI/UX design, facilitated workshops in Madrid with regulators and developers, and designed the NYCW booth experience. The fastest way to build trust in a system is to make the system itself visible.</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Strategy, Product, UI/UX, Launch</span>
+            <span class="work-detail-box">2022–2025</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 05 -->
+        <div class="work-row" data-tag="Case-studies" data-img="./images/hoka0.jpg">
+          <span class="work-num">05</span>
+          <div class="work-info">
+            <h2 class="work-title">Immersive Experience</h2>
+            <p class="work-sub">HOKA Runner's High — Art Basel HK</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Case Study</span>
+            <span class="work-year">2026</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p>Presented at Art Basel Hong Kong 2026, <b>Runner's High</b> is an immersive installation by HOKA that explores the psychological and sensory thresholds of endurance. Rooted in the brand's ethos of movement as transformation, the work draws from the lived experiences of ultra-marathon runners.</p>
+            <br>
+            <p>The installation unfolds across two environments: the Bright Side (expansive, luminous, exhilarating) and a Dark Immersive Space (disorientation, repetition, hallucination). Together they create a shifting perceptual field where clarity and distortion coexist.</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Experiential Design, Design + Production</span>
+            <span class="work-detail-box">2026</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 06 -->
+        <div class="work-row" data-tag="Case-studies" data-img="./images/Van Alen/Screenshot 2026-05-21 at 22.47.19.png">
+          <span class="work-num">06</span>
+          <div class="work-info">
+            <h2 class="work-title">Strategy + New Business Model</h2>
+            <p class="work-sub">Van Alen Institute</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Case Study</span>
+            <span class="work-year">2020–21</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p>Entering 2020, Van Alen Institute — a 125-year-old heritage organization in architecture and urbanism — wanted to evolve its program and mission. Working with Thirdway, we helped align leadership vision with employee expectations, co-creating strategy and organizational shifts.</p>
+            <br>
+            <p>Result: <em>"VAI shares its core assets — an interdisciplinary network and deep community-driven knowledge — with historically under-resourced communities to strengthen social infrastructure in the built environment."</em></p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Strategy + New Business Model</span>
+            <span class="work-detail-box">2020–21, New York</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 07 -->
+        <div class="work-row" data-tag="Case-studies" data-img="./images/AIA/Screenshot 2026-05-21 at 23.18.35.png">
+          <span class="work-num">07</span>
+          <div class="work-info">
+            <h2 class="work-title">Experience + Workplace Strategy</h2>
+            <p class="work-sub">AIA — 1 Stubbs Road</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Case Study</span>
+            <span class="work-year">2024</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p>AIA — the largest publicly traded life insurance group in Asia-Pacific — set out to transform its workplace into a platform for cultural and operational change. We helped align leadership vision with employee expectations, ensuring the new building at 1 Stubbs Road would enable a sustainable, collaborative future.</p>
+            <br>
+            <p>Through facilitated workshops, we found strong alignment between executive vision and staff aspirations. Employees want ownership of choices, deeper engagement, and recognition of individual diversity — with ESG and D&amp;I embedded into every touchpoint.</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Experience + Workplace Strategy</span>
+            <span class="work-detail-box">2024, Hong Kong</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 08 -->
+        <div class="work-row" data-tag="Case-studies" data-img="./images/TSG/Screenshot 2026-05-21 at 23.20.25.png">
+          <span class="work-num">08</span>
+          <div class="work-info">
+            <h2 class="work-title">Brand Extension Strategy</h2>
+            <p class="work-sub">TSG Entertainment</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Case Study</span>
+            <span class="work-year">Entertainment</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p>TSG Entertainment has financed the Avatar series, Jojo Rabbit, Ford v Ferrari, The Shape of Water, Gone Girl, and many others — investing more than US$3 billion across 140 projects. We came in to help extend the reach of key IP beyond the expected.</p>
+            <br>
+            <p>During our work with Ron's Gone Wrong and the Lethal Lit series, we focused on extending narratives beyond the screen into online, offline, and integrated moments — working with creators early to understand key emotional moments and bringing those to life through ethnography and narrative analysis.</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Brand Extension Strategy</span>
+            <span class="work-detail-box">Entertainment, IP</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 09 -->
+        <div class="work-row" data-tag="Case-studies" data-img="./images/Explorium/Screenshot 2026-05-20 at 20.51.01.png">
+          <span class="work-num">09</span>
+          <div class="work-info">
+            <h2 class="work-title">Corporate Innovation</h2>
+            <p class="work-sub">Explorium, Fung Group</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Case Study</span>
+            <span class="work-year">2019–21</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p>Explorium is the Fung Group innovation platform — a collaboration hub empowering communities of innovation in supply chain, retail, and beyond, to co-create the future. As an experiment in community-driven corporate innovation, Explorium HK served as a place to inform, inspire, and facilitate creating new value by engaging a community of champions, innovators, and business leaders.</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Case Study</span>
+            <span class="work-detail-box">Corporate Innovation</span>
+            <span class="work-detail-box">2019–21, Hong Kong</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 10 -->
+        <div class="work-row" data-tag="Articles" data-img="./images/SKWAT0.jpg">
+          <span class="work-num">10</span>
+          <div class="work-info">
+            <h2 class="work-title">2028 Research</h2>
+            <p class="work-sub">SKWAT, Tokyo</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Article</span>
+            <span class="work-year">2023</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p>In 2028, the LA Olympics aims to be the first global sports event to use existing structures rather than building new stadiums. SKWAT, a Tokyo-based collective, has been transforming spaces around Tokyo and beyond since the early 2010s — a model for how to reimagine space as an experiment, a way to revive the city at large.</p>
+            <br>
+            <p><em>"Reconstructing things according to the zeitgeist, instead of copy-and-pasting, will lead to new values."</em> — Keisuke Nakamura, SKWAT</p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Interview</span>
+            <span class="work-detail-box">Masato Iwasaki, Keisuke Nakamura, Irene Yamaguchi</span>
+            <span class="work-detail-box">January 2023, Tokyo</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+        <!-- 11 -->
+        <div class="work-row" data-tag="Research" data-img="./images/World Report Survey/Screenshot 2026-05-21 at 23.35.44.png">
+          <span class="work-num">11</span>
+          <div class="work-info">
+            <h2 class="work-title">It's The World We Live In</h2>
+            <p class="work-sub">2020 World Survey — 'Stay Home'</p>
+          </div>
+          <div class="work-meta">
+            <span class="work-tag">Research</span>
+            <span class="work-year">2020</span>
+          </div>
+        </div>
+        <div class="work-detail">
+          <div class="work-detail-body">
+            <p>101 responses from 25 countries and territories. A survey, along with in-depth interviews, exploring how confined life changed people's experiences and feelings during the Covid-19 pandemic. Structured around six key themes: Experience and Attitude Towards Opportunities, Observations on the World, The Future of Work and Skills, Life and Preferences, Feelings at the Moment and Mental Wellness, and Great Life Moments.</p>
+            <br>
+            <p><a href="./images/2020 World Survey_Report.pdf" target="_blank" rel="noopener noreferrer">→ Download the full 2020 report</a></p>
+          </div>
+          <div class="work-detail-meta">
+            <span class="work-detail-box">Research</span>
+            <span class="work-detail-box">Survey, community, pandemic</span>
+            <span class="work-detail-box">2020, Global</span>
+          </div>
+          <button class="work-close">↑ Close</button>
+        </div>
+
+      </div><!-- /work-list -->
+    </div><!-- /work-list-pane -->
+  </div><!-- /work-page -->
+
+  <!-- Footer -->
+  <footer class="site-footer footer-content">
+    <div class="f-split">
+      <div class="f-brand">
+        <img src="SVG/logo-white.svg" alt="PROJCT" class="f-logo">
+        <p class="f-addr">Unit 8-10, GF, 189 Queen's Road West<br>Sai Ying Pun, Hong Kong</p>
+      </div>
+      <div class="f-info">
+        <div class="f-links">
+          <span class="f-col-label">Contact</span>
+          <a href="mailto:hi@projct.co">hi@projct.co</a>
+          <a href="tel:+85257271122">+852 5727 1122</a>
+        </div>
+        <div class="f-links">
+          <span class="f-col-label">Follow</span>
+          <a href="https://www.are.na/projct/channels" target="_blank" rel="noopener noreferrer">Are.na</a>
+          <a href="https://www.linkedin.com/company/projct/?originalSubdomain=hk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://www.instagram.com/projct_co/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </div>
+        <div>
+          <span class="f-col-label">Newsletter</span>
+          <form action="#" method="post" onsubmit="event.preventDefault();">
+            <input type="email" class="f-newsletter-input" name="email" placeholder="Your email address" required aria-label="Email address">
+            <button type="submit" class="f-newsletter-submit" aria-label="Subscribe">Subscribe →</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="f-clocks">
+      <div class="clock-item">
+        <span class="clock-city">HONG KONG</span>
+        <svg class="clock-face" data-tz="Asia/Hong_Kong" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="Asia/Hong_Kong">00:00:00</span>
+      </div>
+      <span class="clock-sep">•</span>
+      <div class="clock-item">
+        <span class="clock-city">LONDON</span>
+        <svg class="clock-face" data-tz="Europe/London" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="Europe/London">00:00:00</span>
+      </div>
+      <span class="clock-sep">•</span>
+      <div class="clock-item">
+        <span class="clock-city">SAN FRANCISCO</span>
+        <svg class="clock-face" data-tz="America/Los_Angeles" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="America/Los_Angeles">00:00:00</span>
+      </div>
+    </div>
+  </footer>
+  <div class="footer-legal">
+    <div class="f-legal-links">
+      <a href="Policies-and-Governance.html">Policies &amp; Governance</a>
+      <a href="non-lobbying-statement copy.html">Non-lobbying statement</a>
+      <a href="Policies-and-Governance.html#grievance-handling">Grievance handling</a>
+    </div>
+    <span>© PROJCT 2026</span>
+  </div>
+
+  <script>
+    (function () {
+      /* ── Header scroll hide ── */
+      var header = document.querySelector('.header');
+      if (header) {
+        var scroller = document.body;
+        var lastY = scroller.scrollTop, ticking = false;
+        function updateHeader() {
+          var y = scroller.scrollTop, delta = y - lastY;
+          if (y < 80) header.classList.remove('is-hidden');
+          else if (delta > 6) header.classList.add('is-hidden');
+          else if (delta < -6) header.classList.remove('is-hidden');
+          lastY = y; ticking = false;
+        }
+        scroller.addEventListener('scroll', function () {
+          if (!ticking) { requestAnimationFrame(updateHeader); ticking = true; }
+        }, { passive: true });
+      }
+
+      /* ── Preview image ── */
+      var previewImg = document.getElementById('previewImg');
+      var previewLabel = document.getElementById('previewLabel');
+      var rows = document.querySelectorAll('.work-row');
+
+      rows.forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+          var img = row.dataset.img;
+          var title = row.querySelector('.work-title').textContent;
+          if (img) {
+            previewImg.src = img;
+            previewImg.classList.add('visible');
+            if (previewLabel) previewLabel.textContent = title;
+          }
+        });
+        row.addEventListener('mouseleave', function () {
+          previewImg.classList.remove('visible');
+        });
+      });
+
+      /* ── Click to expand / collapse detail ── */
+      rows.forEach(function (row) {
+        row.addEventListener('click', function () {
+          var detail = row.nextElementSibling;
+          if (!detail || !detail.classList.contains('work-detail')) return;
+          var isOpen = detail.classList.contains('open');
+          // close all
+          document.querySelectorAll('.work-detail.open').forEach(function (d) { d.classList.remove('open'); });
+          if (!isOpen) detail.classList.add('open');
+        });
+      });
+
+      /* ── Close buttons ── */
+      document.querySelectorAll('.work-close').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          btn.closest('.work-detail').classList.remove('open');
+        });
+      });
+
+      /* ── Filter ── */
+      var filterBtns = document.querySelectorAll('.wf-btn');
+      filterBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          filterBtns.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          var filter = btn.dataset.filter;
+          var counter = 1;
+          rows.forEach(function (row) {
+            var detail = row.nextElementSibling;
+            if (filter === 'all' || row.dataset.tag === filter) {
+              row.classList.remove('hidden');
+              row.querySelector('.work-num').textContent = String(counter).padStart(2, '0');
+              counter++;
+            } else {
+              row.classList.add('hidden');
+              if (detail && detail.classList.contains('work-detail')) {
+                detail.classList.remove('open');
+              }
+            }
+          });
+        });
+      });
+
+      /* ── Mobile overlay ── */
+      var trigger = document.getElementById('mobileTrigger');
+      var overlay = document.getElementById('mobileOverlay');
+      var closeBtn = document.getElementById('mobileClose');
+      if (trigger && overlay) {
+        trigger.addEventListener('click', function () { overlay.classList.add('open'); document.body.classList.add('menu-open'); });
+        closeBtn && closeBtn.addEventListener('click', function () { overlay.classList.remove('open'); document.body.classList.remove('menu-open'); });
+      }
+    })();
+  </script>
+  <script src="./about.js"></script>
+  <script>
+    (function initWorldClocks() {
+      function getTimeParts(tz) {
+        var now = new Date();
+        var parts = new Intl.DateTimeFormat('en-US', {
+          timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        }).formatToParts(now);
+        function get(type) { return parseInt((parts.find(function(p){ return p.type === type; }) || {value:'0'}).value); }
+        return { h: get('hour'), m: get('minute'), s: get('second') };
+      }
+      function tick() {
+        document.querySelectorAll('.clock-face[data-tz]').forEach(function(svg) {
+          var t = getTimeParts(svg.dataset.tz);
+          var hourDeg = (t.h % 12) * 30 + t.m * 0.5;
+          var minDeg  = t.m * 6 + t.s * 0.1;
+          var hh = svg.querySelector('.clock-hour');
+          var mh = svg.querySelector('.clock-min');
+          if (hh) hh.setAttribute('transform', 'rotate(' + hourDeg + ',12,12)');
+          if (mh) mh.setAttribute('transform', 'rotate(' + minDeg  + ',12,12)');
+        });
+        document.querySelectorAll('.clock-time[data-tz]').forEach(function(span) {
+          var t = getTimeParts(span.dataset.tz);
+          span.textContent = String(t.h).padStart(2,'0') + ':' + String(t.m).padStart(2,'0') + ':' + String(t.s).padStart(2,'0');
+        });
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</body>
+</html>
