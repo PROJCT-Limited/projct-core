@@ -2195,3 +2195,45 @@ body.nodes-page #mobileOverlay .mobile-close {
 :root.idx-white-mode .index-item-text a {
   color: #0e50c8;
 }
+
+/* ===== WORLD CLOCKS ===== */
+.footer-clocks {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(12px, 3vw, 36px);
+  padding-top: clamp(14px, 2vw, 24px);
+  font-size: clamp(11px, 0.9vw, 14px);
+  letter-spacing: 0.1em;
+  color: #fff;
+}
+
+.clock-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.clock-city {
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  font-family: "Red Hat Display", sans-serif;
+}
+
+.clock-face {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.clock-sep {
+  font-size: 1.1em;
+}
+
+.clock-time {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  font-family: "Red Hat Display", sans-serif;
+}
