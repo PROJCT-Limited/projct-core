@@ -503,6 +503,41 @@ if (shareNodeCopyBtn && shareNodeUrlEl) {
 })();
 
 
+// --- World clocks ---
+(function initWorldClocks() {
+  function getTimeParts(tz) {
+    var now = new Date();
+    var parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    }).formatToParts(now);
+    function get(type) { return parseInt((parts.find(function(p){ return p.type === type; }) || {value:'0'}).value); }
+    return { h: get('hour'), m: get('minute'), s: get('second') };
+  }
+
+  function tick() {
+    document.querySelectorAll('.clock-face[data-tz]').forEach(function(svg) {
+      var t = getTimeParts(svg.dataset.tz);
+      var hourDeg = (t.h % 12) * 30 + t.m * 0.5;
+      var minDeg  = t.m * 6 + t.s * 0.1;
+      var hh = svg.querySelector('.clock-hour');
+      var mh = svg.querySelector('.clock-min');
+      if (hh) hh.setAttribute('transform', 'rotate(' + hourDeg + ',12,12)');
+      if (mh) mh.setAttribute('transform', 'rotate(' + minDeg  + ',12,12)');
+    });
+    document.querySelectorAll('.clock-time[data-tz]').forEach(function(span) {
+      var t = getTimeParts(span.dataset.tz);
+      span.textContent =
+        String(t.h).padStart(2,'0') + ':' +
+        String(t.m).padStart(2,'0') + ':' +
+        String(t.s).padStart(2,'0');
+    });
+  }
+
+  tick();
+  setInterval(tick, 1000);
+})();
+
 // --- bottom Graph / Tags switch ---
 (function setupViewTabs() {
   function init() {
