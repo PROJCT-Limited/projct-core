@@ -238,6 +238,44 @@ document.addEventListener('swup:contentReplaced', () => {
   })();
 
 
+  function initReveal() {
+    if (!window.IntersectionObserver) return;
+
+    var SELECTORS = [
+      '.work-row',
+      '.list-projects1',
+      '.panel',
+      '.svc-item',
+      '.kicker',
+      '.f-split',
+      '.f-clocks',
+    ].join(', ');
+
+    var els = Array.from(document.querySelectorAll(SELECTORS));
+    if (!els.length) return;
+
+    var vh = window.innerHeight;
+
+    var obs = new IntersectionObserver(function(entries) {
+      var batch = entries
+        .filter(function(e) { return e.isIntersecting; })
+        .sort(function(a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
+      batch.forEach(function(entry, i) {
+        entry.target.style.transitionDelay = (i * 0.07) + 's';
+        entry.target.classList.add('is-visible');
+        obs.unobserve(entry.target);
+      });
+    }, { threshold: 0.06, rootMargin: '0px 0px -32px 0px' });
+
+    els.forEach(function(el) {
+      if (el.hasAttribute('data-reveal')) return;
+      if (el.getBoundingClientRect().top >= vh) {
+        el.setAttribute('data-reveal', '');
+        obs.observe(el);
+      }
+    });
+  }
+
   function applyNoImageMode() {
     document.querySelectorAll('.index-item').forEach(item => {
       const wrapper = item.querySelector('.index-item-images');
@@ -265,7 +303,8 @@ document.addEventListener('swup:contentReplaced', () => {
   function boot() {
     wirePageToggles();
     initMobileMenu();
-    applyNoImageMode();   // <— add this line
+    applyNoImageMode();
+    initReveal();
   }
   document.addEventListener('swup:contentReplaced', () => {
     boot();               // apply again after Swup swaps content
