@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="preload" href="fonts/static/RedHatDisplay-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>PROJCT structure</title>
   <script>
@@ -11,18 +12,8 @@
   </script>
     <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="style2.css">
-  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="cursor.css">
   <script src="subscribe.js" defer></script>
-  <!-- Preload first case study images for instant display -->
-  <link rel="preload" as="image" href="./images/LIGHTBOX2.jpg.webp">
-  <link rel="preload" as="image" href="./images/LIGHTBOX.png.webp">
-  <link rel="preload" as="image" href="./images/Lightbox Gallery/LG0.jpg">
-  <link rel="preload" as="image" href="./images/Lightbox Gallery/LG1.jpg">
-  <link rel="preload" as="image" href="./images/Lightbox Gallery/LG2.jpg">
-  <link rel="preload" as="image" href="./images/Lightbox Gallery/LG3.jpg">
- 
- 
 
 </head>
 <body >
@@ -150,13 +141,13 @@
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
       
         <div class="slides">
-          <!-- <img src="./images/lightbox.jpeg" alt=""> -->
-          <img src="./images/LIGHTBOX2.jpg.webp" alt="">
-          <img src="./images/LIGHTBOX.png.webp" alt="">
-          <img src="./images/Lightbox Gallery/LG0.jpg" alt="">
-          <img src="./images/Lightbox Gallery/LG1.jpg" alt="">
-          <img src="./images/Lightbox Gallery/LG2.jpg" alt="">
-          <img src="./images/Lightbox Gallery/LG3.jpg" alt="">
+          <!-- <img loading="lazy" src="./images/lightbox.jpeg" alt=""> -->
+          <img loading="lazy" src="./images/LIGHTBOX2.jpg.webp" alt="">
+          <img loading="lazy" src="./images/LIGHTBOX.png.webp" alt="">
+          <img loading="lazy" src="./images/Lightbox Gallery/LG0.webp" alt="">
+          <img loading="lazy" src="./images/Lightbox Gallery/LG1.webp" alt="">
+          <img loading="lazy" src="./images/Lightbox Gallery/LG2.webp" alt="">
+          <img loading="lazy" src="./images/Lightbox Gallery/LG3.webp" alt="">
         </div>
       
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
@@ -190,13 +181,13 @@
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
       
         <div class="slides">
-          <img src="./images/1-4.jpg" alt="Every Wish Lasts">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0092-Edit.jpg" alt="Wishing Well installation, Art Basel HK 2025">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0160-Edit.jpg" alt="Wishing Well, Art Basel HK 2025">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0179-Edit.jpg" alt="Chubb Art Basel Hong Kong 2025">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_060.jpg" alt="Conversations of Life installation">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_093.jpg" alt="Art Basel HK 2025, Chubb">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_154.jpg" alt="Chubb Wishing Well, Art Basel 2025">
+          <img loading="lazy" src="./images/1-4.webp" alt="Every Wish Lasts">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0092-Edit.webp" alt="Wishing Well installation, Art Basel HK 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0160-Edit.webp" alt="Wishing Well, Art Basel HK 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0179-Edit.webp" alt="Chubb Art Basel Hong Kong 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_060.webp" alt="Conversations of Life installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_093.webp" alt="Art Basel HK 2025, Chubb">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_154.webp" alt="Chubb Wishing Well, Art Basel 2025">
         </div>
       
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
@@ -244,14 +235,14 @@
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
         <div class="slides">
-          <img src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_001.jpg" alt="Life Chapters installation">
-          <img src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_006.jpg" alt="Life Chapters installation">
-          <img src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_025.jpg" alt="Life Chapters installation">
-          <img src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0327_Chubb_063.jpg" alt="Art Basel 2025">
-          <img src="./images/Art%20Basel%20Chubb%20Life%20Chapters/HKL_0378.jpg" alt="Life Chapters">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0078-Edit.jpg" alt="Wishing Well, Art Basel HK 2025">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_075.jpg" alt="Wishing Well installation">
-          <img src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_118.jpg" alt="Art Basel Hong Kong 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_001.webp" alt="Life Chapters installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_006.webp" alt="Life Chapters installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_025.webp" alt="Life Chapters installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0327_Chubb_063.webp" alt="Art Basel 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/HKL_0378.webp" alt="Life Chapters">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0078-Edit.webp" alt="Wishing Well, Art Basel HK 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_075.webp" alt="Wishing Well installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_118.webp" alt="Art Basel Hong Kong 2025">
         </div>
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
       </div>
@@ -304,13 +295,13 @@
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
         <div class="slides">
-          <img src="./images/STRAATOS/IMG_5231.JPG" alt="STRAATOS booth experience">
-          <img src="./images/STRAATOS/IMG_5215.JPG" alt="STRAATOS launch, NY Climate Week 2025">
-          <img src="./images/STRAATOS/IMG_5338.JPG" alt="STRAATOS platform demo">
-          <img src="./images/STRAATOS/IMG_5557.JPG" alt="STRAATOS stakeholder conversations">
-          <img src="./images/STRAATOS/IMG_5613%202.JPG" alt="STRAATOS at NYCW">
-          <img src="./images/STRAATOS/IMG_5620%202.JPG" alt="STRAATOS team at Climate Week">
-          <img src="./images/STRAATOS/IMG_5621%202.JPG" alt="STRAATOS, New York 2025">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5231.webp" alt="STRAATOS booth experience">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5215.webp" alt="STRAATOS launch, NY Climate Week 2025">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5338.webp" alt="STRAATOS platform demo">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5557.webp" alt="STRAATOS stakeholder conversations">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5613%202.webp" alt="STRAATOS at NYCW">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5620%202.webp" alt="STRAATOS team at Climate Week">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5621%202.webp" alt="STRAATOS, New York 2025">
         </div>
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
       </div>
@@ -369,13 +360,13 @@
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
         <div class="slides">
-          <img class="img-placeholder" src="./images/SKWAT0.jpg" alt="">
-          <img class="img-placeholder" src="./images/SKWAT1.jpg" alt="">
-          <img class="img-placeholder" src="./images/SKWAT2.png" alt="">
-          <img class="img-placeholder" src="./images/SKWAT3.jpg" alt="">
-          <img class="img-placeholder" src="./images/SKWAT4.jpg" alt="">
-          <img class="img-placeholder" src="./images/SKWAT5.jpg" alt="">
-          <img class="img-placeholder" src="./images/SKWAT6.jpg" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT0.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT1.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT2.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT3.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT4.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT5.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT6.webp" alt="">
          
         </div>
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
@@ -433,10 +424,10 @@
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
       
         <div class="slides">
-          <!-- <img src="./images/lightbox.jpeg" alt=""> -->
-          <img src="./images/hoka0.jpg" alt="">
-          <img src="./images/hoka1.jpg" alt="">
-          <img src="./images/hoka2.jpg" alt="">
+          <!-- <img loading="lazy" src="./images/lightbox.jpeg" alt=""> -->
+          <img loading="lazy" src="./images/hoka0.webp" alt="">
+          <img loading="lazy" src="./images/hoka1.webp" alt="">
+          <img loading="lazy" src="./images/hoka2.webp" alt="">
         </div>
       
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
@@ -472,7 +463,7 @@
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
         <div class="slides">
-          <img src="./images/Van Alen/Screenshot 2026-05-21 at 22.47.19.png" alt="Van Alen Institute">
+          <img loading="lazy" src="./images/Van Alen/Screenshot 2026-05-21 at 22.47.19.webp" alt="Van Alen Institute">
         </div>
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
       </div>
@@ -527,9 +518,9 @@
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
         <div class="slides">
-          <img src="./images/AIA/Screenshot 2026-05-21 at 23.18.35.png" alt="AIA 1 Stubbs Road">
-          <img src="./images/AIA/Screenshot 2026-05-21 at 23.19.06.png" alt="AIA 1 Stubbs Road">
-          <img src="./images/AIA/Screenshot 2026-05-21 at 23.19.30.png" alt="AIA 1 Stubbs Road">
+          <img loading="lazy" src="./images/AIA/Screenshot 2026-05-21 at 23.18.35.webp" alt="AIA 1 Stubbs Road">
+          <img loading="lazy" src="./images/AIA/Screenshot 2026-05-21 at 23.19.06.webp" alt="AIA 1 Stubbs Road">
+          <img loading="lazy" src="./images/AIA/Screenshot 2026-05-21 at 23.19.30.webp" alt="AIA 1 Stubbs Road">
         </div>
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
       </div>
@@ -563,10 +554,10 @@
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
         <div class="slides">
-          <img src="./images/TSG/Screenshot 2026-05-21 at 23.20.25.png" alt="TSG Entertainment">
-          <img src="./images/TSG/Screenshot 2026-05-21 at 23.20.52.png" alt="TSG Entertainment">
-          <img src="./images/TSG/Screenshot 2026-05-21 at 23.21.11.png" alt="TSG Entertainment">
-          <img src="./images/TSG/Screenshot 2026-05-21 at 23.24.22.png" alt="TSG Entertainment">
+          <img loading="lazy" src="./images/TSG/Screenshot 2026-05-21 at 23.20.25.webp" alt="TSG Entertainment">
+          <img loading="lazy" src="./images/TSG/Screenshot 2026-05-21 at 23.20.52.webp" alt="TSG Entertainment">
+          <img loading="lazy" src="./images/TSG/Screenshot 2026-05-21 at 23.21.11.webp" alt="TSG Entertainment">
+          <img loading="lazy" src="./images/TSG/Screenshot 2026-05-21 at 23.24.22.webp" alt="TSG Entertainment">
         </div>
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
       </div>
@@ -599,7 +590,7 @@
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
       
         <div class="slides">
-          <img src="./images/Explorium/Screenshot 2026-05-20 at 20.51.01.png" alt="">
+          <img loading="lazy" src="./images/Explorium/Screenshot 2026-05-20 at 20.51.01.webp" alt="">
         </div>
       
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
@@ -630,7 +621,7 @@
       <div class="index-item-images slider">
         <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
         <div class="slides">
-          <img src="./images/World Report Survey/Screenshot 2026-05-21 at 23.35.44.png" alt="2020 World Survey Report">
+          <img loading="lazy" src="./images/World Report Survey/Screenshot 2026-05-21 at 23.35.44.webp" alt="2020 World Survey Report">
         </div>
         <button class="slider-arrow next" aria-label="Next slide">❯</button>
       </div>
@@ -644,7 +635,7 @@
         <p>So we thought, let's design a survey and host an open, intimate exhibit where people can share basically anything with us amid all the pandemic restrictions — forget about social distancing! We wanted everyone to feel a bit more energised and, perhaps more vitally, (re)connected with the neighbourhood, community, and even the world.</p>
         <p>We then curated a space in a <em>tong lau</em> apartment on Sun Street in Wan Chai, inviting every member of the audience to join us in these continuous conversations.</p>
 
-        <!-- <figure class="survey-figure"><img src="./images/World Survey/Figure 1.png" alt="Images from Exhibit"></figure> -->
+        <!-- <figure class="survey-figure"><img loading="lazy" src="./images/World Survey/Figure 1.webp" alt="Images from Exhibit"></figure> -->
 
         <!-- ── WHAT'S THE SURVEY ABOUT? ── -->
         <h3 class="survey-section-head">What's the survey about?</h3>
@@ -656,8 +647,8 @@
         <p>Within a month or so, 101 responses were collected from 25 countries and territories, from where we're based — Hong Kong (16%), of course — to the Philippines (33%), and the United States (8%). Respondents range in age from 16 to 50, with slightly over one-third (38%) being students at the time.</p>
 
         <div class="survey-figures-pair">
-          <figure class="survey-figure"><img src="images/World Survey/Figure 1.png" alt="Figure 1"><figcaption class="survey-fig-label">Figure 1</figcaption></figure>
-          <figure class="survey-figure"><img src="images/World Survey/Figure 2.png" alt="Figure 2"><figcaption class="survey-fig-label">Figure 2</figcaption></figure>
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 1.webp" alt="Figure 1"><figcaption class="survey-fig-label">Figure 1</figcaption></figure>
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 2.webp" alt="Figure 2"><figcaption class="survey-fig-label">Figure 2</figcaption></figure>
         </div>
 
         <!-- ── INVESTIGATIVE JOURNEY ── -->
@@ -667,8 +658,8 @@
         <p><b>Lockdowns restricted physical movement and social contact but by no means self-exploration and discovery</b> through new hobbies, skills, and ventures. People also did all kinds of 'quirky' things back then, from learning how to pick locks to creating a karaoke room and improving on typing speed. Some immersed themselves in books, while others in the digital world — making TikTok videos, gaming, and conversing in different accents.</p>
 
         <div class="survey-figures-pair survey-figures-pair--two-col">
-          <figure class="survey-figure"><img src="images/World Survey/Figure 3.png" alt="Figure 3"><figcaption class="survey-fig-label">Figure 3</figcaption></figure>
-          <figure class="survey-figure"><img src="images/World Survey/Figure 4.png" alt="Figure 4"><figcaption class="survey-fig-label">Figure 4</figcaption></figure>
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 3.png" alt="Figure 3"><figcaption class="survey-fig-label">Figure 3</figcaption></figure>
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 4.png" alt="Figure 4"><figcaption class="survey-fig-label">Figure 4</figcaption></figure>
         </div>
 
         <!-- ── SKILLS & SIDE GIGS ── -->
@@ -683,7 +674,7 @@
             <p class="survey-callout-stat">5 in 10</p>
             <p class="survey-callout-body">respondents pursued a side gig or business when the pandemic hit.</p>
             <p class="survey-callout-sub">(with about one-third in business development and entrepreneurship such as marketing consulting; a close second is e-commerce and consumer goods like mask production)</p>
-            <figure class="survey-figure"><img src="images/World Survey/Figure 5.png" alt="Figure 5"><figcaption class="survey-fig-label">Figure 5</figcaption></figure>
+            <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 5.webp" alt="Figure 5"><figcaption class="survey-fig-label">Figure 5</figcaption></figure>
           </div>
         </div>
 
@@ -691,7 +682,7 @@
         <p><b>But mixed feelings about life and the world's trajectory were widespread:</b> thankful for being alive, frustrated with the seemingly never-ending pandemic, and worried about losing a job all at once. People weren't wildly optimistic about the future. After all, tens of millions worldwide lost their lives. Job loss and mental distress were common. Many foresaw the impending challenges of adapting to the 'new normal,' compounded by worries like xenophobia.</p>
 
         <div class="survey-callout-pair">
-          <figure class="survey-figure"><img src="images/World Survey/Figure 6.png" alt="Figure 6"><figcaption class="survey-fig-label">Figure 6</figcaption></figure>
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 6.png" alt="Figure 6"><figcaption class="survey-fig-label">Figure 6</figcaption></figure>
           <div class="survey-callout">
             <p class="survey-callout-stat">63%</p>
             <p class="survey-callout-body">of respondents believe that the world is staying the same or getting worse.</p>
@@ -713,7 +704,7 @@
           <div class="survey-callout">
             <p class="survey-callout-stat">95%</p>
             <p class="survey-callout-body">of respondents believe purposely doing things to take care of mental health is somewhat to highly essential.</p>
-            <figure class="survey-figure"><img src="images/World Survey/Figure 7.png" alt="Figure 7"><figcaption class="survey-fig-label">Figure 7</figcaption></figure>
+            <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 7.png" alt="Figure 7"><figcaption class="survey-fig-label">Figure 7</figcaption></figure>
             <p>Only <b>1 in 10</b> respondents reportedly didn't take time out.</p>
           </div>
           <div class="survey-callout">
@@ -859,70 +850,12 @@
 </script>
 </body>
 
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-
-
-
 <!-- swup + plugins -->
-<script src="https://unpkg.com/swup@4"></script>
-<script src="https://unpkg.com/@swup/forms-plugin@2"></script>
-<script src="https://unpkg.com/@swup/scroll-plugin@3"></script>
-<script src="https://unpkg.com/@swup/head-plugin@2"></script>
+<script src="https://unpkg.com/swup@4" defer></script>
+<script src="https://unpkg.com/@swup/forms-plugin@2" defer></script>
+<script src="https://unpkg.com/@swup/scroll-plugin@3" defer></script>
+<script src="https://unpkg.com/@swup/head-plugin@2" defer></script>
 
-
-<script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/p5.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/addons/p5.sound.min.js"></script>
-
-
-<script src="interaction.js"></script>
-<script>
-  window.addEventListener('load', function () {
-    var imgs = [
-      './images/last-wishes.jpg',
-      './images/1-4.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0092-Edit.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0160-Edit.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0179-Edit.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_060.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_093.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_154.jpg',
-      './images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_001.jpg',
-      './images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_006.jpg',
-      './images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_025.jpg',
-      './images/Art%20Basel%20Chubb%20Life%20Chapters/0327_Chubb_063.jpg',
-      './images/Art%20Basel%20Chubb%20Life%20Chapters/HKL_0378.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0078-Edit.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_075.jpg',
-      './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_118.jpg',
-      './images/STRAATOS/IMG_5231.JPG',
-      './images/STRAATOS/IMG_5215.JPG',
-      './images/STRAATOS/IMG_5338.JPG',
-      './images/STRAATOS/IMG_5557.JPG',
-      './images/STRAATOS/IMG_5613%202.JPG',
-      './images/STRAATOS/IMG_5620%202.JPG',
-      './images/STRAATOS/IMG_5621%202.JPG',
-      './images/SKWAT0.jpg',
-      './images/SKWAT1.jpg',
-      './images/SKWAT2.png',
-      './images/SKWAT3.jpg',
-      './images/SKWAT4.jpg',
-      './images/SKWAT5.jpg',
-      './images/SKWAT6.jpg',
-      './images/hoka0.jpg',
-      './images/hoka1.jpg',
-      './images/hoka2.jpg',
-      './images/Explorium/Screenshot 2026-05-20 at 20.51.01.png',
-      'images/World Survey/Figure 1.png',
-      'images/World Survey/Figure 2.png',
-      'images/World Survey/Figure 3.png',
-      'images/World Survey/Figure 4.png',
-      'images/World Survey/Figure 5.png',
-      'images/World Survey/Figure 6.png',
-      'images/World Survey/Figure 7.png'
-    ];
-    imgs.forEach(function (src) { var i = new Image(); i.src = src; });
-  });
-</script>
+<script src="interaction.js" defer></script>
 
 </html>
