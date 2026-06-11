@@ -26,7 +26,13 @@ function wirePageToggles() {
   on(document, 'click', '.list-projects1', function () {
     const next = this.nextElementSibling;
     if (!next || !next.classList.contains('index-item')) return;
-  
+
+    // index2.html: open the full-screen case-study overlay instead of expanding inline
+    if (typeof window.openCaseStudy === 'function') {
+      window.openCaseStudy(this);
+      return;
+    }
+
     const isOpening = next.classList.contains('is-hidden'); // current state before toggle
   
     // Close ALL other items
