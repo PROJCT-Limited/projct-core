@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preload" href="fonts/static/RedHatDisplay-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PROJCT structure — v2</title>
+    <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style2.css">
+  <link rel="stylesheet" href="index2.css">
+  <link rel="stylesheet" href="cursor.css">
+  <script src="subscribe.js" defer></script>
+
+</head>
+<body >
+  <!-- Page transition overlay -->
+<div class="page-wipe" aria-hidden="true"></div>
+
+  <div class="header"> 
+    <div class="logo_PROJCT">
+      <a href="about.html">
+      <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 239.57" aria-label="PROJCT" role="img">
+        <title>PROJCT</title>
+        <g>
+          <g>
+            <path d="M173.62,84.3c0,49.75-17.05,83.16-92.2,83.16H13.92v70.63H0V1.49h81.42c75.15,0,92.2,33.05,92.2,82.81ZM159.7,84.3c0-60.19-30.97-68.89-78.29-68.89H13.92v138.13h67.5c47.32,0,78.29-10.09,78.29-69.24Z" fill="currentColor"/>
+            <path d="M340.62,141.36h37.92v96.73h-13.92v-88.03h-142.31v88.03h-13.92V1.49h77.94c75.15,0,92.2,33.05,92.2,75.85,0,36.53-20.53,52.54-37.92,58.45v5.57ZM286.35,136.14c50.8,0,78.29-10.09,78.29-58.8,0-53.24-30.97-61.93-78.29-61.93h-64.02v120.73h64.02Z" fill="currentColor"/>
+            <path d="M759.18,1.49v236.6h-107.86v-13.92h93.94V1.49h13.92Z" fill="currentColor"/>
+            <path d="M902.52,1.49c64.72,0,97.77,41.4,99.86,90.12h-13.92c-9.39-58.45-38.62-76.2-85.94-76.2-50.1,0-91.16,30.97-91.16,104.38s41.06,104.38,91.16,104.38c47.32,0,76.55-17.74,85.94-76.2h13.92c-2.09,48.71-35.14,90.11-99.86,90.11-75.85,0-105.08-59.15-105.08-118.3S826.67,1.49,902.52,1.49Z" fill="currentColor"/>
+            <path d="M1200,15.4h-83.16v222.68h-13.92V15.4h-83.16V1.49h180.23v13.92Z" fill="currentColor"/>
+          </g>
+          <path d="M530.28,239.57c-66.04,0-119.78-53.74-119.78-119.78S464.24,0,530.28,0s119.79,53.74,119.79,119.79-53.74,119.78-119.79,119.78ZM530.28,12.65c-59.08,0-107.13,48.06-107.13,107.14s48.06,107.13,107.13,107.13,107.14-48.06,107.14-107.13-48.06-107.14-107.14-107.14Z" fill="currentColor"/>
+        </g>
+      </svg>
+      </a>
+    </div>
+    <div class="nav-right">
+
+           <button class="mobile" id="mobileTrigger"
+      aria-controls="mobileOverlay"
+      aria-expanded="false"
+      aria-label="Open menu"
+      style="background:none;border:0;padding:0;cursor:pointer;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none"
+           viewBox="0 0 24 24" stroke="white" stroke-width="2" class="hamburger">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+
+    <div class="button-header button_header1 desktop">
+      <div class="nav-arrow"><p><a href="about.html">About us</a></p></div>
+      <div class="nav-arrow"><p><a href="projects.html">Projects</a></p></div>
+      <div class="nav-arrow"><p><a href="nodes.html">The world we live in</a></p></div>
+      <div class="nav-text"><p><a href="index.html">Index</a></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔁 MOVE OVERLAY OUTSIDE HEADER (direct child of body) -->
+<nav class="mobile-overlay" id="mobileOverlay">
+  <button id="mobileClose" class="mobile-close" aria-label="Close menu">
+    <!-- X icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none"
+         viewBox="0 0 24 24" stroke="white" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/>
+    </svg>
+  </button>
+
+  <div class="overlay-inner">
+    <div class="row1">
+      <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/>
+      <a class="overlay-link" href="about.html">About</a>
+    </div>
+    <div class="row2">
+      <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/>
+      <a class="overlay-link" href="nodes.html">The world we live in</a>
+    </div>
+    <div class="row3">
+      <img src="SVG/Asset 1.svg" alt="Arrow" class="nav-svg-mobile"/>
+      <a class="overlay-link" href="index.html">Index</a>
+    </div>
+  </div>
+  </nav>
+
+       
+
+
+  <div id="swup" class="mainbody transition-fade">
+ 
+    
+    <div class="index-outer list-item"> 
+    <img src = "SVG/Asset 4.svg" alt="Arrow" class = "nav-svg1"/>
+    <div class="index">
+        INDEX</div>  
+        <!-- <img src = "SVG/search-icon.svg" alt="search-icon" class = "nav-svg2"/> -->
+    </div>
+
+   <!-- FILTER BAR -->
+<div class="search-filter" id="searchFilter">
+  <button class="filter-item" data-tag="Featured">
+    <span class="label">FEATURED</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+
+  <button class="filter-item" data-tag="Case-studies">
+    <span class="label">CASE STUDIES</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+
+  <button class="filter-item" data-tag="Articles">
+    <span class="label">ARTICLES</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+
+  <button class="filter-item" data-tag="Research">
+    <span class="label">RESEARCH</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+
+  <button class="filter-item" data-tag="Practice">
+    <span class="label">PRACTICE</span>
+    <span class="square" aria-hidden="true"></span>
+  </button>
+</div>
+
+
+
+   
+
+
+
+    <div class="list-projects">
+        <hr>
+    <p class="list-projects1" data-tag="Practice">Community Activation | Lightbox Gallery</p> 
+    <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+      
+        <div class="slides">
+          <!-- <img loading="lazy" src="./images/lightbox.jpeg" alt=""> -->
+          <img loading="lazy" src="./images/LIGHTBOX2.jpg.webp" alt="">
+          <img loading="lazy" src="./images/LIGHTBOX.png.webp" alt="">
+          <img loading="lazy" src="./images/Lightbox Gallery/LG0.webp" alt="">
+          <img loading="lazy" src="./images/Lightbox Gallery/LG1.webp" alt="">
+          <img loading="lazy" src="./images/Lightbox Gallery/LG2.webp" alt="">
+          <img loading="lazy" src="./images/Lightbox Gallery/LG3.webp" alt="">
+        </div>
+      
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+        <div class="index-item-text">
+            <p><b>LIGHTBOX Gallery</b> is a collaborative initiative by PROJCT and EJAR that transforms Hong Kong’s public spaces into a living gallery, where creativity can emerge and thrive when it is nurtured carefully. By utilising places not traditionally seen as artistic venues, the initiative uncovers the creative potential embedded within everyday urban spaces and cultivates environments where creativity can take root and grow. <br><br>
+              The gallery came to life through the inaugural collaboration of four talented artists—Au Kin Wai Johnny, Chan Man Yi, Yeung Shu Nga Emma, and Yuen An Tung Ariel. Since then, this project has evolved into a dynamic exhibition platform that celebrates cross disciplinary collaboration and international exchange.
+              <br><br>
+              By turning the city itself into a canvas, streets become more than routes of movement; they evolve into spaces of interaction, reflection, and social engagement. Unlike traditional galleries, LIGHTBOX Gallery also features a month-long auction, inviting participation from local audiences and art enthusiasts around the world. This hybrid experience not only bridges Hong Kong’s vibrant urban culture with global artistic networks, but creates an environment where artistic expression can thrive, regardless of location, fostering dialogue that transcends geography.
+              <br><br>
+              Beyond exhibition and exchange, LIGHTBOX Gallery sees Hong Kong as a backdrop reflecting a hub for cultural exchange where Eastern and Western perspectives intersect in a global city. By focusing on the potential of creativity within hidden spaces, the gallery introduces subtle yet impactful shifts within the urban environment, encouraging attentiveness of one’s surroundings. Each installation invites viewers to observe the city’s everyday transitions and appreciate the small moments of change that shape urban life.
+               </p>     <br><br>
+          
+            <div id="container">
+                <div class="box">Case Study</div>
+                <div class="box">Exhibition, art, community</div>
+                <div class="box">2025</div>
+                <div class="box"></div>
+              </div>
+        </div>
+
+        
+    </div>
+    <hr>
+    <p class="list-projects1" data-tag="Case-studies">Innovative Campaign | ‘Last Wishes’</p>
+    
+
+    <div class="index-item is-hidden">
+
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+      
+        <div class="slides">
+          <img loading="lazy" src="./images/1-4.webp" alt="Every Wish Lasts">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0092-Edit.webp" alt="Wishing Well installation, Art Basel HK 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0160-Edit.webp" alt="Wishing Well, Art Basel HK 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0179-Edit.webp" alt="Chubb Art Basel Hong Kong 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_060.webp" alt="Conversations of Life installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_093.webp" alt="Art Basel HK 2025, Chubb">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_154.webp" alt="Chubb Wishing Well, Art Basel 2025">
+        </div>
+      
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+        <div class="index-item-text">
+            <p> <b class ="highlighted-text">Every Wish Lasts: Having the toughest conversation </b>
+              <br><br>
+              In a society where death is a profound taboo, our challenge was to help position our client not just as an insurer, but as a compassionate leader in life’s most important conversations. Further research revealed a critical insight: 71% of Hong Kong residents had never shared their final wishes, leaving families in emotional and financial uncertainty. This became the strategic cornerstone for the 2025 “Every Wish Lasts” (成就每一種遺願) campaign, transforming end-of-life planning from a daunting task into a meaningful, human-centric dialogue.
+              <br><br>
+              We began with a city-wide prototype: anonymous “teaser” walls posing, “When you’re no longer here… what’s your wish?” The overwhelming public response provided authentic content for the next phase, where we repainted the walls with the collected wishes, unveiling our client’s branding and launching a full-scale OOH campaign.
+              <br>
+              <br><br>
+              <b class ="highlighted-text">The initiative expanded to normalize the conversation across diverse contexts:  </b>   
+              <br><br>
+              - Kicked off with a survey asking Hong Kong a simple question: "If you're no longer here, what's your wish?"
+              <br>
+              - We took the conversation to the street and painted murals around Hong Kong asking the same question.
+              <br>
+              - <b>From Singles’ Day to a Day of Connection:</b> We distributed 600+ paired drinks with attached last wishes, transforming this into an opportunity for reflection.
+              <br>
+              - <b>Film Screenings & Discussions: </b>Partnership with Emperor Cinemas for a special screening of The Last Dance and a collaboration with Savour Cinema for The Farewell combined film, food, and reflection, where guests dined on themed meals with ‘End-of-Life’ wishes discussion facilitated throughout.
+              <br>
+              - <b> Planning Tools:</b> We created 40 question cards and keepsake books to help families start the dialogue at home.
+              <br>
+              - <b> Art as Reflection:</b>  Art pieces curation through our client's Art Gallery – ‘Every Love Lasts’ on love letters to leave behind.
+              <br>
+              - <b> “Last Wishes” Magazine: </b> A guide featuring 19 real-life stories from professionals like nurses and funeral directors, pairing profound narratives with a practical checklist.
+              <br><br>
+              - The campaign culminated in an immersive art installation at Art Basel Hong Kong 2025. <b>“Conversations of Life: Every Wish Lasts”</b> guided visitors on a two-act journey. In the Reflection Lounge, there were soundscapes of anonymous wishes that prompted self-reflection. Visitors then were able to digitally inscribe a personal wish, casting a ceremonial coin into a “Wishing Well,” where their wish was dynamically projected onto the walls. A keepsake photograph of this moment was given upon leaving the experience, serving as a powerful affirmation.
+              <br><br>
+              These integrated activations perfectly encapsulated our strategic innovation: transforming legacy planning from a taboo into a tangible, artistic, and deeply human act, solidifying our client’s role as a trusted life advisor. </p>
+              <br><br>
+            <div id="container">
+                <div class="box">Case Study</div>
+                <div class="box">PROJCT Role: Strategic Advisor, Content Storytelling, Co-Conceptor, Designer + Production</div>
+                <div class="box">2024-25</div>
+                <div class="box"></div>
+              </div>
+        </div>
+   
+    </div>
+    <hr>
+    <p class="list-projects1" data-tag="Case-studies">Strategy | Life Insurance company | Discovery → Build (2023–2026)</p>
+    <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+        <div class="slides">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_001.webp" alt="Life Chapters installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_006.webp" alt="Life Chapters installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_025.webp" alt="Life Chapters installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/0327_Chubb_063.webp" alt="Art Basel 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Life%20Chapters/HKL_0378.webp" alt="Life Chapters">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0078-Edit.webp" alt="Wishing Well, Art Basel HK 2025">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_075.webp" alt="Wishing Well installation">
+          <img loading="lazy" src="./images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_118.webp" alt="Art Basel Hong Kong 2025">
+        </div>
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+      <div class="index-item-text">
+        <p>In late 2022, this company ranked #27 in industry name recognition (YouGov) and held less than 1% of market share in Hong Kong. We were engaged to help with a new positioning strategy through a Discovery project.
+          <br><br>
+          Launched in 2023, Discovery 1.0 gathered market insights via qualitative interviews, a quantitative survey, and market data. We defined brand opportunities through experiential workshops, then set potential directions by creating an ideas library, sharing findings across teams, and prioritising development directions. The process brought internal stakeholders together to deliver a plan of action.
+          <br><br>
+          Based on this, we created four story directions — <em>Identity Enabler</em>, <em>Always Here</em>, <em>Pioneering Communities</em>, and <em>Cut through the Noise</em> — along with activation ideas that would guide Activations and Product Strategy over the following three years.
+          <br><br>
+          <b>From there, we delivered:</b>
+          <br><br>
+          <b>Brand Assets &amp; Playbook:</b> Brand Story deck, booklet and advertisements, launched "The Key" magazine covering life topics relevant to insurance, festive designs (Calendar/Diary, Mooncake Sleeve, etc), Wealth Centre Assets, and more.
+          <br><br>
+          <b>Product Strategy:</b> Beyond product proposition and landscape research, we developed a Product Framework and led renaming efforts for key product launches — ensuring naming and positioning worked together.
+          <br><br>
+          <b>Customer Experience:</b> CRM Workshops, Template Development, Customer Journey Mapping, Event Ticketing Portal UI/UX, Conversion Tool Platform Creation.
+          <br><br>
+          <b>Cross-department Playbooks:</b> Agency Recruitment Strategy to drive culture change and attract higher-quality agents.
+          <br><br>
+          <b>Community Engagement:</b> Ideated and created VOICES — an integrated insight ecosystem blending internal and external perspectives to foster dialogue, co-creation, and systemic foresight, engaging thought leaders in experimental activities.
+          <br><br>
+          <b>Experiential Marketing:</b> We proposed, created the strategy, connected with ecosystem partnerships, and built the execution for Art Basel Hong Kong from 2024–2026 (3 years). The "Life Forest" installation in 2024 reached 6.33 million people, generating HK$8.097 million in PR value.
+          <br><br>
+          <b>Innovative Campaigns (strategy, ideation, development, and build/execution):</b>
+          <br><br>
+          <b>Every Way of Legacy (MyLegacy III):</b> The Every Way of Legacy campaign redefined life insurance through MyLegacy III, a flexible policy that accommodates diverse values around legacy — catering to families without children, single individuals, and LGBTQ+ couples. Our integrated omni-channel approach featured immersive experiences like the "Life Forest" at Art Basel 2024 and thought leadership through the magazine series "The Key." The brand ranking went from #21 to #16 within one quarter, with a 516% increase in social media interactions, over 15 million OOH impressions, and a significant sales surge.
+          <br><br>
+          <b>Every Way of Wish:</b> This campaign transformed the conversation around end-of-life planning in Hong Kong from 'taboo' to transformative. Using word-based campaigns, we created powerful movements around end-of-life planning — becoming the brand that owns the term "Wish" in Hong Kong. Results: HK$124.4M in PR value, 455 media coverage pieces, &gt;25k organic engagements, 785M impressions, 2M OOH views, 3.4K in-person attendees, 10K microsite visitors.
+          <br><br>
+          The effect trickles down. Brand awareness lifts consideration. Consideration drives leads. Leads convert to market share. And market share builds cultural relevance — making every subsequent campaign easier and more effective. Over three years, brand recognition moved from #27 → #21 → #16. In 2026, up to #15!
+          <br><br>
+          Recognised globally and in Hong Kong: Fast Company World's Most Innovative Company (2025) for Every Way of Legacy, Winner of HKFI Awards Outstanding Integrated Marketing Award for Every Wish Lasts, Winner of Bloomberg Awards in Integrated Marketing for Every Way of Legacy, 6 Marketing Event Awards for Every Wish Lasts, Creative Review Awards shortlist and more.
+          <br><br>
+          We don't just hand over decks. We stay in the room and build together — from Discovery and Strategy to ideation, development, and build.
+        </p>
+        <br><br>
+        <div id="container">
+          <div class="box">Case Study</div>
+          <div class="box">PROJCT Role: Strategy, Brand, Campaigns, Experiential</div>
+          <div class="box">2023–2026, Hong Kong</div>
+          <div class="box"></div>
+        </div>
+      </div>
+    </div>
+    <hr>
+  
+    <p class="list-projects1" data-tag="Case-studies">Product Strategy + Launch | STRAATOS</p>
+    <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+        <div class="slides">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5231.webp" alt="STRAATOS booth experience">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5215.webp" alt="STRAATOS launch, NY Climate Week 2025">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5338.webp" alt="STRAATOS platform demo">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5557.webp" alt="STRAATOS stakeholder conversations">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5613%202.webp" alt="STRAATOS at NYCW">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5620%202.webp" alt="STRAATOS team at Climate Week">
+          <img loading="lazy" src="./images/STRAATOS/IMG_5621%202.webp" alt="STRAATOS, New York 2025">
+        </div>
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+      <div class="index-item-text">
+        <p><b>Rebuilding trust in climate data: how PROJCT helped launch STRAATOS at New York Climate Week 2025.</b> A two-year journey from a gathering in Senegal to a working platform on the floor at NYCW.
+          <br><br>
+          <b>Context</b>
+          <br><br>
+          We worked closely with STRAATOS, a carbon credit project platform built around the core principles of transparency and community equity, supporting the vision from its earliest days through to the launch campaign at NY Climate Week 2025. Our journey began in 2022 in Saly, Senegal, where we stepped in as facilitators and organised sessions with a diverse group of stakeholders — almost 100 people spanning the UN, project development and investment, blockchain tech, and social justice. That gathering is where the seed of the idea was planted.
+          <br><br>
+          <b>What is STRAATOS, and why does it matter</b>
+          <br><br>
+          STRAATOS is the 'Operating System' of the VCM (voluntary carbon market) — the system through which carbon credits are traded. These credits represent a reduction or removal of greenhouse gases from the atmosphere, and governments, companies, and even individuals can buy them to offset their emissions.
+          <br><br>
+          The voluntary carbon market matters because it mobilises new resources for emission reductions and sustainable development that otherwise wouldn't exist. The aim is to bring real-time traceability and accountability to every stage of a project's lifecycle, unlocking the scale, confidence, and impact that nature-based solutions urgently need.
+          <br><br>
+          The idea behind STRAATOS was born from the 15+ years of carbon market expertise of ALLCOT Group. In a market struggling with credibility, STRAATOS aims to bridge that gap with a clear commitment to prioritise the most vulnerable stakeholders: local communities, Indigenous peoples, and the project developers on the front lines of climate action. The goal is to tackle the deep-rooted inefficiencies and trust issues in carbon markets by building an open, transparent digital infrastructure.
+          <br><br>
+          The value chain breaks down into four main parts: Originators reduce or remove carbon in the atmosphere. Captured carbon is then converted into credits and stored in a repository. Brokers and exchanges trade both the original credits and derivative financial instruments — some speculative estimates put this market at over $1 trillion USD annually by 2050. Customers looking to offset, whether firms or individuals, complete the value chain.
+          <br><br>
+          Fraud and falsification can emerge at any stage, particularly around claims behind a credit that don't hold up. Steps 1 and 2 are where the cracks tend to appear, and these are the steps STRAATOS sets out to fix. Built on Hedera Guardian, an open-source decentralised infrastructure that anchors every data point to a public ledger, making each claim traceable from the ground to the credit.
+          <br><br>
+          <b>The challenge</b>
+          <br><br>
+          Voluntary carbon markets are, by most accounts, a broken system. Three challenges sit at the centre: keeping track of project data is a struggle, there is mistrust in what's reported, and the wrong people end up with most of the benefits.
+          <br><br>
+          Our key task was to help build an MVP shaped around these discovered challenges — translating the strategy into a product roadmap built around three principles: keep track of data, build trust, foster openness.
+          <br><br>
+          <b>What we did</b>
+          <br><br>
+          We led the UI/UX design and facilitated workshops in Madrid with regulators and developers to help define the MVP. Regulators brought the questions verifiers would ultimately ask, while developers shared the day-to-day challenges they face on the ground. Together, these sessions helped shape which features were essential to the MVP and which could be developed in later phases.
+          <br><br>
+          The most recent milestone was the launch at New York Climate Week 2025. We helped develop the concept and designed the booth experience: a phone prop with pre-recorded pain point examples, a thick stack of PDD (Project Design Document) inside a drawer with a 30-second challenge for people to find certain information to illustrate the manual inefficiencies, a digital platform live demo and more. Alongside the booth, we supported the team in their speaking opportunities, hosted conversations with stakeholders on the floor, and helped gather and qualify leads through the week.
+          <br><br>
+          <b>Our takeaways</b>
+          <br><br>
+          NYCW highlighted both the potential and the need for integrity in the VCM. High-integrity carbon markets can accelerate climate action and drive innovation, but greenwashing and the lack of transparency around carbon credits have to be addressed first.
+          <br><br>
+          STRAATOS, as the 'OS' of high-integrity carbon projects, sets out to address governance, transparency, verification, additionality, and community benefit through a robust digital infrastructure. And what this work clarified for us is that the fastest way to build trust in a system is to make the system itself visible.
+        </p>
+        <br><br>
+        <div id="container">
+          <div class="box">Case Study</div>
+          <div class="box">PROJCT Role: Strategy, Product, UI/UX, Launch</div>
+          <div class="box">2022–2025</div>
+          <div class="box"></div>
+        </div>
+      </div>
+    </div>
+    <hr>
+   
+   
+    <p class="list-projects1" data-tag="Articles">2028 Research | SKWAT, Tokyo</p>
+
+    <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+        <div class="slides">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT0.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT1.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT2.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT3.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT4.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT5.webp" alt="">
+          <img loading="lazy" class="img-placeholder" src="./images/SKWAT6.webp" alt="">
+         
+        </div>
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+      <div class="index-item-text">
+        <p>
+          <b class="highlighted-text">In 2028, the LA Olympics aims to be the first global sports event to use existing structures rather than building new stadiums.</b> This effort will bring ideas around reimagined space into the mainstream, raising demand for players that know how to reuse and repurpose.
+          <br><br>
+          SKWAT, a Tokyo-based collective conceived in 2019, is one of these. The members have been transforming spaces around Tokyo and beyond since the early 2010s under various identities.
+          <br><br>
+          We are in a building in the luxury locus of Aoyama, Tokyo. A place so devoted to the modern handbag temples of lux that squatting seems almost unimaginable among the high fashion. Of course, this particular site is somewhat sanctioned. SKWAT has three different spaces in the building — a bookshop run by twelvebooks, a Lemaire store and the experimental space PARK. Together they offer a view on how to reimagine space as an experiment, a way to revive the city at large. Other spaces came before this and more are to come.
+          <br><br>
+          "The initial idea was to move from space to space. Vacant spaces within the city. But during COVID, we figured that it's also nice to have some sort of headquarter. We have to leave this space, too," says Keisuke Nakamura, a founder of SKWAT and the visionary behind its aesthetic activism. "It's about expressing inclusiveness. Architecture and design can have a visual language that is very intimidating in material choice — steel, marble, … — depending on how you use it can be very intimidating and feel exclusive. We don't really touch the base of the space and we use what we have at hand. Materials that are familiar to everyone. Cheap materials like roll carpet. I don't think it's very intimidating."
+          <br><br>
+          "I think the visual language for us here is approachable. I hope so," Keisuke said, explaining SKWAT's method of building on the signature design of a space. "We touch on the main substance of the building, using what we have there."
+          <br><br>
+          "We also reuse everything for a lot of projects. For example, the Lemaire store here is built with materials from an old Osaka house. It can be completely dissembled and moved if needed. Sometimes we buy or purchase new things but otherwise rent, in the basement ('PARK' space) the scaffolding structure is all rental. And we often change the structure and shape depending on what we want to do in the basement, like Legos. I love an adaptable approach that adds new value to a space. Very flexible."
+          <br><br>
+          Sustainability and fiscal responsibility are core to the LA Games Plan: no new permanent venues are needed in 2028. This approach has not been the norm for major sports events, with histories of local debt and too many stadiums, although the Paris Games in 2024 came close, with 95% of venues existing or temporary. In fact, SKWAT was set up with the expectation of Tokyo Olympics overbuilds in mind as a way to open up unused urban spaces for the public to discover.
+          <br><br>
+          Let's be honest, there's nothing new about reusing things. It's as old as life itself. But there's something new about rarely reusing and just erasing. And so traditional practice becomes modern. In utilising unused spaces and designing for modularity, the design principle becomes about achieving maximum results with minimum interference in the foundational environment. Perhaps even bringing out and putting on a pedestal the unique elements of a place. It allows us to be non-prescriptive and dream of multiple futures for a place, rather than just one or a few.
+          <br><br>
+          "It's a very broad range, the projects we do," says Irene Yamaguchi of the SKWAT team, as we eat bento from Kisurin at the SKWAT/twelvebooks space in Aoyama. "It's a wide variety of approaches. And I think that creates a very interesting synergy. We all have a different background, from architecture, fine arts, interior design, and research. It makes it about collaboration and the synergy that is created in a diverse team. Education creates interesting results, so we want to bring that next in the form of a learning space to include more people with different backgrounds but a sort of similar vision. That's also one lesson we learned through some of the projects. There needs to be a common base."
+          <br><br>
+          This common base has been missing in Tokyo and many other cities around the world. Many emerging and fast growing cities that used to have life happening on the streets and back alleys are continuously being modernised with new buildings pushing out independent public space. In New York tough busy streets were transformed into safe spaces for pedestrians and bikers with simple tools like painting part of the street to make it into a plaza or bus lane. Knowing how to read a space helps you make it function better by reallocating the space that's already there and breaking it into its component parts and rewriting the source code. Simply having a picnic might also be a subversive act of change making.
+          <br><br>
+          "We're open to somehow connect to the people who come into our project through SKWAT. We have met a lot of interesting people who gather here not only from Japan but also from abroad," says Irene. "We are not trying to influence but perhaps more be the catalyst of a process, a way of thinking, looking at things or approaching things, a range of processes. A platform for all sorts of different creators. It has no fixed form, really. Of course we're trying to find like minded people that have a similar vision and we hope to, I don't want to use revitalize, vacant space, voids, interests while trying not to have this top down approach, like a lot of cultural institutions, for example art museums, often do."
+          <br><br>
+          "PARK is a space made for people to use freely. If many people could feel free there, then I think we'd be closer to our ideal image of SKWAT. Freedom to live and then freedom to express themselves," as Keisuke put it. "We learned that few knew how to use free space. If you would offer such a place for example in London it could work. But here, somehow nobody came. We concluded that there needs to be more purpose. Purpose, even if it's buying a coffee, a simple exchange of money and receiving something."
+          <br><br>
+          "Reconstructing things according to the zeitgeist, instead of copy-and-pasting, will lead to new values," continues Keisuke. "I want to do a lot with SKWAT. I hope our ideas, even the ones we can't imagine right at this moment, will spread to the world and bring something unprecedented. That's how I want to change modern-day people's values."
+          <br><br>
+          We come back to the surroundings of the current project, the Herzog &amp; de Meuron designed Prada 'Epicenter Tokyo' — peak lux indulgence — is barely a block away. How does this theory of change for SKWAT to catalyse others to do things differently really come into play here?
+          <br><br>
+          "It's a contrast we play with, being based at the Epicenter. Kind of fun. Nobody would expect that kind of space or culture that we have," says Irene. "Intentional or not but I kind of like the way that you get drawn in to the building. Is it a fashion store like everything else?"
+          <br><br>
+          Almost like a little trap. The Lemaire front store feels comfortable in the context of Aoyama. And then you go upstairs to twelvebooks or downstairs to PARK and get trapped deep in culture by a collective of artists and thinkers aiming to bring people together by challenging the spatial and cultural boundaries in society. In a good way.
+        </p>
+        <br><br>
+        <div id="container">
+          <div class="box">Interview</div>
+          <div class="box">Masato Iwasaki, Keisuke Nakamura, Irene Yamaguchi</div>
+          <div class="box">January 12, 2023 — Tokyo</div>
+          <div class="box">#modularity #reuse #freedom #catalyst</div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <p class="list-projects1" data-tag="Case-studies">Immersive Experience | HOKA Runner's High, Art Basel Hong Kong</p>
+    
+
+    <div class="index-item is-hidden">
+
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+      
+        <div class="slides">
+          <!-- <img loading="lazy" src="./images/lightbox.jpeg" alt=""> -->
+          <img loading="lazy" src="./images/hoka0.webp" alt="">
+          <img loading="lazy" src="./images/hoka1.webp" alt="">
+          <img loading="lazy" src="./images/hoka2.webp" alt="">
+        </div>
+      
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+        <div class="index-item-text">
+            <p> 
+              <br><br>
+              <b class ="highlighted-text"> Presented at Art Basel Hong Kong 2026, Runner’s High is an immersive installation by HOKA that explores the psychological and sensory thresholds of endurance.</b><br><br> Rooted in the brand’s ethos of movement as transformation, the work draws from the lived experiences of ultra-marathon runners, where the body is pushed to its limits and perception begins to shift.
+           
+              At extreme distances, runners often report hallucinations and altered states of awareness. Time extends, the body dissolves, and reality becomes distorted. In these moments, runners describe a paradoxical state: losing themselves while simultaneously becoming more present than ever before.
+              <br><br>
+              The installation unfolds as a spatial journey across two contrasting environments: the Inner and the External.
+              <br><br>
+              The Bright Side evokes the external world of the run, expansive, luminous, and exhilarating. It captures sensations of velocity, openness, and elevation, where the body feels light and the landscape unfolds in rhythm with breath and stride.
+              <br><br>
+              In contrast, the Dark Immersive Space turns inward. Here, visitors encounter the mental terrain of endurance: disorientation, repetition, and hallucination. Light fragments, sound distorts, and tactile cues blur the boundary between body and space, simulating the altered states reported in ultra-distance running.
+              <br><br>
+              Together, these dual environments create a shifting perceptual field, where clarity and distortion coexist. Runner’s High invites visitors at Art Basel Hong Kong to not only observe but inhabit this threshold, offering a visceral glimpse into the fleeting moments where exhaustion transforms into euphoria, and reality gives way to something more expansive.</p>
+              <br><br>
+            <div id="container">
+                <div class="box">Case Study</div>
+                <div class="box">PROJCT Role: Experiential Design, Design + Production</div>
+                <div class="box">2026</div>
+                <div class="box"></div>
+              </div>
+        </div>
+   
+    </div>
+    <hr>
+    <p class="list-projects1" data-tag="Case-studies">Strategy + New Business Model | Van Alen Institute</p>
+    <div class="index-item is-hidden">
+
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+        <div class="slides">
+          <img loading="lazy" src="./images/Van Alen/Screenshot 2026-05-21 at 22.47.19.webp" alt="Van Alen Institute">
+        </div>
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+
+      <div class="index-item-text">
+        <p>Entering 2020, Van Alen Institute — a 125-year-old heritage organization in architecture and urbanism — wanted to evolve its program and mission. The pandemic, social unrest, and a new endowment created opportunities for change. Working with Thirdway, we set out to empower VAI by helping them understand their future context, align on their ambition, co-create the strategy to get there, activate the strategy, and consider organizational and governance shifts.
+          <br><br>
+          <b>What we wanted to achieve:</b>
+          <br><br>
+          A collective institutional understanding of VAI's current and future operating context and landscape. A high-level blueprint of how VAI might operationalize the strategy towards their new mission (people, process, technology). An initial understanding of institutional autonomy so VAI could repeat this process on their own.
+          <br><br>
+          <b>What we wanted to overcome:</b>
+          <br><br>
+          Differing points of view in the ambition of the organization (scale, geography, etc). Respect of institutional reputation while understanding VAI brand in a wider ecosystem outside architects and urbanists in NYC. Respect of a culture of non-profit operations (for 125 years) vs entrepreneurial pioneers — a collective alignment around what to respect, focus on and let go.
+          <br><br>
+          <b>Our approach:</b>
+          <br><br>
+          We took a holistic and adaptive approach centered on co-creation, provoking broad thinking, and creating future resiliency with a bias towards action. We were not there to tell VAI where to go and how to get there — but focused on shifting mindsets and shifting behaviors, because it's hard to say things will be different, and harder to do things differently.
+          <br><br>
+          We believed in an adaptive strategy, not a silver bullet: developing a clear strategy that can guide actions ahead, while building confidence in that strategy over time through defined pilots that facilitate learning and improving resolution. And we focused on what was actionable and applicable — pushing their thinking while ensuring the future was attainable, with a focus on what they could do differently tomorrow.
+          <br><br>
+          <b>Our process:</b>
+          <br><br>
+          Alongside four formal phases — Discovery (insights development), Strategy (strategic roadmap), Pilots (ways of working), and Big Idea (operationalizing the shifts) — we also spent time enabling organization and governance agility and decision making, helping operationalize the strategy, navigating what's needed in the future operating environment, coaching, and creating network connections.
+          <br><br>
+          <b>Result:</b>
+          <br><br>
+          A clear, directional statement now guides where VAI places its efforts and resources: <em>VAI shares its core assets — an interdisciplinary network and deep community-driven knowledge — with historically under-resourced communities to strengthen social infrastructure in the built environment.</em>
+          <br><br>
+          A set of guiding principles translates this strategy into action:
+          <br><br>
+          <b>Center with communities.</b> Community voices drive outcomes. VAI builds partnerships to expand capacity and creates long-term programmatic streams.
+          <br><br>
+          <b>Learn and create tools.</b> VAI tests, iterates, and learns from current projects — turning methods into tools for community-led outcomes. This includes building digital infrastructure to share its intellectual property and excavating archives for hidden assets.
+          <br><br>
+          <b>Diversify.</b> VAI is broadening revenue sources, external networks, and stakeholders — while bringing BIPOC perspectives into board, council, staff, and leadership.
+          <br><br>
+          Beyond the strategy, VAI is enhancing its readiness through deliberate experiments and pilots — learning as they go, mitigating risk, and building momentum toward their ambition.
+        </p>
+        <br><br>
+        <div id="container">
+          <div class="box">Case Study</div>
+          <div class="box">Strategy + New Business Model</div>
+          <div class="box">2020–21, New York</div>
+          <div class="box"></div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <p class="list-projects1" data-tag="Case-studies">Experience and Workplace Strategy (with WHub) | AIA</p>
+    <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+        <div class="slides">
+          <img loading="lazy" src="./images/AIA/Screenshot 2026-05-21 at 23.18.35.webp" alt="AIA 1 Stubbs Road">
+          <img loading="lazy" src="./images/AIA/Screenshot 2026-05-21 at 23.19.06.webp" alt="AIA 1 Stubbs Road">
+          <img loading="lazy" src="./images/AIA/Screenshot 2026-05-21 at 23.19.30.webp" alt="AIA 1 Stubbs Road">
+        </div>
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+      <div class="index-item-text">
+        <p><b>THE 1 STUBBS ROAD UNIQUE EXPERIENCE</b>
+          <br><br>
+          AIA — the largest publicly traded life insurance group in the Asia-Pacific region — set out to transform its workplace into a platform for cultural and operational change. We were engaged to help align leadership vision with employee expectations, and to ensure the new building at 1 Stubbs Road would enable a sustainable, collaborative future.
+          <br><br>
+          <em>The Northstar: 1 Stubbs Road will be the platform for our transformation, purposefully creating cohesive engagements with our employees.</em>
+          <br><br>
+          Rapid change, ESG focus, and hybrid work require more than a redesigned floor plan. They require a curated campaign to drive adoption — showcasing the future of AIA's culture in a space designed for diverse expectations of place and mode of work.
+          <br><br>
+          <b>What we discovered:</b> Through workshops and ideation that we facilitated, we found strong alignment between executive vision and staff aspirations. Employees want the new building to be outstanding. They discovered new levels of productivity during the pandemic and now seek ownership of choices — because choice demonstrates trust. They also want deeper engagement with colleagues and the organization, with recognition of individual diversity.
+          <br><br>
+          <b>What we helped overcome:</b> Concerns about returning to the office. Fixed desk models that no longer fit hybrid norms. Unconnected spaces that limit collaboration. And the need to embed ESG and D&amp;I into the building's touchpoints — not as an afterthought, but as a core expression of a responsible organization.
+          <br><br>
+          <b>How our recommendation drove changes:</b> We guided the Steering Committee to push for greater flexibility, diversity, and modularity in the building — creating space for agile collaboration, quiet focus, and planned serendipity. Technology, including a user-friendly building app, can address key pain points. But the real opportunity is bigger than tech: designing culture and habits around AIA's values of healthier, longer, and better employee lives. As a result, the building was finally opened in Q1 2024 — not just as an office, but as a platform for transformation.
+        </p>
+        <br><br>
+        <div id="container">
+          <div class="box">Case Study</div>
+          <div class="box">Experience + Workplace Strategy</div>
+          <div class="box">2024, Hong Kong</div>
+          <div class="box"></div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <p class="list-projects1" data-tag="Case-studies">Brand Extension Strategy | TSG Entertainment</p>
+    <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+        <div class="slides">
+          <img loading="lazy" src="./images/TSG/Screenshot 2026-05-21 at 23.20.25.webp" alt="TSG Entertainment">
+          <img loading="lazy" src="./images/TSG/Screenshot 2026-05-21 at 23.20.52.webp" alt="TSG Entertainment">
+          <img loading="lazy" src="./images/TSG/Screenshot 2026-05-21 at 23.21.11.webp" alt="TSG Entertainment">
+          <img loading="lazy" src="./images/TSG/Screenshot 2026-05-21 at 23.24.22.webp" alt="TSG Entertainment">
+        </div>
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+      <div class="index-item-text">
+        <p>TSG Entertainment is an American film finance company founded by Chip Seelig. The company has financed the Avatar series, Jojo Rabbit, Ford v Ferrari, Red Sparrow, The Shape of Water, Gone Girl, and many others — investing more than US$3 billion across 140 projects for Fox and Sony Pictures. TSG's logo and vanity card depict a man with a bow shooting an arrow through a dozen axe heads. Clearly, the company knows how to pick and build the right entertainment IP.
+          <br><br>
+          We came in to help extend the reach of some of this IP beyond the expected. During our work with Ron's Gone Wrong, the Lethal Lit series, and other entertainment properties, we focused on extending narratives beyond the screen and into online, offline, and integrated moments.
+          <br><br>
+          <b>Our process:</b> We begin at the intersection of interest and opportunity. Through research and planning, we move quickly to ideation and prototyping — sharing the process with the larger team and partners, introducing new ideas, and testing them rapidly.
+          <br><br>
+          <b>What we do differently:</b> We work with creators early to understand key emotional moments in their stories — and bring those moments to life through ethnography and narrative analysis. We extend those magic moments into physical and digital products and experiences that enable consumers to feed their imaginations. We inspire and engage value chain partners to co-create, bringing creators closer to their distribution partners and fan communities. And we adopt data-driven analytics and social commerce to reduce waste and retail risk.
+          <br><br>
+          <b>Ron's Gone Wrong — Merch Discovery:</b> We defined themes, opportunities, and initial ideas based on our research. Our strategy led us toward developing products that extend the movie's narrative beyond the theatre. We proposed 7 different merchandise concepts, each designed to bring key emotional moments from the film into the hands of fans.
+          <br><br>
+          <b>Lethal Lit — Story Extensions:</b> We focused on bringing Tig Torres to life through narrative extensions. Through desk research, interviews, and co-design sessions with creators, we identified key opportunity spaces: expanding and deepening the Lethal Lit universe, promoting the property beyond podcast communities, building the fan base from the ground up, converting listeners to active fans, and driving revenue and user growth. We developed brand frameworks — values, voice, design principles — defining the moments, themes, locations, and emotions from the narrative. We then proposed three distinct concepts, extending content through community.
+        </p>
+        <br><br>
+        <div id="container">
+          <div class="box">Case Study</div>
+          <div class="box">Brand Extension Strategy</div>
+          <div class="box">Entertainment, IP</div>
+          <div class="box"></div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <p class="list-projects1" data-tag="Case-studies">Corporate Innovation | Explorium, Fung Group</p>
+    <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+      
+        <div class="slides">
+          <img loading="lazy" src="./images/Explorium/Screenshot 2026-05-20 at 20.51.01.webp" alt="">
+        </div>
+      
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+      <div class="index-item-text">
+        <p>Explorium is the Fung Group innovation platform — a collaboration hub empowering communities of innovation in supply chain, retail, and beyond, to co-create the future. The experiment ended in Hong Kong in 2021.
+          <br><br>
+          As an experiment in community-driven corporate innovation, Explorium HK served its purpose as a place to inform, inspire and facilitate creating new value by engaging a community of champions, innovators and business leaders for change.
+          <br><br>
+          The Explorium community and the spirit of innovating through exploration will live on and many experiments proving the merits of ecosystem thinking and bringing together constellations of partners and knowledge were carried out.
+          <br><br>
+          Check out the free, open-sourced collaborative platform of resources: <a href="https://sharp-cloche-eba.notion.site/Ecosystem-Innovation-Playbook-552c1d1631724a8095a8f4d7eb0c5955" target="_blank" rel="noopener noreferrer">Ecosystem Innovation Playbook</a>
+        </p>
+        <br><br>
+        <div id="container">
+          <div class="box">Case Study</div>
+          <div class="box">Corporate Innovation</div>
+          <div class="box">2019–21, Hong Kong</div>
+          <div class="box"></div>
+        </div>
+      </div>
+    </div>
+    <hr>
+
+  
+    <p class="list-projects1" data-tag="Research">Research | 2020 It's The World We Live In | 'Stay Home'</p>
+    <div class="index-item is-hidden">
+      <div class="index-item-images slider">
+        <button class="slider-arrow prev" aria-label="Previous slide">❮</button>
+        <div class="slides">
+          <img loading="lazy" src="./images/World Report Survey/Screenshot 2026-05-21 at 23.35.44.webp" alt="2020 World Survey Report">
+        </div>
+        <button class="slider-arrow next" aria-label="Next slide">❯</button>
+      </div>
+      <div class="index-item-text">
+
+        <!-- ── INTRO ── -->
+        <p><b>2020, Covid-19 pandemic, what a year …</b></p>
+        <blockquote class="survey-quote">'Hit the elevator buttons with my knuckles. Like seriously, how is that going to solve anything?'</blockquote>
+        <p>Well, he wasn't alone in this quest; this was probably <em>the</em> question niggling at most of us during the pandemic. There seemed to be nothing that we could do to alter the situation (hmm, vaccination?). So why not just observe, think, and feel outside the box a bit, which we can't afford to do during 'normal' day-to-day lives? Like <em>watching your pets investigate the robot vacuum for months</em>, <em>wondering why and how something you googled pops up in your feed out of nowhere</em>, and <em>realising that taking off bedsheets each morning and putting them back is tedious yet inexplicably rewarding</em>.</p>
+        <p>This project was exactly born out of collecting these somewhat random questions and thoughts. As you probably know, we're a bunch of individuals who are weary of the ordinary; digging into the most private, weirdest, and deepest minds is what we do.</p>
+        <p>So we thought, let's design a survey and host an open, intimate exhibit where people can share basically anything with us amid all the pandemic restrictions — forget about social distancing! We wanted everyone to feel a bit more energised and, perhaps more vitally, (re)connected with the neighbourhood, community, and even the world.</p>
+        <p>We then curated a space in a <em>tong lau</em> apartment on Sun Street in Wan Chai, inviting every member of the audience to join us in these continuous conversations.</p>
+
+        <!-- <figure class="survey-figure"><img loading="lazy" src="./images/World Survey/Figure 1.webp" alt="Images from Exhibit"></figure> -->
+
+        <!-- ── WHAT'S THE SURVEY ABOUT? ── -->
+        <h3 class="survey-section-head">What's the survey about?</h3>
+        <p>The team was curious about how confined life had changed people's experiences and feelings. And a survey, along with some in-depth interviews, would be a great way to solve the puzzle.</p>
+        <p>We had endless, heated discussions about what we wanted to know most and ended up bringing the survey to 60+ questions, with a mix of closed- and open-ended formats, so as to capture a plurality of voices and perspectives.</p>
+        <p>It's structured around six key themes: 1) Experience and Attitude Towards Opportunities, 2) Observations on the World, 3) The Future of Work and Skills, 4) Life and Preferences, 5) Feelings at the Moment and Mental Wellness, and 6) Great Life Moments.</p>
+
+        <h3 class="survey-section-head">A big thanks to these people!</h3>
+        <p>Within a month or so, 101 responses were collected from 25 countries and territories, from where we're based — Hong Kong (16%), of course — to the Philippines (33%), and the United States (8%). Respondents range in age from 16 to 50, with slightly over one-third (38%) being students at the time.</p>
+
+        <div class="survey-figures-pair">
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 1.webp" alt="Figure 1"><figcaption class="survey-fig-label">Figure 1</figcaption></figure>
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 2.webp" alt="Figure 2"><figcaption class="survey-fig-label">Figure 2</figcaption></figure>
+        </div>
+
+        <!-- ── INVESTIGATIVE JOURNEY ── -->
+        <p>We also Zoom-interviewed 15 individuals at different life stages, a cohort reflective of diverse cultural backgrounds and lifestyles.</p>
+        <!-- <figure class="survey-figure"><img src="" alt="Images from Interviews"><figcaption class="survey-fig-label">Images from Interviews</figcaption></figure> -->
+        <p><b>And now let's embark on a little investigative journey</b> with this core question in mind: what did people experience and feel during these turbulent times?</p>
+        <p><b>Lockdowns restricted physical movement and social contact but by no means self-exploration and discovery</b> through new hobbies, skills, and ventures. People also did all kinds of 'quirky' things back then, from learning how to pick locks to creating a karaoke room and improving on typing speed. Some immersed themselves in books, while others in the digital world — making TikTok videos, gaming, and conversing in different accents.</p>
+
+        <div class="survey-figures-pair survey-figures-pair--two-col">
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 3.png" alt="Figure 3"><figcaption class="survey-fig-label">Figure 3</figcaption></figure>
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 4.png" alt="Figure 4"><figcaption class="survey-fig-label">Figure 4</figcaption></figure>
+        </div>
+
+        <!-- ── SKILLS & SIDE GIGS ── -->
+        <div class="survey-callout-pair">
+          <div class="survey-callout">
+            <p class="survey-callout-stat">8 in 10</p>
+            <p class="survey-callout-body">respondents picked up new skills during the pandemic.</p>
+            <p class="survey-callout-sub">(making sourdough, playing the piano, running, and so many more.)</p>
+            <blockquote class="survey-quote survey-quote--inline">"The pandemic is a period when there is less stimulation to see constantly, so exploring your community or your own city has become the new norm."</blockquote>
+          </div>
+          <div class="survey-callout">
+            <p class="survey-callout-stat">5 in 10</p>
+            <p class="survey-callout-body">respondents pursued a side gig or business when the pandemic hit.</p>
+            <p class="survey-callout-sub">(with about one-third in business development and entrepreneurship such as marketing consulting; a close second is e-commerce and consumer goods like mask production)</p>
+            <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 5.webp" alt="Figure 5"><figcaption class="survey-fig-label">Figure 5</figcaption></figure>
+          </div>
+        </div>
+
+        <!-- ── MIXED FEELINGS ── -->
+        <p><b>But mixed feelings about life and the world's trajectory were widespread:</b> thankful for being alive, frustrated with the seemingly never-ending pandemic, and worried about losing a job all at once. People weren't wildly optimistic about the future. After all, tens of millions worldwide lost their lives. Job loss and mental distress were common. Many foresaw the impending challenges of adapting to the 'new normal,' compounded by worries like xenophobia.</p>
+
+        <div class="survey-callout-pair">
+          <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 6.png" alt="Figure 6"><figcaption class="survey-fig-label">Figure 6</figcaption></figure>
+          <div class="survey-callout">
+            <p class="survey-callout-stat">63%</p>
+            <p class="survey-callout-body">of respondents believe that the world is staying the same or getting worse.</p>
+            <blockquote class="survey-quote survey-quote--inline">"I think one challenge would be getting used to the new normal. The economy will also be greatly affected. A lot of things have already changed and will continue to change post-Covid."</blockquote>
+          </div>
+        </div>
+
+        <!-- ── WELL-BEING ── -->
+        <blockquote class="survey-quote">"I think Covid has helped those of us who were lucky enough to make time for personal goals and needs, but the new normal will always challenge that balance."</blockquote>
+        <p><b>The good news: a growing focus on well-being, both physical and mental.</b> People spent more (quality) time with family and friends, picked up old hobbies like reading, and developed new ones such as yoga and journaling. When asked what the best thing they had done during the pandemic was, some said:</p>
+
+        <div class="survey-quotes-pair">
+          <blockquote class="survey-quote">"I love spending more time with my family, so I think the lockdown can be an opportunity for us to further strengthen our bonds."</blockquote>
+          <blockquote class="survey-quote">"I used to hate exercising, but since quarantine started I challenged myself to do workout programs. It really changed me physically and mentally."</blockquote>
+        </div>
+
+        <!-- ── MENTAL HEALTH ── -->
+        <div class="survey-callout-pair">
+          <div class="survey-callout">
+            <p class="survey-callout-stat">95%</p>
+            <p class="survey-callout-body">of respondents believe purposely doing things to take care of mental health is somewhat to highly essential.</p>
+            <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 7.png" alt="Figure 7"><figcaption class="survey-fig-label">Figure 7</figcaption></figure>
+            <p>Only <b>1 in 10</b> respondents reportedly didn't take time out.</p>
+          </div>
+          <div class="survey-callout">
+            <p class="survey-callout-stat">98%</p>
+            <p class="survey-callout-body">of respondents believe companies somewhat or should keep track of employees' mental health.</p>
+          </div>
+        </div>
+
+        <p><b>The relationship between technology and mental health is far from straightforward.</b> Opinions on whether technology use has aggravated or alleviated depression are divided: proponents stated reasons such as easy access to information and entertainment, whereas opponents suggested that increased technology use leads to social comparison and a lack of physical interaction.</p>
+
+        <div class="survey-quotes-pair">
+          <blockquote class="survey-quote">"Technology enabled more access to entertainment and sources for self-care."</blockquote>
+          <blockquote class="survey-quote">"Technology brings us closer to others with just a text but also separates us more than ever with just a text."</blockquote>
+        </div>
+
+        <!-- ── CLOSING ── -->
+        <p>No matter what, the pandemic gave many of us (those lucky to survive) pause for thought: what's truly important to ourselves? There's no universal answer, and you have to carve out your own path.</p>
+        <h3 class="survey-section-head">What's next?</h3>
+        <p>Our curiosity has never dimmed. We have loads of energy to explore new ideas — and the next iteration has already started!</p>
+        <p>
+          <a href="https://survey.projct.co" target="_blank" rel="noopener noreferrer">→ Click here to participate in the 2026 World Survey</a><br><br>
+          <a href="./images/2020 World Survey_Report.pdf" target="_blank" rel="noopener noreferrer">→ Click here to download the full 2020 report</a>
+        </p>
+
+        <br>
+        <div id="container">
+          <div class="box">Research</div>
+          <div class="box">Survey, community, pandemic</div>
+          <div class="box">2020, Global</div>
+          <div class="box"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <footer class="site-footer footer-content">
+    <div class="f-split">
+      <div class="f-brand">
+        <img src="SVG/logo-white.svg" alt="PROJCT" class="f-logo">
+        <p class="f-addr">Unit 8-10, GF, 189 Queen's Road West<br>Sai Ying Pun, Hong Kong</p>
+      </div>
+      <div class="f-info">
+        <div class="f-links">
+          <span class="f-col-label">Contact</span>
+          <a href="mailto:hi@projct.co">hi@projct.co</a>
+          <a href="tel:+85257271122">+852 5727 1122</a>
+        </div>
+        <div class="f-links">
+          <span class="f-col-label">Follow</span>
+          <a href="https://www.are.na/projct/channels" target="_blank" rel="noopener noreferrer">Are.na</a>
+          <a href="https://www.linkedin.com/company/projct/?originalSubdomain=hk" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://www.instagram.com/projct_co/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </div>
+        <div>
+          <span class="f-col-label">Newsletter</span>
+          <form action="#" method="post" onsubmit="event.preventDefault();">
+            <input type="email" class="f-newsletter-input" name="email" placeholder="Your email address" required aria-label="Email address">
+            <button type="submit" class="f-newsletter-submit" aria-label="Subscribe">Subscribe →</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="f-clocks">
+      <div class="clock-item">
+        <span class="clock-city">HONG KONG</span>
+        <svg class="clock-face" data-tz="Asia/Hong_Kong" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="Asia/Hong_Kong">00:00:00</span>
+      </div>
+      <span class="clock-sep">•</span>
+      <div class="clock-item">
+        <span class="clock-city">LONDON</span>
+        <svg class="clock-face" data-tz="Europe/London" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="Europe/London">00:00:00</span>
+      </div>
+      <span class="clock-sep">•</span>
+      <div class="clock-item">
+        <span class="clock-city">SAN FRANCISCO</span>
+        <svg class="clock-face" data-tz="America/Los_Angeles" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line class="clock-hour" x1="12" y1="12" x2="12" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line class="clock-min" x1="12" y1="12" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+        </svg>
+        <span class="clock-time" data-tz="America/Los_Angeles">00:00:00</span>
+      </div>
+    </div>
+  </footer>
+  <div class="footer-legal">
+    <div class="f-legal-links">
+      <a href="Policies-and-Governance.html">Policies &amp; Governance</a>
+      <a href="non-lobbying-statement copy.html">Non-lobbying statement</a>
+      <a href="Policies-and-Governance.html#grievance-handling">Grievance handling</a>
+    </div>
+    <span>© PROJCT 2026</span>
+  </div>
+
+  <!-- ─── Case study overlay (work2-style popup, natural-ratio images on the right) ─── -->
+  <div class="cs-overlay" id="csOverlay" aria-modal="true" role="dialog">
+
+    <button class="cs-back" id="csBackBtn">
+      <span class="cs-back-arrow">←</span> Back to index
+    </button>
+
+    <div class="cs-layout">
+      <div class="cs-col-text">
+        <h1 class="cs-headline" id="csHeadline"></h1>
+        <p class="cs-client" id="csClient"></p>
+        <p class="cs-intro" id="csIntro"></p>
+        <div class="cs-services" id="csServices"></div>
+        <div class="cs-stat-row" id="csStats" style="display:none"></div>
+        <div class="cs-text-blocks" id="csTextBlocks"></div>
+      </div>
+      <div class="cs-col-images" id="csImages"></div>
+    </div>
+
+    <div class="cs-nav">
+      <button class="cs-nav-btn" id="csPrev">
+        <span>← Previous</span>
+        <span class="cs-nav-title" id="csPrevTitle"></span>
+      </button>
+      <button class="cs-nav-btn cs-nav-next" id="csNext">
+        <span>Next →</span>
+        <span class="cs-nav-title" id="csNextTitle"></span>
+      </button>
+    </div>
+
+  </div><!-- /cs-overlay -->
+
+  <!-- Rich body content for "It's The World We Live In" — cloned into the overlay by JS -->
+  <template id="csBodyWorldSurvey">
+    <p class="cs-text-block-body"><b>2020, Covid-19 pandemic, what a year …</b></p>
+    <blockquote class="survey-quote">'Hit the elevator buttons with my knuckles. Like seriously, how is that going to solve anything?'</blockquote>
+    <p class="cs-text-block-body">Well, he wasn't alone in this quest; this was probably <em>the</em> question niggling at most of us during the pandemic. There seemed to be nothing that we could do to alter the situation (hmm, vaccination?). So why not just observe, think, and feel outside the box a bit, which we can't afford to do during 'normal' day-to-day lives? Like <em>watching your pets investigate the robot vacuum for months</em>, <em>wondering why and how something you googled pops up in your feed out of nowhere</em>, and <em>realising that taking off bedsheets each morning and putting them back is tedious yet inexplicably rewarding</em>.</p>
+    <p class="cs-text-block-body">This project was exactly born out of collecting these somewhat random questions and thoughts. As you probably know, we're a bunch of individuals who are weary of the ordinary; digging into the most private, weirdest, and deepest minds is what we do.</p>
+    <p class="cs-text-block-body">So we thought, let's design a survey and host an open, intimate exhibit where people can share basically anything with us amid all the pandemic restrictions — forget about social distancing! We wanted everyone to feel a bit more energised and, perhaps more vitally, (re)connected with the neighbourhood, community, and even the world.</p>
+    <p class="cs-text-block-body">We then curated a space in a <em>tong lau</em> apartment on Sun Street in Wan Chai, inviting every member of the audience to join us in these continuous conversations.</p>
+
+    <h3 class="survey-section-head">What's the survey about?</h3>
+    <p class="cs-text-block-body">The team was curious about how confined life had changed people's experiences and feelings. And a survey, along with some in-depth interviews, would be a great way to solve the puzzle.</p>
+    <p class="cs-text-block-body">We had endless, heated discussions about what we wanted to know most and ended up bringing the survey to 60+ questions, with a mix of closed- and open-ended formats, so as to capture a plurality of voices and perspectives.</p>
+    <p class="cs-text-block-body">It's structured around six key themes: 1) Experience and Attitude Towards Opportunities, 2) Observations on the World, 3) The Future of Work and Skills, 4) Life and Preferences, 5) Feelings at the Moment and Mental Wellness, and 6) Great Life Moments.</p>
+
+    <h3 class="survey-section-head">A big thanks to these people!</h3>
+    <p class="cs-text-block-body">Within a month or so, 101 responses were collected from 25 countries and territories, from where we're based — Hong Kong (16%), of course — to the Philippines (33%), and the United States (8%). Respondents range in age from 16 to 50, with slightly over one-third (38%) being students at the time.</p>
+
+    <div class="survey-figures-pair">
+      <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 1.webp" alt="Figure 1"><figcaption class="survey-fig-label">Figure 1</figcaption></figure>
+      <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 2.webp" alt="Figure 2"><figcaption class="survey-fig-label">Figure 2</figcaption></figure>
+    </div>
+
+    <p class="cs-text-block-body">We also Zoom-interviewed 15 individuals at different life stages, a cohort reflective of diverse cultural backgrounds and lifestyles.</p>
+    <p class="cs-text-block-body"><b>And now let's embark on a little investigative journey</b> with this core question in mind: what did people experience and feel during these turbulent times?</p>
+    <p class="cs-text-block-body"><b>Lockdowns restricted physical movement and social contact but by no means self-exploration and discovery</b> through new hobbies, skills, and ventures. People also did all kinds of 'quirky' things back then, from learning how to pick locks to creating a karaoke room and improving on typing speed. Some immersed themselves in books, while others in the digital world — making TikTok videos, gaming, and conversing in different accents.</p>
+
+    <div class="survey-figures-pair survey-figures-pair--two-col">
+      <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 3.png" alt="Figure 3"><figcaption class="survey-fig-label">Figure 3</figcaption></figure>
+      <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 4.png" alt="Figure 4"><figcaption class="survey-fig-label">Figure 4</figcaption></figure>
+    </div>
+
+    <div class="survey-callout-pair">
+      <div class="survey-callout">
+        <p class="survey-callout-stat">8 in 10</p>
+        <p class="survey-callout-body">respondents picked up new skills during the pandemic.</p>
+        <p class="survey-callout-sub">(making sourdough, playing the piano, running, and so many more.)</p>
+        <blockquote class="survey-quote survey-quote--inline">"The pandemic is a period when there is less stimulation to see constantly, so exploring your community or your own city has become the new norm."</blockquote>
+      </div>
+      <div class="survey-callout">
+        <p class="survey-callout-stat">5 in 10</p>
+        <p class="survey-callout-body">respondents pursued a side gig or business when the pandemic hit.</p>
+        <p class="survey-callout-sub">(with about one-third in business development and entrepreneurship such as marketing consulting; a close second is e-commerce and consumer goods like mask production)</p>
+        <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 5.webp" alt="Figure 5"><figcaption class="survey-fig-label">Figure 5</figcaption></figure>
+      </div>
+    </div>
+
+    <p class="cs-text-block-body"><b>But mixed feelings about life and the world's trajectory were widespread:</b> thankful for being alive, frustrated with the seemingly never-ending pandemic, and worried about losing a job all at once. People weren't wildly optimistic about the future. After all, tens of millions worldwide lost their lives. Job loss and mental distress were common. Many foresaw the impending challenges of adapting to the 'new normal,' compounded by worries like xenophobia.</p>
+
+    <div class="survey-callout-pair">
+      <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 6.png" alt="Figure 6"><figcaption class="survey-fig-label">Figure 6</figcaption></figure>
+      <div class="survey-callout">
+        <p class="survey-callout-stat">63%</p>
+        <p class="survey-callout-body">of respondents believe that the world is staying the same or getting worse.</p>
+        <blockquote class="survey-quote survey-quote--inline">"I think one challenge would be getting used to the new normal. The economy will also be greatly affected. A lot of things have already changed and will continue to change post-Covid."</blockquote>
+      </div>
+    </div>
+
+    <blockquote class="survey-quote">"I think Covid has helped those of us who were lucky enough to make time for personal goals and needs, but the new normal will always challenge that balance."</blockquote>
+    <p class="cs-text-block-body"><b>The good news: a growing focus on well-being, both physical and mental.</b> People spent more (quality) time with family and friends, picked up old hobbies like reading, and developed new ones such as yoga and journaling. When asked what the best thing they had done during the pandemic was, some said:</p>
+
+    <div class="survey-quotes-pair">
+      <blockquote class="survey-quote">"I love spending more time with my family, so I think the lockdown can be an opportunity for us to further strengthen our bonds."</blockquote>
+      <blockquote class="survey-quote">"I used to hate exercising, but since quarantine started I challenged myself to do workout programs. It really changed me physically and mentally."</blockquote>
+    </div>
+
+    <div class="survey-callout-pair">
+      <div class="survey-callout">
+        <p class="survey-callout-stat">95%</p>
+        <p class="survey-callout-body">of respondents believe purposely doing things to take care of mental health is somewhat to highly essential.</p>
+        <figure class="survey-figure"><img loading="lazy" src="images/World Survey/Figure 7.png" alt="Figure 7"><figcaption class="survey-fig-label">Figure 7</figcaption></figure>
+        <p class="cs-text-block-body">Only <b>1 in 10</b> respondents reportedly didn't take time out.</p>
+      </div>
+      <div class="survey-callout">
+        <p class="survey-callout-stat">98%</p>
+        <p class="survey-callout-body">of respondents believe companies somewhat or should keep track of employees' mental health.</p>
+      </div>
+    </div>
+
+    <p class="cs-text-block-body"><b>The relationship between technology and mental health is far from straightforward.</b> Opinions on whether technology use has aggravated or alleviated depression are divided: proponents stated reasons such as easy access to information and entertainment, whereas opponents suggested that increased technology use leads to social comparison and a lack of physical interaction.</p>
+
+    <div class="survey-quotes-pair">
+      <blockquote class="survey-quote">"Technology enabled more access to entertainment and sources for self-care."</blockquote>
+      <blockquote class="survey-quote">"Technology brings us closer to others with just a text but also separates us more than ever with just a text."</blockquote>
+    </div>
+
+    <p class="cs-text-block-body">No matter what, the pandemic gave many of us (those lucky to survive) pause for thought: what's truly important to ourselves? There's no universal answer, and you have to carve out your own path.</p>
+    <h3 class="survey-section-head">What's next?</h3>
+    <p class="cs-text-block-body">Our curiosity has never dimmed. We have loads of energy to explore new ideas — and the next iteration has already started!</p>
+    <p class="cs-text-block-body">
+      <a href="https://survey.projct.co" target="_blank" rel="noopener noreferrer">→ Click here to participate in the 2026 World Survey</a><br><br>
+      <a href="./images/2020 World Survey_Report.pdf" target="_blank" rel="noopener noreferrer">→ Click here to download the full 2020 report</a>
+    </p>
+  </template>
+
+
+<!-- Mode toggle button -->
+<button class="idx-mode-toggle" id="modeToggle" aria-label="Toggle colour mode" title="Toggle colour mode"></button>
+
+<script>
+  (function () {
+    var btn  = document.getElementById('modeToggle');
+    var root = document.documentElement;
+    var dark = false;
+    btn.addEventListener('click', function () {
+      dark = !dark;
+      root.classList.toggle('idx-white-mode', dark);
+    });
+  })();
+</script>
+<script>
+  (function () {
+    var header = document.querySelector('.header');
+    if (!header) return;
+    var scroller = document.body;
+    var lastY = scroller.scrollTop;
+    var ticking = false;
+    function update() {
+      var y = scroller.scrollTop;
+      var delta = y - lastY;
+      if (y < 80) { header.classList.remove('is-hidden'); }
+      else if (delta > 6) { header.classList.add('is-hidden'); }
+      else if (delta < -6) { header.classList.remove('is-hidden'); }
+      lastY = y; ticking = false;
+    }
+    scroller.addEventListener('scroll', function () {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+  })();
+</script>
+
+<!-- Case study overlay logic -->
+<script>
+(function () {
+  var overlay = document.getElementById('csOverlay');
+  if (!overlay) return;
+
+  var projects = [
+    {
+      headline: 'Community\nActivation',
+      client: 'Lightbox Gallery — 2025',
+      intro: 'A collaborative initiative by PROJCT and EJAR that transforms Hong Kong\'s public spaces into a living gallery. By utilising places not traditionally seen as artistic venues, the initiative uncovers the creative potential embedded within everyday urban spaces.',
+      services: ['Practice', 'Community', 'Exhibition', 'Art'],
+      stats: [],
+      body: [
+        { label: 'About', text: 'The gallery came to life through the inaugural collaboration of four talented artists — Au Kin Wai Johnny, Chan Man Yi, Yeung Shu Nga Emma, and Yuen An Tung Ariel. Since then, it has evolved into a dynamic exhibition platform that celebrates cross-disciplinary collaboration and international exchange.' },
+        { label: 'Approach', text: 'By turning the city itself into a canvas, streets become more than routes of movement; they evolve into spaces of interaction, reflection, and social engagement. Unlike traditional galleries, LIGHTBOX also features a month-long auction, bridging Hong Kong\'s vibrant urban culture with global artistic networks.' }
+      ],
+      images: ['./images/LIGHTBOX2.jpg.webp', './images/LIGHTBOX.png.webp', './images/Lightbox Gallery/LG0.webp', './images/Lightbox Gallery/LG1.webp', './images/Lightbox Gallery/LG2.webp', './images/Lightbox Gallery/LG3.webp']
+    },
+    {
+      headline: 'Every Wish\nLasts',
+      client: 'Chubb Life Insurance — 2024–25',
+      intro: '71% of Hong Kong residents had never shared their final wishes. We transformed end-of-life planning from a taboo into a meaningful, city-wide human-centric dialogue — culminating in an immersive installation at Art Basel Hong Kong 2025.',
+      services: ['Strategic Advisory', 'Content Storytelling', 'Experiential Design', 'OOH'],
+      stats: [
+        { num: 'HK$124M', label: 'PR Value' },
+        { num: '785M', label: 'Impressions' },
+        { num: '455', label: 'Media pieces' },
+        { num: '3.4K', label: 'In-person attendees' }
+      ],
+      body: [
+        { label: 'The Challenge', text: 'In a society where death is a profound taboo, our challenge was to help position our client not just as an insurer, but as a compassionate leader in life\'s most important conversations.' },
+        { label: 'What we did', text: 'We began with anonymous "teaser" walls posing, "When you\'re no longer here… what\'s your wish?" The overwhelming public response was painted back onto the walls. The campaign expanded to film screenings, a "Last Wishes" magazine, 40 question cards, and a Wishing Well at Art Basel.' }
+      ],
+      images: ['./images/1-4.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0092-Edit.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0160-Edit.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0179-Edit.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_060.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_093.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_154.webp']
+    },
+    {
+      headline: 'Discovery\n→ Build',
+      client: 'Life Insurance Company — 2023–2026',
+      intro: 'From #27 to #15 in brand recognition. Over three years, we led Strategy, Brand, Campaigns, and Experiential work — including three consecutive Art Basel Hong Kong installations that redefined how the brand speaks to Hong Kong.',
+      services: ['Strategy', 'Brand', 'Campaigns', 'Experiential Marketing'],
+      stats: [
+        { num: '#27→#15', label: 'Brand ranking' },
+        { num: 'HK$8M', label: 'PR value (Life Forest)' },
+        { num: '6.33M', label: 'People reached' },
+        { num: '516%', label: 'Social media increase' }
+      ],
+      body: [
+        { label: 'Starting point', text: 'In late 2022, this company ranked #27 in industry name recognition and held less than 1% market share. We were engaged to help with a new positioning strategy through a Discovery project — gathering market insights, defining brand opportunities, and setting strategic directions.' },
+        { label: 'Recognition', text: 'Fast Company World\'s Most Innovative Company (2025), Winner of HKFI Awards Outstanding Integrated Marketing, Bloomberg Awards in Integrated Marketing, 6 Marketing Event Awards, Creative Review shortlist. We don\'t just hand over decks. We stay in the room and build together.' }
+      ],
+      images: ['./images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_001.webp', './images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_006.webp', './images/Art%20Basel%20Chubb%20Life%20Chapters/0325_Chubb_install_025.webp', './images/Art%20Basel%20Chubb%20Life%20Chapters/0327_Chubb_063.webp', './images/Art%20Basel%20Chubb%20Life%20Chapters/HKL_0378.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/20250326_CHUBB_ABHK_0078-Edit.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250326_ArtBasel_075.webp', './images/Art%20Basel%20Chubb%20Wishing%20well/Chubb_20250327_ArtBasel_118.webp']
+    },
+    {
+      headline: 'Product\nStrategy +\nLaunch',
+      client: 'STRAATOS — 2022–2025',
+      intro: 'Rebuilding trust in climate data. A two-year journey from a stakeholder gathering in Senegal to a working platform launched at New York Climate Week 2025. The fastest way to build trust in a system is to make the system itself visible.',
+      services: ['Strategy', 'Product', 'UI/UX Design', 'Launch Campaign'],
+      stats: [],
+      body: [
+        { label: 'The platform', text: 'STRAATOS is the "Operating System" of the voluntary carbon market — built on Hedera Guardian, an open-source decentralised infrastructure that anchors every data point to a public ledger, making each claim traceable from the ground to the credit.' },
+        { label: 'What we did', text: 'We led UI/UX design, facilitated workshops in Madrid with regulators and developers, and designed the NYCW booth experience — a phone prop with pain point recordings, a thick stack of PDDs to illustrate manual inefficiencies, and a live platform demo.' }
+      ],
+      images: ['./images/STRAATOS/IMG_5231.webp', './images/STRAATOS/IMG_5215.webp', './images/STRAATOS/IMG_5338.webp', './images/STRAATOS/IMG_5557.webp', './images/STRAATOS/IMG_5613%202.webp', './images/STRAATOS/IMG_5620%202.webp', './images/STRAATOS/IMG_5621%202.webp']
+    },
+    {
+      headline: '2028\nResearch',
+      client: 'SKWAT, Tokyo — January 2023',
+      intro: 'In 2028, the LA Olympics aims to be the first global sports event to use existing structures rather than building new stadiums. SKWAT, a Tokyo-based collective, is a model for how to reimagine space as experiment — a way to revive the city at large.',
+      services: ['Article', 'Research', 'Interview'],
+      stats: [],
+      body: [
+        { label: 'The collective', text: '"Reconstructing things according to the zeitgeist, instead of copy-and-pasting, will lead to new values." SKWAT has been transforming spaces around Tokyo and beyond since the early 2010s — a bookshop run by twelvebooks, a Lemaire store, and the experimental space PARK.' },
+        { label: 'The idea', text: '"It\'s about expressing inclusiveness. Architecture and design can have a visual language that is very intimidating in material choice. We don\'t really touch the base of the space and we use what we have at hand. Materials that are familiar to everyone." — Keisuke Nakamura' }
+      ],
+      images: ['./images/SKWAT0.webp', './images/SKWAT1.webp', './images/SKWAT2.webp', './images/SKWAT3.webp', './images/SKWAT4.webp', './images/SKWAT5.webp', './images/SKWAT6.webp']
+    },
+    {
+      headline: 'Runner\'s\nHigh',
+      client: 'HOKA — Art Basel Hong Kong 2026',
+      intro: 'An immersive installation exploring the psychological and sensory thresholds of endurance. Rooted in the brand\'s ethos of movement as transformation, the work draws from the lived experiences of ultra-marathon runners where reality begins to shift.',
+      services: ['Experiential Design', 'Design', 'Production'],
+      stats: [],
+      body: [
+        { label: 'The Bright Side', text: 'The first environment evokes the external world of the run — expansive, luminous, and exhilarating. It captures sensations of velocity, openness, and elevation, where the body feels light and the landscape unfolds in rhythm with breath and stride.' },
+        { label: 'The Dark Space', text: 'The second environment turns inward. Visitors encounter the mental terrain of endurance: disorientation, repetition, and hallucination. Light fragments, sound distorts, and tactile cues blur the boundary between body and space.' }
+      ],
+      images: ['./images/hoka0.webp', './images/hoka1.webp', './images/hoka2.webp']
+    },
+    {
+      headline: 'Strategy +\nNew Business\nModel',
+      client: 'Van Alen Institute — 2020–21',
+      intro: 'Entering 2020, Van Alen Institute — a 125-year-old heritage organization in architecture and urbanism — wanted to evolve its mission. We helped co-create the strategy, not by telling them where to go, but by shifting mindsets and behaviours.',
+      services: ['Strategy', 'New Business Model', 'Organizational Design'],
+      stats: [],
+      body: [
+        { label: 'The approach', text: 'We took a holistic and adaptive approach centered on co-creation: developing a clear strategy that guides actions ahead, while building confidence through defined pilots that facilitate learning. We focused on what was actionable and applicable — pushing their thinking while ensuring the future was attainable.' },
+        { label: 'The result', text: '"VAI shares its core assets — an interdisciplinary network and deep community-driven knowledge — with historically under-resourced communities to strengthen social infrastructure in the built environment." A set of guiding principles translates this strategy into action: Center with communities. Learn and create tools. Diversify.' }
+      ],
+      images: ['./images/Van Alen/Screenshot 2026-05-21 at 22.47.19.webp']
+    },
+    {
+      headline: 'Experience +\nWorkplace\nStrategy',
+      client: 'AIA — 1 Stubbs Road, 2024',
+      intro: 'AIA — the largest publicly traded life insurance group in Asia-Pacific — set out to transform its workplace into a platform for cultural and operational change. A campaign to drive adoption of the future of AIA\'s culture.',
+      services: ['Experience Strategy', 'Workplace Design', 'Facilitation'],
+      stats: [],
+      body: [
+        { label: 'What we discovered', text: 'Through workshops and ideation, we found strong alignment between executive vision and staff aspirations. Employees want the new building to be outstanding. They want ownership of choices — because choice demonstrates trust. And they want deeper engagement with colleagues and the organization.' },
+        { label: 'What we overcame', text: 'Concerns about returning to the office. Fixed desk models that no longer fit hybrid norms. Unconnected spaces that limit collaboration. The need to embed ESG and D&I into the building\'s touchpoints — not as an afterthought, but as a core expression of a responsible organization.' }
+      ],
+      images: ['./images/AIA/Screenshot 2026-05-21 at 23.18.35.webp', './images/AIA/Screenshot 2026-05-21 at 23.19.06.webp', './images/AIA/Screenshot 2026-05-21 at 23.19.30.webp']
+    },
+    {
+      headline: 'Brand\nExtension\nStrategy',
+      client: 'TSG Entertainment',
+      intro: 'TSG has financed Avatar, Jojo Rabbit, Ford v Ferrari, The Shape of Water, and many others — over US$3 billion across 140 projects. We helped extend key IP beyond the expected, bringing emotional moments from the screen into the hands of fans.',
+      services: ['Brand Extension', 'Narrative Strategy', 'IP Strategy'],
+      stats: [],
+      body: [
+        { label: 'Ron\'s Gone Wrong', text: 'We defined themes, opportunities, and initial ideas based on research. Our strategy led toward developing products that extend the movie\'s narrative beyond the theatre. We proposed 7 merchandise concepts, each designed to bring key emotional moments from the film into the hands of fans.' },
+        { label: 'Lethal Lit', text: 'We focused on bringing Tig Torres to life through narrative extensions. Through desk research, interviews, and co-design sessions, we identified key opportunity spaces: expanding the Lethal Lit universe, building the fan base from the ground up, and driving revenue and user growth.' }
+      ],
+      images: ['./images/TSG/Screenshot 2026-05-21 at 23.20.25.webp', './images/TSG/Screenshot 2026-05-21 at 23.20.52.webp', './images/TSG/Screenshot 2026-05-21 at 23.21.11.webp', './images/TSG/Screenshot 2026-05-21 at 23.24.22.webp']
+    },
+    {
+      headline: 'Corporate\nInnovation',
+      client: 'Explorium, Fung Group — 2019–21',
+      intro: 'Explorium is the Fung Group innovation platform — a collaboration hub empowering communities of innovation in supply chain, retail, and beyond, to co-create the future. A community-driven experiment that ended in Hong Kong in 2021.',
+      services: ['Corporate Innovation', 'Community Building', 'Ecosystem Strategy'],
+      stats: [],
+      body: [
+        { label: 'About', text: 'As an experiment in community-driven corporate innovation, Explorium HK served its purpose as a place to inform, inspire, and facilitate creating new value by engaging a community of champions, innovators, and business leaders for change.' },
+        { label: 'Legacy', text: 'The Explorium community and the spirit of innovating through exploration continues. Many experiments proving the merits of ecosystem thinking were carried out. The open-sourced <a href="https://sharp-cloche-eba.notion.site/Ecosystem-Innovation-Playbook-552c1d1631724a8095a8f4d7eb0c5955" target="_blank" rel="noopener noreferrer">Ecosystem Innovation Playbook</a> remains freely available.' }
+      ],
+      images: ['./images/Explorium/Screenshot 2026-05-20 at 20.51.01.webp']
+    },
+    {
+      headline: 'It\'s The World\nWe Live In',
+      client: '2020 World Survey — Global',
+      intro: '101 responses from 25 countries and territories. A survey exploring how confined pandemic life changed people\'s experiences and feelings — and an open, intimate exhibit in a tong lau apartment on Sun Street in Wan Chai.',
+      services: ['Research', 'Survey Design', 'Community'],
+      stats: [
+        { num: '101', label: 'Respondents' },
+        { num: '25', label: 'Countries' },
+        { num: '60+', label: 'Questions' },
+        { num: '15', label: 'Zoom interviews' }
+      ],
+      body: [],
+      customBody: 'csBodyWorldSurvey',
+      images: ['./images/World Report Survey/Screenshot 2026-05-21 at 23.35.44.webp']
+    }
+  ];
+
+  var headers = Array.from(document.querySelectorAll('.list-projects1'));
+
+  var els = {
+    headline: document.getElementById('csHeadline'),
+    client: document.getElementById('csClient'),
+    intro: document.getElementById('csIntro'),
+    services: document.getElementById('csServices'),
+    stats: document.getElementById('csStats'),
+    textBlocks: document.getElementById('csTextBlocks'),
+    images: document.getElementById('csImages'),
+    prevTitle: document.getElementById('csPrevTitle'),
+    nextTitle: document.getElementById('csNextTitle')
+  };
+
+  var currentId = 0;
+
+  function renderOverlay(id) {
+    id = ((id % projects.length) + projects.length) % projects.length;
+    currentId = id;
+    var p = projects[id];
+
+    els.headline.innerHTML = p.headline.replace(/\n/g, '<br>');
+    els.client.textContent = p.client;
+    els.intro.textContent = p.intro;
+
+    els.services.innerHTML = p.services.map(function (s) {
+      return '<span class="cs-service-tag">' + s + '</span>';
+    }).join('');
+
+    if (p.stats && p.stats.length) {
+      els.stats.style.display = 'flex';
+      els.stats.innerHTML = p.stats.map(function (s) {
+        return '<div class="cs-stat"><p class="cs-stat-num">' + s.num + '</p><p class="cs-stat-label">' + s.label + '</p></div>';
+      }).join('');
+    } else {
+      els.stats.style.display = 'none';
+      els.stats.innerHTML = '';
+    }
+
+    els.textBlocks.innerHTML = '';
+    if (p.customBody) {
+      var tpl = document.getElementById(p.customBody);
+      if (tpl) els.textBlocks.appendChild(tpl.content.cloneNode(true));
+    } else {
+      p.body.forEach(function (b) {
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<p class="cs-text-block-label">' + b.label + '</p><p class="cs-text-block-body">' + b.text + '</p>';
+        els.textBlocks.appendChild(wrap);
+      });
+    }
+
+    els.images.innerHTML = p.images.map(function (src) {
+      return '<img loading="lazy" src="' + src + '" alt="">';
+    }).join('');
+
+    var prev = projects[(id - 1 + projects.length) % projects.length];
+    var next = projects[(id + 1) % projects.length];
+    els.prevTitle.textContent = prev.headline.replace(/\n/g, ' ');
+    els.nextTitle.textContent = next.headline.replace(/\n/g, ' ');
+
+    overlay.scrollTop = 0;
+  }
+
+  function openOverlay(id) {
+    renderOverlay(id);
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeOverlay() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* Called by interaction.js when a .list-projects1 header is clicked */
+  window.openCaseStudy = function (headerEl) {
+    var index = headers.indexOf(headerEl);
+    if (index === -1) index = 0;
+    openOverlay(index);
+  };
+
+  document.getElementById('csBackBtn').addEventListener('click', closeOverlay);
+  document.getElementById('csPrev').addEventListener('click', function () { openOverlay(currentId - 1); });
+  document.getElementById('csNext').addEventListener('click', function () { openOverlay(currentId + 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
+  });
+})();
+</script>
+</body>
+
+<!-- swup + plugins -->
+<script src="https://unpkg.com/swup@4" defer></script>
+<script src="https://unpkg.com/@swup/forms-plugin@2" defer></script>
+<script src="https://unpkg.com/@swup/scroll-plugin@3" defer></script>
+<script src="https://unpkg.com/@swup/head-plugin@2" defer></script>
+
+<script src="interaction.js" defer></script>
+
+</html>
