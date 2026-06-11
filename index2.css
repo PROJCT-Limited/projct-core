@@ -1,0 +1,207 @@
+/* ============================================================
+   index2.css — case-study popup overlay (work2-style)
+   Used only by index2.html. Clicking a .list-projects1 entry
+   opens a full-screen overlay; all gallery images are shown
+   in a right-hand column at their natural aspect ratio.
+   ============================================================ */
+
+.cs-overlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  color: var(--brand-blue, #0e50c8);
+  z-index: 8000;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transform: translateY(100%);
+  transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+  visibility: hidden;
+}
+.cs-overlay.open {
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.cs-back {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px clamp(20px,5vw,64px);
+  background: #fff;
+  border-bottom: 1px solid rgba(14,80,200,0.1);
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-blue, #0e50c8);
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+.cs-back:hover { opacity: 0.6; }
+.cs-back-arrow { font-size: 1rem; }
+
+/* ── Two-column layout: text left, imagery right ── */
+.cs-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px,5vw,80px);
+  padding: clamp(40px,6vh,80px) clamp(20px,5vw,64px);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .cs-layout { grid-template-columns: 1fr; gap: 40px; }
+}
+
+.cs-headline {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: clamp(32px,5vw,64px);
+  font-weight: 300;
+  line-height: 1.1;
+  margin: 0 0 24px;
+  color: var(--brand-blue, #0e50c8);
+}
+.cs-client {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.45;
+  margin: 0 0 20px;
+}
+.cs-intro {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: clamp(15px,1.2vw,18px);
+  line-height: 1.65;
+  color: var(--brand-blue, #0e50c8);
+  margin: 0 0 24px;
+}
+.cs-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: clamp(28px,4vh,48px);
+}
+.cs-service-tag {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid rgba(14,80,200,0.4);
+  padding: 5px 14px;
+  border-radius: 100px;
+  color: rgba(14,80,200,0.7);
+}
+
+/* ── Stat row ── */
+.cs-stat-row {
+  display: flex;
+  gap: clamp(24px,3vw,48px);
+  flex-wrap: wrap;
+  margin-bottom: clamp(28px,4vh,48px);
+  padding: clamp(20px,3vh,32px) 0;
+  border-top: 1px solid rgba(14,80,200,0.12);
+  border-bottom: 1px solid rgba(14,80,200,0.12);
+}
+.cs-stat { flex: 1; min-width: 100px; }
+.cs-stat-num {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: clamp(24px,3vw,40px);
+  font-weight: 300;
+  line-height: 1;
+  margin: 0 0 6px;
+}
+.cs-stat-label {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.72rem;
+  opacity: 0.5;
+  margin: 0;
+}
+
+/* ── Body text blocks ── */
+.cs-text-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px,3.5vh,40px);
+}
+.cs-text-block-label {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.4;
+  margin: 0 0 12px;
+}
+.cs-text-block-body {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: clamp(14px,1.1vw,16px);
+  line-height: 1.7;
+  color: var(--brand-blue, #0e50c8);
+  margin: 0 0 1em;
+}
+.cs-text-block-body:last-child { margin-bottom: 0; }
+.cs-text-block-body b { font-weight: 600; }
+.cs-text-block-body em { font-style: italic; }
+.cs-text-block-body a { color: var(--brand-blue, #0e50c8); text-decoration: underline; }
+
+/* ── Right column: every image shown at its natural aspect ratio ── */
+.cs-col-images {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px,2.5vw,28px);
+}
+.cs-col-images img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
+/* ── Prev / next nav ── */
+.cs-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(24px,4vh,48px) clamp(20px,5vw,64px);
+  border-top: 1px solid rgba(14,80,200,0.12);
+}
+.cs-nav-btn {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  color: var(--brand-blue, #0e50c8);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cs-nav-btn:hover { opacity: 0.6; }
+.cs-nav-next { text-align: right; align-items: flex-end; }
+.cs-nav-title {
+  font-size: clamp(14px,1.5vw,18px);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-top: 4px;
+}
+
+/* ── Survey content (World Survey body) on the white overlay bg ── */
+.cs-overlay .survey-section-head { color: var(--brand-blue, #0e50c8); }
+.cs-overlay .survey-quote {
+  color: rgba(14,80,200,.8);
+  border-left-color: rgba(14,80,200,.4);
+}
+.cs-overlay .survey-callout-stat { color: var(--brand-blue, #0e50c8); }
+.cs-overlay .survey-callout-body { color: rgba(14,80,200,.85); }
+.cs-overlay .survey-callout-sub { color: rgba(14,80,200,.55); }
+.cs-overlay .survey-fig-label {
+  color: rgba(14,80,200,.4);
+  border-top-color: rgba(14,80,200,.15);
+}
