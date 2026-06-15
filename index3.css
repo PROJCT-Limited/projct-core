@@ -1,0 +1,339 @@
+/* ============================================================
+   index3.css — editorial layout
+   Used only by index3.html. Each case study becomes a sticky
+   meta rail (left, narrow) + a single storytelling column
+   (right) where copy and Brand Asset imagery flow together.
+   ============================================================ */
+
+/* ── Row shape: meta rail + story column ── */
+.editorial .index-item {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: clamp(28px, 5vw, 72px);
+}
+
+/* ── Meta rail (left) ── */
+.editorial .index-item-meta {
+  flex: 0 0 clamp(140px, 16vw, 220px);
+  max-width: clamp(140px, 16vw, 220px);
+}
+.editorial .meta-sticky {
+  position: sticky;
+  top: calc(var(--header-h, 80px) + 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 60px;
+}
+.editorial .meta-kicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.editorial .meta-role,
+.editorial .meta-year {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  margin: 0;
+}
+.editorial .meta-year {
+  opacity: 0.75;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.22);
+}
+.editorial .meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 4px;
+}
+.editorial .meta-tag {
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 100px;
+  padding: 3px 10px;
+  opacity: 0.75;
+}
+
+/* ── Story column (right) — text + images flow together ── */
+.editorial .index-item.no-images .index-item-text {
+  max-width: none;
+  flex: 1 1 auto;
+  margin-left: 0;
+  padding: 60px 0 40px;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  max-height: none;
+  overflow: visible;
+}
+
+.editorial .index-item-text > p { margin: 0 0 1.4em; }
+
+.editorial .index-item-text ul {
+  margin: 0 0 1.4em;
+  padding-left: 1.2em;
+}
+.editorial .index-item-text ul li {
+  margin-bottom: 0.6em;
+}
+.editorial .index-item-text ul li:last-child { margin-bottom: 0; }
+
+/* ── Inline editorial imagery ── */
+.editorial .cs-figure {
+  margin: clamp(32px, 5vw, 64px) 0;
+}
+.editorial .cs-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+}
+.editorial .cs-figure--lead {
+  margin-top: clamp(8px, 2vw, 24px);
+}
+.editorial .cs-figure figcaption {
+  margin-top: 10px;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  opacity: 0.55;
+}
+
+/* Two-up diptych for case studies with more imagery */
+.editorial .cs-figure-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(12px, 2.5vw, 24px);
+  margin: clamp(32px, 5vw, 64px) 0;
+}
+.editorial .cs-figure-pair img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  display: block;
+  border-radius: 2px;
+}
+
+/* ── Headline cues inside the story column ── */
+.editorial .index-item-text .highlighted-text {
+  display: block;
+  font-size: clamp(1.15em, 2vw, 1.45em);
+  line-height: 1.35;
+  margin: 0 0 0.6em;
+}
+
+/* ── Mobile: stack meta above story, drop sticky ── */
+@media (max-width: 900px) {
+  .editorial .index-item {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .editorial .index-item-meta {
+    flex: 0 0 auto;
+    max-width: none;
+    width: 100%;
+  }
+  .editorial .meta-sticky {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 22px;
+    padding: 0 0 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+  .editorial .meta-year {
+    padding-top: 0;
+    border-top: none;
+  }
+  .editorial .index-item.no-images .index-item-text {
+    padding: 0 0 24px;
+  }
+  .editorial .cs-figure-pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   Case-study overlay — full-screen white popup
+   Reuses the .editorial layout (meta rail left, story right)
+   on top of a white background with blue text/borders.
+   ============================================================ */
+.cs-overlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  color: #0e50c8;
+  z-index: 8000;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transform: translateY(100%);
+  transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+  visibility: hidden;
+}
+.cs-overlay.open {
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.cs-back {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px clamp(20px, 5vw, 64px);
+  background: #fff;
+  border-bottom: 1px solid rgba(14,80,200,0.1);
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0e50c8;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+.cs-back:hover { opacity: 0.6; }
+.cs-back-arrow { font-size: 1rem; }
+
+.cs-overlay-body {
+  padding: clamp(40px, 6vh, 80px) clamp(20px, 5vw, 64px) 0;
+}
+
+/* Recolour + de-animate the cloned .index-item for the white overlay */
+.cs-overlay .index-item {
+  background-color: transparent;
+  color: #0e50c8;
+  max-height: none;
+  opacity: 1;
+  overflow: visible;
+  transition: none;
+}
+.cs-overlay .meta-sticky {
+  top: 64px;
+  padding-top: 0;
+}
+.cs-overlay .meta-year { border-top-color: rgba(14,80,200,0.22); }
+.cs-overlay .meta-tag { border-color: rgba(14,80,200,0.35); }
+.cs-overlay .index-item-text a { color: #0e50c8; }
+
+/* Narrower story column, pulled to the right edge as in index2 */
+.cs-overlay .index-item.no-images .index-item-text {
+  max-width: 680px;
+  margin-left: auto;
+}
+
+/* ── Feature layout (overlay only): wide left column with
+   headline / intro / tags, matching index2's cs-layout split ── */
+.editorial .meta-feature { display: none; }
+
+.cs-overlay .index-item.cs-feature {
+  gap: clamp(40px, 6vw, 96px);
+}
+.cs-overlay .index-item.cs-feature .index-item-meta {
+  flex: 0 0 44%;
+  max-width: 44%;
+}
+.cs-overlay .index-item.cs-feature .index-item-text {
+  max-width: none;
+  margin-left: 0;
+  flex: 1 1 auto;
+}
+.cs-overlay .index-item.cs-feature .meta-kicker,
+.cs-overlay .index-item.cs-feature .meta-role,
+.cs-overlay .index-item.cs-feature .meta-year {
+  display: none;
+}
+.cs-overlay .meta-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.cs-overlay .meta-headline {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: clamp(32px, 4.5vw, 56px);
+  font-weight: 300;
+  line-height: 1.1;
+  margin: 0;
+  color: #0e50c8;
+}
+.cs-overlay .meta-client {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.45;
+  margin: 0;
+}
+.cs-overlay .meta-intro {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: clamp(14px, 1.1vw, 16px);
+  line-height: 1.65;
+  margin: 0;
+}
+.cs-overlay .meta-feature .meta-tags {
+  padding-top: 4px;
+}
+
+/* Survey content (World Survey body) on the white overlay */
+.cs-overlay .survey-section-head,
+.cs-overlay .survey-callout-stat,
+.cs-overlay .survey-stat-num { color: #0e50c8; }
+.cs-overlay .survey-callout-body { color: rgba(14,80,200,.85); }
+.cs-overlay .survey-callout-sub,
+.cs-overlay .survey-stat-label { color: rgba(14,80,200,.55); }
+.cs-overlay .survey-quote { border-left-color: rgba(14,80,200,.4); color: rgba(14,80,200,.8); }
+.cs-overlay .survey-stat { border-top-color: rgba(14,80,200,.3); }
+.cs-overlay .survey-fig-label { color: rgba(14,80,200,.4); border-top-color: rgba(14,80,200,.15); }
+
+/* Prev / next nav */
+.cs-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: clamp(24px, 4vh, 48px) clamp(20px, 5vw, 64px);
+  margin-top: clamp(40px, 6vh, 80px);
+  border-top: 1px solid rgba(14,80,200,0.12);
+}
+.cs-nav-btn {
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  color: #0e50c8;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cs-nav-btn:hover { opacity: 0.6; }
+.cs-nav-next { text-align: right; align-items: flex-end; }
+.cs-nav-title {
+  font-size: clamp(14px, 1.5vw, 18px);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-top: 4px;
+  max-width: 320px;
+}
+
+@media (max-width: 900px) {
+  .cs-overlay .meta-sticky { border-bottom-color: rgba(14,80,200,0.2); }
+  .cs-nav-title { max-width: 200px; }
+
+  .cs-overlay .index-item.cs-feature .index-item-meta {
+    flex: 0 0 auto;
+    max-width: none;
+  }
+  .cs-overlay .meta-headline { font-size: clamp(32px, 10vw, 48px); }
+}
