@@ -238,13 +238,20 @@
   gap: clamp(40px, 6vw, 96px);
 }
 .cs-overlay .index-item.cs-feature .index-item-meta {
-  flex: 0 0 44%;
-  max-width: 44%;
+  flex: 0 0 34%;
+  max-width: 34%;
 }
 .cs-overlay .index-item.cs-feature .index-item-text {
   max-width: none;
   margin-left: 0;
   flex: 1 1 auto;
+}
+
+/* Reference-sized imagery, inset within the feature layout's body text area */
+.cs-overlay .index-item.cs-feature .index-item-text .cs-figure,
+.cs-overlay .index-item.cs-feature .index-item-text .cs-figure-pair {
+  max-width: 60%;
+  margin-left: 14%;
 }
 .cs-overlay .index-item.cs-feature .meta-kicker,
 .cs-overlay .index-item.cs-feature .meta-role,
@@ -258,7 +265,7 @@
 }
 .cs-overlay .meta-headline {
   font-family: "Red Hat Display", sans-serif;
-  font-size: clamp(32px, 4.5vw, 56px);
+  font-size: clamp(32px, 4vw, 56px);
   font-weight: 300;
   line-height: 1.1;
   margin: 0;
