@@ -60,6 +60,13 @@
 }
 
 /* ── Story column (right) — text + images flow together ── */
+.editorial .index-item-text {
+  padding-top: 60px;
+  padding-right: 0;
+  max-width: none;
+  margin-left: 0;
+}
+
 .editorial .index-item.no-images .index-item-text {
   max-width: none;
   flex: 1 1 auto;
