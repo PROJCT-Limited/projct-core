@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npx esbuild node_modules/@sanity/visual-editing/dist/index.js --bundle --format=esm --outfile=sanity-visual-editing.bundle.js --minify",
+  "outputDirectory": ".",
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    }
+  ]
+}

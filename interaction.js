@@ -25,23 +25,51 @@ function wirePageToggles() {
 
   on(document, 'click', '.list-projects1', function () {
     const next = this.nextElementSibling;
-    if (!next || !next.classList.contains('index-item')) return;
 
-    // index2.html: open the full-screen case-study overlay instead of expanding inline
+    // index3.html editorial: mini-preview step — check this BEFORE openCaseStudy
+    if (next && next.classList.contains('mini-preview')) {
+      const isOpening = next.classList.contains('is-hidden');
+      document.querySelectorAll('.mini-preview:not(.is-hidden)').forEach(p => {
+        if (p !== next) p.classList.add('is-hidden');
+      });
+      document.querySelectorAll('.index-item:not(.is-hidden)').forEach(item => {
+        item.classList.add('is-hidden');
+      });
+      next.classList.toggle('is-hidden', !isOpening);
+      return;
+    }
+
+    // index2.html / other pages: open full-screen overlay if available
     if (typeof window.openCaseStudy === 'function') {
       window.openCaseStudy(this);
       return;
     }
 
-    const isOpening = next.classList.contains('is-hidden'); // current state before toggle
-  
-    // Close ALL other items
+    // Fallback: toggle index-item inline
+    if (!next || !next.classList.contains('index-item')) return;
+    const isOpening = next.classList.contains('is-hidden');
     document.querySelectorAll('.index-item:not(.is-hidden)').forEach(openItem => {
       if (openItem !== next) openItem.classList.add('is-hidden');
     });
-  
-    // Toggle the clicked one (open if it was closed; close if it was open)
     next.classList.toggle('is-hidden', !isOpening);
+  });
+
+  // "Read more" → close preview, open full overlay (or inline fallback)
+  on(document, 'click', '.read-more', function () {
+    const preview = this.closest('.mini-preview');
+    if (!preview) return;
+    preview.classList.add('is-hidden');
+    const header = preview.previousElementSibling;
+    if (typeof window.openCaseStudy === 'function' && header && header.classList.contains('list-projects1')) {
+      window.openCaseStudy(header);
+      return;
+    }
+    const item = preview.nextElementSibling;
+    if (!item || !item.classList.contains('index-item')) return;
+    document.querySelectorAll('.index-item:not(.is-hidden)').forEach(openItem => {
+      if (openItem !== item) openItem.classList.add('is-hidden');
+    });
+    item.classList.remove('is-hidden');
   });
   
 
@@ -213,8 +241,8 @@ document.addEventListener('swup:contentReplaced', () => {
     const btnH  = document.getElementById('btn-hand');
     const btnM  = document.getElementById('btn-mouse');
 
-    function openTip(){ tip.classList.add('is-open'); tip.setAttribute('aria-hidden','false'); }
-    function closeTip(){ tip.classList.remove('is-open'); tip.setAttribute('aria-hidden','true'); }
+    function openTip(){ if (!tip) return; tip.classList.add('is-open'); tip.setAttribute('aria-hidden','false'); }
+    function closeTip(){ if (!tip) return; tip.classList.remove('is-open'); tip.setAttribute('aria-hidden','true'); }
 
     // Clicking the hand button: enable hand control + show quick guide the first time
     let shownOnce = false;
@@ -284,6 +312,7 @@ document.addEventListener('swup:contentReplaced', () => {
 
   function applyNoImageMode() {
     document.querySelectorAll('.index-item').forEach(item => {
+      if (item.classList.contains('cs-feature')) return;
       const wrapper = item.querySelector('.index-item-images');
       if (!wrapper) {
         item.classList.add('no-images');
@@ -315,6 +344,9 @@ document.addEventListener('swup:contentReplaced', () => {
   document.addEventListener('swup:contentReplaced', () => {
     boot();               // apply again after Swup swaps content
   });
+  document.addEventListener('sanity:loaded', () => {
+    boot();               // re-init after Sanity replaces case study DOM
+  });
   
 
 
@@ -342,7 +374,10 @@ document.addEventListener('swup:contentReplaced', () => {
     if (!bar) return;
 
     const buttons  = Array.from(bar.querySelectorAll(".filter-item"));
-    const headers  = Array.from(document.querySelectorAll(".list-projects1"));
+    let headers  = Array.from(document.querySelectorAll(".list-projects1"));
+    document.addEventListener("sanity:loaded", () => {
+      headers = Array.from(document.querySelectorAll(".list-projects1"));
+    });
 
     function clearHighlight() {
       headers.forEach(h => h.classList.remove("is-highlight"));
