@@ -1,36 +1,56 @@
+import crypto from 'crypto'
 import { createClient } from '@sanity/client'
 
 const PROJECT_ID = 'onhood8r'
 const DATASET = 'production'
+const MAX_AGE_MS = 3600 * 1000
+
+function parseCookies(header) {
+  var cookies = {}
+  ;(header || '').split(';').forEach(function (c) {
+    var parts = c.trim().split('=')
+    if (parts.length >= 2) cookies[parts[0]] = parts.slice(1).join('=')
+  })
+  return cookies
+}
+
+function verifyCookie(value, token) {
+  if (!value || !value.includes('.')) return false
+  var parts = value.split('.')
+  var ts = parts[0]
+  var sig = parts[1]
+  var expected = crypto.createHmac('sha256', token).update(ts).digest('hex')
+  if (sig !== expected) return false
+  if (Date.now() - parseInt(ts, 10) > MAX_AGE_MS) return false
+  return true
+}
 
 export default async function handler(req, res) {
   if (!process.env.SANITY_API_READ_TOKEN) {
     return res.status(500).json({ message: 'Server misconfigured' })
   }
 
-  const referer = req.headers.referer || req.headers.origin || ''
-  const isLocal = referer.includes('localhost')
-  const isVercelPreview = referer.includes(process.env.VERCEL_URL || '__none__')
-  if (!isLocal && !isVercelPreview) {
-    return res.status(401).json({ message: 'Preview mode not enabled' })
+  var cookies = parseCookies(req.headers.cookie)
+  if (!verifyCookie(cookies.__sanity_preview, process.env.SANITY_API_READ_TOKEN)) {
+    return res.status(401).json({ message: 'Invalid or missing preview cookie' })
   }
 
-  const query = req.query.query
+  var query = req.query.query
   if (!query) {
     return res.status(400).json({ message: 'Missing query parameter' })
   }
 
-  const params = {}
-  for (const [key, val] of Object.entries(req.query)) {
+  var params = {}
+  for (var key of Object.keys(req.query)) {
     if (key.startsWith('$')) {
-      try { params[key.slice(1)] = JSON.parse(val) } catch {}
+      try { params[key.slice(1)] = JSON.parse(req.query[key]) } catch {}
     }
   }
 
   try {
-    const studioUrl = process.env.SANITY_STUDIO_URL || 'https://projct-website.sanity.studio'
+    var studioUrl = process.env.SANITY_STUDIO_URL || 'https://projct-website.sanity.studio'
 
-    const client = createClient({
+    var client = createClient({
       projectId: PROJECT_ID,
       dataset: DATASET,
       apiVersion: '2025-06-01',
@@ -38,11 +58,11 @@ export default async function handler(req, res) {
       token: process.env.SANITY_API_READ_TOKEN,
       stega: {
         enabled: true,
-        studioUrl,
+        studioUrl: studioUrl,
       },
     })
 
-    const result = await client.fetch(query, params, {
+    var result = await client.fetch(query, params, {
       perspective: 'drafts',
     })
 

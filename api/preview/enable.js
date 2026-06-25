@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import { createClient } from '@sanity/client'
 import { validatePreviewUrl } from '@sanity/preview-url-secret'
 
@@ -12,6 +13,12 @@ const client = createClient({
   token: process.env.SANITY_API_READ_TOKEN,
 })
 
+function signCookie(token) {
+  var ts = Date.now().toString()
+  var sig = crypto.createHmac('sha256', token).update(ts).digest('hex')
+  return ts + '.' + sig
+}
+
 export default async function handler(req, res) {
   if (!process.env.SANITY_API_READ_TOKEN) {
     return res.status(500).json({ message: 'Server misconfigured' })
@@ -24,18 +31,14 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: 'Invalid preview request' })
     }
 
-    const isLocalhost = (req.headers.host || '').startsWith('localhost')
-    const cookieOpts = isLocalhost
-      ? 'Path=/; HttpOnly; SameSite=Lax; Max-Age=3600'
-      : 'Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600'
-    const flagOpts = isLocalhost
-      ? 'Path=/; SameSite=Lax; Max-Age=3600'
-      : 'Path=/; Secure; SameSite=None; Max-Age=3600'
+    var signed = signCookie(process.env.SANITY_API_READ_TOKEN)
 
-    res.setHeader('Set-Cookie', [
-      `__sanity_preview=1; ${cookieOpts}`,
-      `sanity_preview_mode=1; ${flagOpts}`,
-    ])
+    var isLocalhost = (req.headers.host || '').startsWith('localhost')
+    var cookieAttrs = isLocalhost
+      ? 'Path=/; HttpOnly; SameSite=Lax; Max-Age=3600'
+      : 'Path=/; HttpOnly; Secure; SameSite=None; Partitioned; Max-Age=3600'
+
+    res.setHeader('Set-Cookie', `__sanity_preview=${signed}; ${cookieAttrs}`)
 
     var location = redirectTo || '/index3.html'
     if (location === '/' || location.startsWith('/?')) {
