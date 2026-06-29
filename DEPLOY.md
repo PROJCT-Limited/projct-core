@@ -1,95 +1,133 @@
 # PROJCT Site — Deployment & Operations
 
-## Architecture
+## Architecture (current)
 
-| Component | Host | Role |
+| Component | Host | URL |
 |---|---|---|
-| Public site | GitHub Pages | Serves published content from Sanity CDN. No token. |
-| Preview site + API | Vercel | Preview proxy + visual editing for logged-in editors only. Token in env vars. |
-| Sanity Studio | Vercel (or sanity.studio) | Content editor. Deployed via `npx sanity deploy` or Vercel. |
-| Content Lake | Sanity (`onhood8r` / `production`) | Source of truth for all case study content. |
+| Public site | GitHub Pages | `https://projct-limited.github.io/projct-core/` |
+| Sanity Studio | Sanity hosting | `https://projct-website.sanity.studio` |
+| Content Lake | Sanity | Project `onhood8r`, dataset `production` |
 
-One push to `main` deploys both GitHub Pages and Vercel from the same commit.
-
-## Version pair (keep aligned)
-
-| Package | Pinned version | Comlink protocol |
-|---|---|---|
-| `sanity` (Studio runtime) | 6.2.0 (auto-updates) | `@sanity/comlink@4.x`, `@sanity/presentation-comlink@2.x` |
-| `@sanity/visual-editing` | **5.4.4** (pinned in `package.json`) | `@sanity/comlink@^4.0.1`, `@sanity/presentation-comlink@^2.1.0` |
-
-The hosted Studio runtime auto-updates. If a future runtime ships a new comlink
-major, `@sanity/visual-editing` will need re-aligning: update the pin in
-`package.json`, run `npm install`, and Vercel rebuilds the bundle on next deploy.
-
-## Vercel setup
-
-1. Import the GitHub repo in Vercel. Root directory: `.` Framework: Other.
-2. Vercel auto-detects `vercel.json` (builds the visual-editing bundle) and the
-   `api/` directory (deploys as serverless functions).
-3. Add environment variables in the Vercel dashboard:
-
-| Variable | Value | Notes |
-|---|---|---|
-| `SANITY_API_READ_TOKEN` | A Viewer (read-only) token from sanity.io/manage | Never a write token |
-| `SANITY_STUDIO_URL` | The deployed Studio URL, e.g. `https://projct-website.sanity.studio` | Used by stega to build intent links |
-
-4. Note the Vercel deployment URL (e.g. `https://projct-preview.vercel.app`).
-5. Set `SANITY_STUDIO_PREVIEW_ORIGIN` in the Studio's deployment to this URL.
-
-## Preview mode — how it works and why
-
-The Presentation tool (in the Studio) loads the Vercel preview site in an iframe.
-
-1. Studio navigates iframe to `/api/preview/enable?sanity-preview-secret=...&sanity-preview-pathname=/index3.html&sanity-preview-perspective=drafts`
-2. The enable endpoint validates the secret against the Sanity dataset, sets cookies, redirects to `/index3.html?sanity-preview-perspective=drafts`
-3. `sanity-client.js` detects the URL parameter (NOT the cookie — cookies are blocked in cross-origin iframes) and switches to the preview fetch path
-4. The preview path fetches through `/api/preview/query`, which adds the token and `perspective: drafts` server-side, and returns stega-encoded content
-5. `@sanity/visual-editing` decodes stega characters in the DOM and renders click-to-edit overlays
-
-The token never reaches the browser. The public GitHub Pages site never has
-the URL parameter, so `IS_PREVIEW` is always false and the CDN path runs.
-
-### Cross-site cookie note
-
-On `vercel.app` URLs, the Studio and preview site are cross-site (vercel.app
-is on the Public Suffix List). Third-party cookies do not work. Mode detection
-uses the URL parameter instead. If you move to custom subdomains of `projct.co`
-(e.g. `studio.projct.co` and `preview.projct.co`), they become same-site and
-cookies work normally.
+The public site fetches **published** content from the Sanity CDN API in the
+browser. No token, no server, no build step. Editors use the Studio to create
+and edit case studies; clicking Publish makes content appear on the public site
+on the next page load.
 
 ## CORS origins
 
-Add these in the Sanity dashboard (sanity.io/manage → project → API → CORS):
+Add these in **sanity.io/manage → project → API → CORS origins**:
 
-| Origin | Credentials | Purpose |
+| Origin | Credentials | Why |
 |---|---|---|
-| `https://<your-github-pages-domain>` | No | Public site CDN reads |
-| `https://projct.co` | No | Public site (if custom domain) |
-| `https://www.projct.co` | No | Public site (www) |
-| `https://<vercel-preview>.vercel.app` | Yes | Preview proxy + Studio iframe |
-| `http://localhost:8080` | No | Local dev |
-| `http://localhost:3333` | Yes | Local Studio |
+| `https://projct-limited.github.io` | No | Public site reads from CDN |
+| `http://localhost:8080` | No | Local development |
 | `http://localhost:5500` | No | VS Code Live Server |
+
+The Studio at `projct-website.sanity.studio` does NOT need a CORS entry — it
+communicates with the Content Lake via its own authenticated session, not via
+browser CORS.
 
 ## Adding a new case study
 
-1. Open the Studio → Structure → Case Study → Create new
-2. Fill in the header fields: title, headline (use `\n` for line breaks), category eyebrow, year, standfirst, tags, kicker, role
-3. Upload a hero image with alt text
-4. Write the body using the Portable Text editor: paragraphs, h3 subheadings, images, image pairs, pull quotes, bullet lists
-5. Set the filter category (Case Studies, Articles, Research, Practice)
-6. Set orderRank to control position in the index
-7. Click Publish — the case study appears on the public site on next page load, no deploy needed
+1. Open `https://projct-website.sanity.studio` and log in
+2. Click **Structure** → the **+** button → **Case Study**
+3. Fill in the header fields:
+   - **Title**: the index list title, e.g. "Community Activation | Lightbox Gallery"
+   - **Headline**: display headline with `\n` for line breaks, e.g. "Community\nActivation"
+   - **Category**: client eyebrow, e.g. "Lightbox Gallery — 2025"
+   - **Year**, **Standfirst**, **Tags**, **Kicker**, **Role**
+4. Upload a **Hero Image** with alt text
+5. Write the **Body** using the Portable Text editor:
+   paragraphs, h3 subheadings, images, image pairs, pull quotes, bullet lists
+6. Set **Filter Category** (Case Studies, Articles, Research, Practice)
+7. Set **Order Rank** (lower numbers appear first)
+8. Click **Publish**
+
+The case study appears on the public site on the next page load. No commit or
+deploy needed.
+
+## Deploying the Studio
+
+```bash
+cd nextjs-projct-website/studio-projct-website
+npx sanity deploy --yes
+```
+
+This deploys to `https://projct-website.sanity.studio`. The hosted runtime
+auto-updates (currently sanity@6.2.0).
 
 ## Local development
 
 ```bash
-# Start the preview dev server (static files + API functions)
+# Serve the site locally
+python3 -m http.server 8080
+# or with preview API functions:
 node dev-server.mjs 8080
 
-# Start the Studio
+# Run the Studio locally
 cd nextjs-projct-website/studio-projct-website && npx sanity dev --port 3333
 ```
 
-The dev server reads `SANITY_API_READ_TOKEN` from `.env.local` in the repo root.
+---
+
+## Re-enabling draft preview (dormant)
+
+The codebase includes a Vercel preview proxy and Presentation tool integration
+that are currently disabled. To re-enable live draft preview with click-to-edit:
+
+### What's already committed (dormant)
+
+- `api/preview/enable.js` — validates preview secret, sets HMAC-signed httpOnly cookie
+- `api/preview/disable.js` — clears preview cookie
+- `api/preview/query.js` — GROQ proxy (adds token + stega + drafts perspective)
+- `sanity-client.js` — preview branch gated on `?sanity-preview-perspective` URL param
+- `@sanity/visual-editing@5.4.4` pinned in `package.json` (comlink v4, matches Studio runtime)
+- `vercel.json` — builds the visual-editing bundle on Vercel deploy
+- `presentation/resolve.ts` — document locations for Presentation tool
+
+### Steps to activate
+
+1. **Deploy preview site to Vercel**: import the repo, root directory `.`,
+   framework "Other". Add env var `SANITY_API_READ_TOKEN` (Viewer token).
+
+2. **Set up same-site subdomains** (recommended for reliable cookie auth):
+   - `preview.projct.co` → CNAME to Vercel (DNS only / grey cloud in Cloudflare)
+   - `studio.projct.co` → optional alias for the Studio
+
+3. **Re-enable Presentation tool** in `sanity.config.ts`:
+   ```ts
+   import {presentationTool} from 'sanity/presentation'
+   import {resolve} from './presentation/resolve'
+
+   // Add to plugins array:
+   presentationTool({
+     resolve,
+     previewUrl: {
+       origin: 'https://preview.projct.co',
+       preview: '/index3.html',
+       previewMode: { enable: '/api/preview/enable' },
+     },
+   }),
+   ```
+
+4. **Add CORS origin**: `https://preview.projct.co` with credentials in sanity.io/manage.
+
+5. **Redeploy Studio**: `npx sanity deploy --yes`
+
+### Version pair (keep aligned)
+
+| Package | Version | Comlink |
+|---|---|---|
+| `sanity` (Studio runtime) | 6.2.0 (auto-updates) | `@sanity/comlink@4.x` |
+| `@sanity/visual-editing` | 5.4.4 (pinned) | `@sanity/comlink@^4.0.1` |
+
+If the Studio runtime auto-updates to a new comlink major, update the
+`@sanity/visual-editing` pin in `package.json` to match and redeploy.
+
+### Cookie auth model
+
+The preview proxy uses HMAC-SHA256 signed cookies (not Referer headers):
+- `enable.js` signs `timestamp` with `HMAC(timestamp, SANITY_API_READ_TOKEN)`
+- `query.js` verifies the signature and rejects expired cookies (1h TTL)
+- Cookie: `HttpOnly; Secure; SameSite=Lax` (works because `studio.projct.co`
+  and `preview.projct.co` are same-site)
