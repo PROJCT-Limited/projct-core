@@ -89,15 +89,45 @@
 }
 .editorial .index-item-text ul li:last-child { margin-bottom: 0; }
 
-/* ── Mini-preview: brief teaser shown on title click ── */
-.editorial .mini-preview {
-  padding: 16px 0 24px;
+/* ── List row: title left, year right ── */
+.editorial .list-projects1 {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.editorial .list-title {
+  flex: 1;
+  min-width: 0;
+}
+.editorial .list-year {
+  flex-shrink: 0;
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+  padding-left: 24px;
+}
+
+/* ── Mini-preview: expanded panel with image ── */
+.editorial .mini-preview {
+  padding: 20px 0 32px;
+  display: flex;
+  flex-direction: row;
   align-items: flex-start;
-  gap: 14px;
+  gap: 32px;
 }
 .editorial .mini-preview.is-hidden { display: none; }
+.editorial .preview-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.editorial .preview-content .mini-preview-title {
+  margin: 0;
+  padding: 0;
+}
 .editorial .mini-preview-text {
   font-family: "Red Hat Display", sans-serif;
   font-size: 0.82rem;
@@ -106,6 +136,25 @@
   opacity: 0.8;
   margin: 0;
   max-width: 560px;
+}
+.editorial .preview-image {
+  flex: 0 0 auto;
+  width: clamp(200px, 30vw, 360px);
+  opacity: 0;
+  animation: previewFadeIn 0.5s ease-out 0.15s forwards;
+}
+.editorial .preview-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+@keyframes previewFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 600px) {
+  .editorial .mini-preview { flex-direction: column; }
+  .editorial .preview-image { width: 100%; }
 }
 .editorial .read-more {
   position: relative;

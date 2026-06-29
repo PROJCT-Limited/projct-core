@@ -231,8 +231,19 @@
       '</figure>';
   }
 
+  function renderPreviewImage(cs) {
+    if (!cs.heroImage) return '';
+    var src = imageUrl(cs.heroImage, {w: 600});
+    var srcsetStr = imageSrcset(cs.heroImage, [300, 600, 900]);
+    var alt = escapeAttr(cs.heroImage.alt || cs.title);
+    return '<div class="preview-image">' +
+      '<img loading="lazy" src="' + src + '" srcset="' + srcsetStr + '" sizes="(max-width: 768px) 100vw, 320px" alt="' + alt + '">' +
+      '</div>';
+  }
+
   function renderCaseStudyListItem(cs) {
     var dataTag = escapeAttr(cs.filterCategory || '');
+    var yearText = escapeHtml(cs.year || '');
     var tagsHtml = (cs.tags || []).map(function (t) {
       return '<span class="meta-tag">' + escapeHtml(t) + '</span>';
     }).join('');
@@ -241,10 +252,20 @@
       .replace(/\n/g, '<br>');
 
     return '<hr>' +
-      '<p class="list-projects1" data-tag="' + dataTag + '">' + escapeHtml(cs.title) + '</p>' +
+      '<p class="list-projects1" data-tag="' + dataTag + '">' +
+        '<span class="list-title">' + escapeHtml(cs.title) + '</span>' +
+        '<span class="list-year">' + yearText + '</span>' +
+      '</p>' +
       '<div class="mini-preview is-hidden">' +
-        '<p class="mini-preview-text">' + escapeHtml(cs.standfirst || '') + '</p>' +
-        '<button class="read-more">Read more</button>' +
+        '<div class="preview-content">' +
+          '<p class="list-projects1 mini-preview-title" data-tag="' + dataTag + '">' +
+            '<span class="list-title">' + escapeHtml(cs.title) + '</span>' +
+            '<span class="list-year">' + yearText + '</span>' +
+          '</p>' +
+          '<p class="mini-preview-text">' + escapeHtml(cs.standfirst || '') + '</p>' +
+          '<button class="read-more">Read More</button>' +
+        '</div>' +
+        renderPreviewImage(cs) +
       '</div>' +
       '<div class="index-item is-hidden cs-feature">' +
         '<div class="index-item-meta">' +
