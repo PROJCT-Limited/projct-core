@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     var isLocalhost = (req.headers.host || '').startsWith('localhost')
     var cookieAttrs = isLocalhost
       ? 'Path=/; HttpOnly; SameSite=Lax; Max-Age=3600'
-      : 'Path=/; HttpOnly; Secure; SameSite=None; Partitioned; Max-Age=3600'
+      : 'Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=3600'
 
     res.setHeader('Set-Cookie', `__sanity_preview=${signed}; ${cookieAttrs}`)
 

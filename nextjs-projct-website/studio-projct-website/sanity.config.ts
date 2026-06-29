@@ -6,7 +6,7 @@ import {schemaTypes} from './schemaTypes'
 import {resolve} from './presentation/resolve'
 
 const previewOrigin =
-  process.env.SANITY_STUDIO_PREVIEW_ORIGIN || 'http://localhost:8080'
+  process.env.SANITY_STUDIO_PREVIEW_ORIGIN || 'https://preview.projct.co'
 
 export default defineConfig({
   name: 'default',

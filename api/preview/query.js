@@ -48,7 +48,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    var studioUrl = process.env.SANITY_STUDIO_URL || 'https://projct-website.sanity.studio'
+    var studioUrl = process.env.SANITY_STUDIO_URL || 'https://studio.projct.co'
 
     var client = createClient({
       projectId: PROJECT_ID,
