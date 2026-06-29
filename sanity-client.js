@@ -19,10 +19,26 @@
   // ── Presentation mode: detect Studio iframe ──
   var IS_PREVIEW = window.parent !== window;
 
+  var _liveStore = null;
+
   if (IS_PREVIEW) {
     import('./sanity-visual-editing.bundle.js')
       .then(function (mod) {
         mod.enableVisualEditing();
+      })
+      .catch(function () {});
+
+    import('./sanity-live.bundle.js')
+      .then(function (mod) {
+        var client = mod.createClient({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          apiVersion: API_VERSION,
+          useCdn: true,
+          stega: { enabled: true, studioUrl: STUDIO_URL },
+        });
+        _liveStore = mod.createQueryStore({ client: client, ssr: false });
+        _liveStore.enableLiveMode();
       })
       .catch(function () {});
   }
@@ -47,21 +63,36 @@
       .then(function (data) { return data.result; });
   }
 
-  function groqFetchStega(query, params) {
-    return import('./sanity-stega-client.bundle.js').then(function (mod) {
-      var client = mod.createClient({
-        projectId: PROJECT_ID,
-        dataset: DATASET,
-        apiVersion: API_VERSION,
-        useCdn: true,
-        stega: { enabled: true, studioUrl: STUDIO_URL },
+  function groqFetchLive(query, params) {
+    if (!_liveStore) {
+      return import('./sanity-live.bundle.js').then(function (mod) {
+        var client = mod.createClient({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          apiVersion: API_VERSION,
+          useCdn: true,
+          stega: { enabled: true, studioUrl: STUDIO_URL },
+        });
+        return client.fetch(query, params || {});
       });
-      return client.fetch(query, params || {});
+    }
+
+    return new Promise(function (resolve) {
+      var fetcher = _liveStore.createFetcherStore({
+        query: query,
+        params: params || {},
+      });
+      var unsub = fetcher.subscribe(function (snapshot) {
+        if (!snapshot.loading && snapshot.data) {
+          unsub();
+          resolve(snapshot.data);
+        }
+      });
     });
   }
 
   function groqFetch(query, params) {
-    return IS_PREVIEW ? groqFetchStega(query, params) : groqFetchPublished(query, params);
+    return IS_PREVIEW ? groqFetchLive(query, params) : groqFetchPublished(query, params);
   }
 
   // ── Image URL builder ──
@@ -330,6 +361,35 @@
 
   // ── Boot ──
 
+  function renderCaseStudies(container, caseStudies) {
+    var children = Array.from(container.children);
+    children.forEach(function (child) {
+      if (child.classList.contains('list-projects1') ||
+          child.classList.contains('mini-preview') ||
+          child.classList.contains('index-item') ||
+          child.tagName === 'HR') {
+        container.removeChild(child);
+      }
+    });
+
+    var fragment = document.createDocumentFragment();
+    var temp = document.createElement('div');
+
+    caseStudies.forEach(function (cs) {
+      temp.innerHTML = renderCaseStudyListItem(cs);
+      while (temp.firstChild) {
+        fragment.appendChild(temp.firstChild);
+      }
+    });
+
+    container.appendChild(fragment);
+
+    if (typeof window.wirePageToggles === 'function') window.wirePageToggles();
+    if (typeof window.initReveal === 'function') window.initReveal();
+    if (typeof window.applyNoImageMode === 'function') window.applyNoImageMode();
+    document.dispatchEvent(new CustomEvent('sanity:loaded'));
+  }
+
   function init() {
     var container = document.querySelector('.list-projects.editorial');
     if (!container) return;
@@ -341,40 +401,22 @@
           return;
         }
 
-        // Clear existing static content (the hardcoded case studies)
-        // Keep only non-case-study children (the INDEX header row at the top)
-        var children = Array.from(container.children);
-        children.forEach(function (child) {
-          if (child.classList.contains('list-projects1') ||
-              child.classList.contains('mini-preview') ||
-              child.classList.contains('index-item') ||
-              child.tagName === 'HR') {
-            container.removeChild(child);
-          }
-        });
-
-        // Render case studies from Sanity
-        var fragment = document.createDocumentFragment();
-        var temp = document.createElement('div');
-
-        caseStudies.forEach(function (cs) {
-          temp.innerHTML = renderCaseStudyListItem(cs);
-          while (temp.firstChild) {
-            fragment.appendChild(temp.firstChild);
-          }
-        });
-
-        container.appendChild(fragment);
-
-        // Re-initialize interactions (the boot function in interaction.js)
-        if (typeof window.wirePageToggles === 'function') window.wirePageToggles();
-        if (typeof window.initReveal === 'function') window.initReveal();
-        if (typeof window.applyNoImageMode === 'function') window.applyNoImageMode();
-
-        // Re-init the overlay system — dispatch event for inline scripts
-        document.dispatchEvent(new CustomEvent('sanity:loaded'));
+        renderCaseStudies(container, caseStudies);
 
         console.log('[sanity] Rendered ' + caseStudies.length + ' case studies');
+
+        // In Presentation mode: subscribe to live updates from the Studio
+        if (IS_PREVIEW && _liveStore) {
+          var fetcher = _liveStore.createFetcherStore({
+            query: CASE_STUDIES_QUERY,
+            params: {},
+          });
+          fetcher.subscribe(function (snapshot) {
+            if (!snapshot.loading && snapshot.data) {
+              renderCaseStudies(container, snapshot.data);
+            }
+          });
+        }
       })
       .catch(function (err) {
         console.error('[sanity] Fetch failed, keeping static content:', err);

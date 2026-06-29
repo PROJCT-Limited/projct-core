@@ -3,6 +3,7 @@
   "type": "module",
   "dependencies": {
     "@sanity/client": "^7",
+    "@sanity/core-loader": "^2.0.12",
     "@sanity/preview-url-secret": "^2",
     "@sanity/visual-editing": "5.4.4"
   }
