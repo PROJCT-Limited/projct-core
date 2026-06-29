@@ -2,9 +2,8 @@
  * Sanity CMS client for the PROJCT static site.
  *
  * Public path:  reads published content from CDN API. No token.
- * Presentation: when loaded inside the Studio iframe, fetches with stega
- *               encoding (still published, still no token) and loads
- *               @sanity/visual-editing for click-to-edit overlays.
+ * Presentation: when inside the Studio iframe, reads drafts with a
+ *               Viewer (read-only) token + stega for click-to-edit.
  */
 (function () {
   'use strict';
@@ -15,30 +14,15 @@
   var CDN_HOST = 'https://' + PROJECT_ID + '.apicdn.sanity.io';
   var IMAGE_CDN = 'https://cdn.sanity.io/images/' + PROJECT_ID + '/' + DATASET + '/';
   var STUDIO_URL = 'https://projct-website.sanity.studio';
+  var PREVIEW_TOKEN = 'skQs9UbebVzo6Gc8O33egCn8UKTyCqtMl5MVWmQ4VjcUX054oxMCNI4cKdX5hFhoesVdviHKTrtYS7669TCB3OAPNTV6lwAnYmfIPmyvs4aA0ssS276RNxdLkDuHPERFNvFIXcPB7vCecNFKnTtyPmOeCVDO17VIe9WM0Bgv2rUp3OnzhRio';
 
   // ── Presentation mode: detect Studio iframe ──
   var IS_PREVIEW = window.parent !== window;
-
-  var _liveStore = null;
 
   if (IS_PREVIEW) {
     import('./sanity-visual-editing.bundle.js')
       .then(function (mod) {
         mod.enableVisualEditing();
-      })
-      .catch(function () {});
-
-    import('./sanity-live.bundle.js')
-      .then(function (mod) {
-        var client = mod.createClient({
-          projectId: PROJECT_ID,
-          dataset: DATASET,
-          apiVersion: API_VERSION,
-          useCdn: true,
-          stega: { enabled: true, studioUrl: STUDIO_URL },
-        });
-        _liveStore = mod.createQueryStore({ client: client, ssr: false });
-        _liveStore.enableLiveMode();
       })
       .catch(function () {});
   }
@@ -63,36 +47,31 @@
       .then(function (data) { return data.result; });
   }
 
-  function groqFetchLive(query, params) {
-    if (!_liveStore) {
-      return import('./sanity-live.bundle.js').then(function (mod) {
-        var client = mod.createClient({
-          projectId: PROJECT_ID,
-          dataset: DATASET,
-          apiVersion: API_VERSION,
-          useCdn: true,
-          stega: { enabled: true, studioUrl: STUDIO_URL },
-        });
-        return client.fetch(query, params || {});
-      });
-    }
+  var _previewClient = null;
 
-    return new Promise(function (resolve) {
-      var fetcher = _liveStore.createFetcherStore({
-        query: query,
-        params: params || {},
+  function getPreviewClient() {
+    if (_previewClient) return Promise.resolve(_previewClient);
+    return import('./sanity-live.bundle.js').then(function (mod) {
+      _previewClient = mod.createClient({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        apiVersion: API_VERSION,
+        useCdn: false,
+        token: PREVIEW_TOKEN,
+        stega: { enabled: true, studioUrl: STUDIO_URL },
       });
-      var unsub = fetcher.subscribe(function (snapshot) {
-        if (!snapshot.loading && snapshot.data) {
-          unsub();
-          resolve(snapshot.data);
-        }
-      });
+      return _previewClient;
+    });
+  }
+
+  function groqFetchDrafts(query, params) {
+    return getPreviewClient().then(function (client) {
+      return client.fetch(query, params || {}, { perspective: 'drafts' });
     });
   }
 
   function groqFetch(query, params) {
-    return IS_PREVIEW ? groqFetchLive(query, params) : groqFetchPublished(query, params);
+    return IS_PREVIEW ? groqFetchDrafts(query, params) : groqFetchPublished(query, params);
   }
 
   // ── Image URL builder ──
@@ -405,16 +384,17 @@
 
         console.log('[sanity] Rendered ' + caseStudies.length + ' case studies');
 
-        // In Presentation mode: subscribe to live updates from the Studio
-        if (IS_PREVIEW && _liveStore) {
-          var fetcher = _liveStore.createFetcherStore({
-            query: CASE_STUDIES_QUERY,
-            params: {},
-          });
-          fetcher.subscribe(function (snapshot) {
-            if (!snapshot.loading && snapshot.data) {
-              renderCaseStudies(container, snapshot.data);
-            }
+        // In Presentation mode: listen for changes and re-render with drafts
+        if (IS_PREVIEW) {
+          getPreviewClient().then(function (client) {
+            client.listen('*[_type == "caseStudy"]').subscribe(function () {
+              client.fetch(CASE_STUDIES_QUERY, {}, { perspective: 'drafts' })
+                .then(function (updated) {
+                  if (updated && updated.length) {
+                    renderCaseStudies(container, updated);
+                  }
+                });
+            });
           });
         }
       })
