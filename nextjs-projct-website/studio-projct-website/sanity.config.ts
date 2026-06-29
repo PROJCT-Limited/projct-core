@@ -1,10 +1,12 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
+import {presentationTool} from 'sanity/presentation'
 import {schemaTypes} from './schemaTypes'
+import {resolve} from './presentation/resolve'
 
-// Draft preview (Presentation tool) is dormant until a Vercel preview
-// deployment is set up at preview.projct.co. See DEPLOY.md to re-enable.
+const previewOrigin =
+  process.env.SANITY_STUDIO_PREVIEW_ORIGIN || 'https://www.projct.co'
 
 export default defineConfig({
   name: 'default',
@@ -16,6 +18,13 @@ export default defineConfig({
   plugins: [
     structureTool(),
     visionTool(),
+    presentationTool({
+      resolve,
+      previewUrl: {
+        origin: previewOrigin,
+        preview: '/index3.html',
+      },
+    }),
   ],
 
   schema: {

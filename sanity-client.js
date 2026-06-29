@@ -1,9 +1,10 @@
 /**
  * Sanity CMS client for the PROJCT static site.
  *
- * Published path: reads from public CDN API. No token, no secrets.
- * Preview path:   reads through /api/preview/query proxy (Vercel only).
- *                 Token stays on the server; never reaches this script.
+ * Public path:  reads published content from CDN API. No token.
+ * Presentation: when loaded inside the Studio iframe, fetches with stega
+ *               encoding (still published, still no token) and loads
+ *               @sanity/visual-editing for click-to-edit overlays.
  */
 (function () {
   'use strict';
@@ -13,23 +14,17 @@
   var API_VERSION = '2025-06-01';
   var CDN_HOST = 'https://' + PROJECT_ID + '.apicdn.sanity.io';
   var IMAGE_CDN = 'https://cdn.sanity.io/images/' + PROJECT_ID + '/' + DATASET + '/';
+  var STUDIO_URL = 'https://projct-website.sanity.studio';
 
-  // ── Preview mode detection ──
-  // URL parameter (set by the enable endpoint's redirect) is the reliable
-  // signal — cookies are blocked in cross-origin iframes.
-  var IS_PREVIEW = new URLSearchParams(window.location.search).has('sanity-preview-perspective');
+  // ── Presentation mode: detect Studio iframe ──
+  var IS_PREVIEW = window.parent !== window;
 
-  // Load visual editing overlays IMMEDIATELY in preview mode so the
-  // Comlink channel is established before the Presentation tool times out.
   if (IS_PREVIEW) {
     import('./sanity-visual-editing.bundle.js')
       .then(function (mod) {
         mod.enableVisualEditing();
-        console.log('[sanity] Visual editing active');
       })
-      .catch(function (err) {
-        console.warn('[sanity] Could not load visual editing:', err);
-      });
+      .catch(function () {});
   }
 
   // ── GROQ fetch ──
@@ -52,25 +47,21 @@
       .then(function (data) { return data.result; });
   }
 
-  function groqFetchPreview(query, params) {
-    var url = '/api/preview/query?query=' + encodeURIComponent(query);
-
-    if (params) {
-      Object.keys(params).forEach(function (key) {
-        url += '&$' + key + '=' + encodeURIComponent(JSON.stringify(params[key]));
+  function groqFetchStega(query, params) {
+    return import('./sanity-stega-client.bundle.js').then(function (mod) {
+      var client = mod.createClient({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        apiVersion: API_VERSION,
+        useCdn: true,
+        stega: { enabled: true, studioUrl: STUDIO_URL },
       });
-    }
-
-    return fetch(url, { credentials: 'same-origin' })
-      .then(function (res) {
-        if (!res.ok) throw new Error('Preview proxy error: ' + res.status);
-        return res.json();
-      })
-      .then(function (data) { return data.result; });
+      return client.fetch(query, params || {});
+    });
   }
 
   function groqFetch(query, params) {
-    return IS_PREVIEW ? groqFetchPreview(query, params) : groqFetchPublished(query, params);
+    return IS_PREVIEW ? groqFetchStega(query, params) : groqFetchPublished(query, params);
   }
 
   // ── Image URL builder ──

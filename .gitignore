@@ -3,4 +3,3 @@ node_modules/
 .env.local
 .env
 .DS_Store
-sanity-visual-editing.bundle.js
