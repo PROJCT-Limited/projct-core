@@ -268,10 +268,6 @@
       '</p>' +
       '<div class="mini-preview is-hidden">' +
         '<div class="preview-content">' +
-          '<p class="list-projects1 mini-preview-title" data-tag="' + dataTag + '">' +
-            '<span class="list-title">' + escapeHtml(cs.title) + '</span>' +
-            '<span class="list-year">' + yearText + '</span>' +
-          '</p>' +
           '<p class="mini-preview-text">' + escapeHtml(cs.standfirst || '') + '</p>' +
           '<button class="read-more">Read More</button>' +
         '</div>' +

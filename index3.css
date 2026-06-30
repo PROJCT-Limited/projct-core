@@ -94,6 +94,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 .editorial .list-title {
   flex: 1;
@@ -108,25 +109,37 @@
   padding-left: 24px;
 }
 
-/* ── Mini-preview: expanded panel with image ── */
+/* ── Mini-preview: expanded panel with image ──
+   Animated open/close: max-height + opacity transition (no display:none,
+   so the panel can be transitioned smoothly). */
 .editorial .mini-preview {
-  padding: 20px 0 32px;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 32px;
+  max-height: 640px;
+  opacity: 1;
+  overflow: hidden;
+  padding: 20px 0 32px;
+  transition:
+    max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.55s ease,
+    padding 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.editorial .mini-preview.is-hidden { display: none; }
+.editorial .mini-preview.is-hidden {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  pointer-events: none;
+}
 .editorial .preview-content {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-}
-.editorial .preview-content .mini-preview-title {
-  margin: 0;
-  padding: 0;
+  align-items: flex-start;
+  gap: 16px;
 }
 .editorial .mini-preview-text {
   font-family: "Red Hat Display", sans-serif;
@@ -137,37 +150,46 @@
   margin: 0;
   max-width: 560px;
 }
+
+/* Uniform image format: same crop/aspect ratio across all case studies */
 .editorial .preview-image {
   flex: 0 0 auto;
   width: clamp(200px, 30vw, 360px);
+  aspect-ratio: 4 / 3;
   opacity: 0;
-  animation: previewFadeIn 0.5s ease-out 0.15s forwards;
+  transition: opacity 0.6s ease 0.1s;
+}
+.editorial .mini-preview:not(.is-hidden) .preview-image {
+  opacity: 1;
 }
 .editorial .preview-image img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   display: block;
-}
-@keyframes previewFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 @media (max-width: 600px) {
   .editorial .mini-preview { flex-direction: column; }
   .editorial .preview-image { width: 100%; }
 }
+
+/* Read More: left-aligned, underline always visible directly beneath */
 .editorial .read-more {
   position: relative;
   display: inline-block;
+  align-self: flex-start;
   background: none;
   border: none;
-  padding: 0 0 3px;
+  padding: 0 0 4px;
+  margin: 0;
   font-family: "Red Hat Display", sans-serif;
   font-size: 0.72rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  text-align: left;
   color: white;
   cursor: pointer;
+  transition: opacity 0.3s ease;
 }
 .editorial .read-more::after {
   content: '';
@@ -177,11 +199,8 @@
   width: 100%;
   height: 1px;
   background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.editorial .read-more:hover::after { transform: scaleX(1); }
+.editorial .read-more:hover { opacity: 0.65; }
 
 /* ── Inline editorial imagery ── */
 .editorial .cs-figure {
