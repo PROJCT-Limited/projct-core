@@ -243,11 +243,11 @@
 
   function renderRowImage(cs) {
     if (!cs.heroImage) return '';
-    var src = imageUrl(cs.heroImage, {w: 200});
-    var srcsetStr = imageSrcset(cs.heroImage, [100, 200, 300]);
+    var src = imageUrl(cs.heroImage, {w: 600});
+    var srcsetStr = imageSrcset(cs.heroImage, [300, 450, 600, 900]);
     var alt = escapeAttr(cs.heroImage.alt || cs.title);
     return '<span class="row-image">' +
-      '<img loading="lazy" src="' + src + '" srcset="' + srcsetStr + '" sizes="80px" alt="' + alt + '">' +
+      '<img loading="lazy" src="' + src + '" srcset="' + srcsetStr + '" sizes="(max-width: 600px) 160px, 260px" alt="' + alt + '">' +
       '</span>';
   }
 

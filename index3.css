@@ -92,12 +92,13 @@
 /* ── List row: title left, year right, image inline between them ── */
 .editorial .list-projects1 {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 .editorial .list-title {
   flex: 1;
   min-width: 0;
+  padding-top: 2px;
 }
 .editorial .list-year {
   flex-shrink: 0;
@@ -106,16 +107,17 @@
   letter-spacing: 0.04em;
   opacity: 0.75;
   padding-left: 24px;
+  padding-top: 2px;
 }
 
-/* Image sits inline in the title row, between title and year — starts
-   collapsed (width 0, invisible) and expands in place when the row's
-   mini-preview is open. No layout shift elsewhere in the row. */
+/* Image starts inline at the title line, between title and year, then
+   grows downward to its full size — collapsed (width 0) when closed,
+   expands in place when the row's mini-preview is open. */
 .editorial .row-image {
   display: inline-block;
   flex: 0 0 auto;
   width: 0;
-  height: 44px;
+  aspect-ratio: 4 / 3;
   margin: 0;
   overflow: hidden;
   opacity: 0;
@@ -126,7 +128,7 @@
     opacity 0.45s ease;
 }
 .editorial .list-projects1:has(+ .mini-preview:not(.is-hidden)) .row-image {
-  width: 64px;
+  width: clamp(160px, 22vw, 260px);
   margin: 0 24px;
   opacity: 1;
 }
@@ -138,7 +140,7 @@
 }
 @media (max-width: 600px) {
   .editorial .list-projects1:has(+ .mini-preview:not(.is-hidden)) .row-image {
-    width: 40px;
+    width: clamp(110px, 36vw, 160px);
     margin: 0 12px;
   }
 }
