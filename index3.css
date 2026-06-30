@@ -111,17 +111,19 @@
 }
 
 /* Image starts inline at the title line, between title and year, then
-   grows downward to its full size — collapsed (width 0) when closed,
-   expands in place when the row's mini-preview is open. */
+   overlays downward to its full size — collapsed (width 0) when closed,
+   expands in place when the row's mini-preview is open. Height is 0 on
+   the flex item itself (the image inside is absolutely positioned), so
+   it never affects the row's layout height — rows stay the same line
+   height as before, regardless of whether the image is open. */
 .editorial .row-image {
+  position: relative;
   display: inline-block;
   flex: 0 0 auto;
   width: 0;
-  aspect-ratio: 4 / 3;
+  height: 0;
   margin: 0;
-  overflow: hidden;
   opacity: 0;
-  border-radius: 2px;
   transition:
     width 0.65s cubic-bezier(0.4, 0, 0.2, 1),
     margin 0.65s cubic-bezier(0.4, 0, 0.2, 1),
@@ -133,10 +135,14 @@
   opacity: 1;
 }
 .editorial .row-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
+  border-radius: 2px;
 }
 @media (max-width: 600px) {
   .editorial .list-projects1:has(+ .mini-preview:not(.is-hidden)) .row-image {
