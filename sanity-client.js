@@ -241,14 +241,14 @@
       '</figure>';
   }
 
-  function renderPreviewImage(cs) {
+  function renderRowImage(cs) {
     if (!cs.heroImage) return '';
-    var src = imageUrl(cs.heroImage, {w: 600});
-    var srcsetStr = imageSrcset(cs.heroImage, [300, 600, 900]);
+    var src = imageUrl(cs.heroImage, {w: 200});
+    var srcsetStr = imageSrcset(cs.heroImage, [100, 200, 300]);
     var alt = escapeAttr(cs.heroImage.alt || cs.title);
-    return '<div class="preview-image">' +
-      '<img loading="lazy" src="' + src + '" srcset="' + srcsetStr + '" sizes="(max-width: 768px) 100vw, 320px" alt="' + alt + '">' +
-      '</div>';
+    return '<span class="row-image">' +
+      '<img loading="lazy" src="' + src + '" srcset="' + srcsetStr + '" sizes="80px" alt="' + alt + '">' +
+      '</span>';
   }
 
   function renderCaseStudyListItem(cs) {
@@ -264,6 +264,7 @@
     return '<hr>' +
       '<p class="list-projects1" data-tag="' + dataTag + '">' +
         '<span class="list-title">' + escapeHtml(cs.title) + '</span>' +
+        renderRowImage(cs) +
         '<span class="list-year">' + yearText + '</span>' +
       '</p>' +
       '<div class="mini-preview is-hidden">' +
@@ -271,7 +272,6 @@
           '<p class="mini-preview-text">' + escapeHtml(cs.standfirst || '') + '</p>' +
           '<button class="read-more">Read More</button>' +
         '</div>' +
-        renderPreviewImage(cs) +
       '</div>' +
       '<div class="index-item is-hidden cs-feature">' +
         '<div class="index-item-meta">' +

@@ -89,11 +89,10 @@
 }
 .editorial .index-item-text ul li:last-child { margin-bottom: 0; }
 
-/* ── List row: title left, year right ── */
+/* ── List row: title left, year right, image inline between them ── */
 .editorial .list-projects1 {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 .editorial .list-title {
@@ -109,14 +108,46 @@
   padding-left: 24px;
 }
 
+/* Image sits inline in the title row, between title and year — starts
+   collapsed (width 0, invisible) and expands in place when the row's
+   mini-preview is open. No layout shift elsewhere in the row. */
+.editorial .row-image {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 0;
+  height: 44px;
+  margin: 0;
+  overflow: hidden;
+  opacity: 0;
+  border-radius: 2px;
+  transition:
+    width 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.45s ease;
+}
+.editorial .list-projects1:has(+ .mini-preview:not(.is-hidden)) .row-image {
+  width: 64px;
+  margin: 0 24px;
+  opacity: 1;
+}
+.editorial .row-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 600px) {
+  .editorial .list-projects1:has(+ .mini-preview:not(.is-hidden)) .row-image {
+    width: 40px;
+    margin: 0 12px;
+  }
+}
+
 /* ── Mini-preview: expanded panel with image ──
    Animated open/close: max-height + opacity transition (no display:none,
    so the panel can be transitioned smoothly). */
 .editorial .mini-preview {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 32px;
   max-height: 640px;
   opacity: 1;
   overflow: hidden;
@@ -149,28 +180,6 @@
   opacity: 0.8;
   margin: 0;
   max-width: 560px;
-}
-
-/* Uniform image format: same crop/aspect ratio across all case studies */
-.editorial .preview-image {
-  flex: 0 0 auto;
-  width: clamp(200px, 30vw, 360px);
-  aspect-ratio: 4 / 3;
-  opacity: 0;
-  transition: opacity 0.6s ease 0.1s;
-}
-.editorial .mini-preview:not(.is-hidden) .preview-image {
-  opacity: 1;
-}
-.editorial .preview-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-@media (max-width: 600px) {
-  .editorial .mini-preview { flex-direction: column; }
-  .editorial .preview-image { width: 100%; }
 }
 
 /* Read More: left-aligned, underline always visible directly beneath */
