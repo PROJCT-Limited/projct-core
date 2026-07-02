@@ -263,7 +263,7 @@
 
     return '<hr>' +
       '<p class="list-projects1" data-tag="' + dataTag + '">' +
-        '<span class="list-title">' + escapeHtml(cs.title) + '</span>' +
+        '<span class="list-title"><span class="title-text">' + escapeHtml(cs.title) + '</span></span>' +
         renderRowImage(cs) +
         '<span class="list-year">' + yearText + '</span>' +
       '</p>' +
