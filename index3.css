@@ -126,9 +126,11 @@
   padding-top: 2px;
 }
 
-/* Image space holder: opens quickly to make room, image fades in after.
-   Height is 0 on the flex item (image is absolutely positioned) so the
-   row's own line height is never affected. */
+/* Image space holder: opens quickly, closes after image fades out.
+   Height 0 on flex item keeps row line-height unchanged at all times.
+   Default transition has a 0.3s delay so the space only collapses once
+   the image has faded; the open-state rule overrides to no-delay so
+   the space opens immediately when the row is clicked. */
 .editorial .row-image {
   position: relative;
   display: inline-block;
@@ -137,15 +139,18 @@
   height: 0;
   margin: 0;
   transition:
-    width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    margin 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    width  0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.3s,
+    margin 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
 }
 .editorial .list-projects1:has(+ .mini-preview:not(.is-hidden)) .row-image {
   width: clamp(160px, 22vw, 260px);
   margin: 0 24px;
+  transition:
+    width  0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Image itself: starts invisible and slightly above, fades + slides down
-   after the space has opened (0.4s delay matches the row expansion). */
+/* Image: fades out immediately on close (no delay in default rule),
+   fades + slides in with a 0.4s delay on open (after space expands). */
 .editorial .row-image img {
   position: absolute;
   top: 0;
@@ -158,8 +163,8 @@
   opacity: 0;
   transform: translateY(-10px);
   transition:
-    opacity 0.35s ease,
-    transform 0.35s cubic-bezier(0.2, 0, 0, 1);
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 .editorial .list-projects1:has(+ .mini-preview:not(.is-hidden)) .row-image img {
   opacity: 1;
@@ -206,6 +211,7 @@
   padding-top: 0;
   padding-bottom: 0;
   pointer-events: none;
+  transition-delay: 0.3s;
 }
 .editorial .preview-content {
   flex: 1;
