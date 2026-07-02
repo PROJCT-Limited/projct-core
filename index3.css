@@ -139,7 +139,10 @@
   top: 0;
   left: 0;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  /* Explicit height clamp (4:3 of the width clamp above) instead of
+     aspect-ratio — aspect-ratio does not resolve reliably on an
+     absolutely positioned <img> inside a zero-height container. */
+  height: clamp(120px, 16.5vw, 195px);
   object-fit: cover;
   display: block;
   border-radius: 2px;
@@ -149,11 +152,18 @@
     width: clamp(110px, 36vw, 160px);
     margin: 0 12px;
   }
+  .editorial .row-image img {
+    height: clamp(82px, 27vw, 120px);
+  }
 }
 
 /* ── Mini-preview: expanded panel with image ──
    Animated open/close: max-height + opacity transition (no display:none,
-   so the panel can be transitioned smoothly). */
+   so the panel can be transitioned smoothly).
+   min-height reserves enough room to fully contain the row-image (which
+   hangs down from the title row above) before the next case study's <hr>
+   begins — so the image stays inside this case study, never overlapping
+   the next one, regardless of how short the standfirst text is. */
 .editorial .mini-preview {
   display: flex;
   max-height: 640px;
@@ -163,7 +173,11 @@
   transition:
     max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1),
     opacity 0.55s ease,
-    padding 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    padding 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+    min-height 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.editorial .mini-preview:not(.is-hidden) {
+  min-height: 190px;
 }
 .editorial .mini-preview.is-hidden {
   max-height: 0;
