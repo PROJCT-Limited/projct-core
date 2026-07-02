@@ -139,8 +139,8 @@
   height: 0;
   margin: 0;
   transition:
-    width  0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.3s,
-    margin 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+    width  0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.5s,
+    margin 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
 }
 .editorial .list-projects1:has(+ .mini-preview:not(.is-hidden)) .row-image {
   width: clamp(160px, 22vw, 260px);
@@ -211,7 +211,7 @@
   padding-top: 0;
   padding-bottom: 0;
   pointer-events: none;
-  transition-delay: 0.3s;
+  transition-delay: 0.5s;
 }
 .editorial .preview-content {
   flex: 1;
