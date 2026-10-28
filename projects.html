@@ -67,75 +67,91 @@
 
   <main class="inv-main">
 
-    <!-- CURRENT EXHIBIT -->
-    <section class="inv-hero">
-      <p class="inv-kicker">Current project</p>
-      <h1 class="inv-title">Infinite Maze 189<br><span class="inv-title-by">with Wit Pimkanchanapong</span></h1>
-
-      <div class="inv-image-wrap" id="inv-slideshow" role="button" tabindex="0" aria-label="Click to advance image">
-        <div class="inv-slide-track" id="inv-track">
-          <img loading="lazy" src="./images/Wit installation/IMG_1221.webp" alt="189 Maze — Wit Pimkanchanapong" class="inv-slide">
-          <img loading="lazy" src="./images/Wit installation/IMG_1212.webp" alt="189 Maze — Wit Pimkanchanapong" class="inv-slide">
-          <img loading="lazy" src="./images/Wit installation/IMG_1214.webp" alt="189 Maze — Wit Pimkanchanapong" class="inv-slide">
-        </div>
-        <div class="inv-slide-dots">
-          <span class="inv-dot active"></span>
-          <span class="inv-dot"></span>
-          <span class="inv-dot"></span>
-        </div>
+    <!-- JUMP MENU -->
+    <nav class="container inv-jump" aria-label="Sections on this page">
+      <div class="inv-jump-links">
+        <a href="#current">Now on</a>
+        <a href="#programme">Programme</a>
+        <a href="#space">The space</a>
       </div>
-      <script>
-        (function () {
-          var wrap = document.getElementById('inv-slideshow');
-          var track = document.getElementById('inv-track');
-          var dots = wrap.querySelectorAll('.inv-dot');
-          var total = dots.length;
-          var current = 0;
-          var timer;
+    </nav>
 
-          function goTo(n) {
-            dots[current].classList.remove('active');
-            current = (n + total) % total;
-            track.style.transform = 'translateX(-' + (current * 100) + '%)';
-            dots[current].classList.add('active');
-          }
-
-          function next() { goTo(current + 1); }
-
-          function resetTimer() {
-            clearInterval(timer);
-            timer = setInterval(next, 3500);
-          }
-
-          wrap.addEventListener('click', function () { next(); resetTimer(); });
-          wrap.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); resetTimer(); }
-          });
-
-          resetTimer();
-        })();
-      </script>
-
-      <p class="inv-description">
-        Wit Pimkanchanapong’s 4th edition of the Infinite Maze emerges as an expanding network of infinite combinations. Located in Sai Ying Pun 189 Queen’s street, the installation shows panels shift, lines of light reconfigure, and the grid itself breathes. Each movement alters the possible routes through the space, creating a living maze that is constantly rewriting its own map.
-        <br><br>
-        <!-- Access is never singular. Multiple entry points invite visitors to choose their own way in, transforming navigation into an active, time-based experience. With every step, the visitor becomes part of the mechanism—triggering new alignments, discovering temporary openings, and witnessing the maze recalibrate around them.
-        <br><br> -->
-        For PROJCT, this work activates the space with intention: a collaboration that brings together architecture, technology, and a precise yet playful sense of structure. The result is not just an installation, but an evolving system, one that asks how many access points we can find, and how often we are willing to begin again.
-      </p>
-
-      <hr class="inv-sep">
-
-      <p class="inv-meta">Location: G/F, 189 Queen's Rd W, Sai Ying Pun, Hong Kong</p>
-      <p class="inv-meta">Date: 15 May– 17 July</p>
-
-      <div class="inv-ctas">
-        <a href="mailto:hi@projct.co" class="inv-btn inv-btn--outline">Ask a question</a>
-        <a href="https://www.eventbrite.com/e/infinite-maze-189-tickets-1989643197363?aff=oddtdtcreator" target="_blank" rel="noopener noreferrer" class="inv-btn inv-btn--fill">Book a slot</a>
+    <!-- CURRENT PROJECT -->
+    <!-- FOUND: after 6 Dec 2026, remove this section and un-comment the FOUND card in Programme. -->
+    <section class="panel inv-section" id="current">
+      <div class="container">
+        <h2 class="kicker">Now on</h2>
+        <article class="inv-feature" data-status="current">
+          <p class="inv-row-meta"><span class="inv-status inv-status--live">Closes 6 Dec</span></p>
+          <h1 class="inv-feature-title">FOUND<span class="inv-feature-sub">Minigolf Social Club</span></h1>
+          <div class="inv-gallery">
+            <img src="./images/FOUND/found-7.webp" srcset="./images/FOUND/found-7-960.webp 960w, ./images/FOUND/found-7.webp 1920w" sizes="(max-width: 640px) 100vw, 40vw" width="1920" height="1080" loading="lazy" alt="Guests talking at FOUND under blue light, with a putter and ball on a plywood station in the foreground">
+            <img src="./images/FOUND/found-3.webp" width="858" height="1080" loading="lazy" alt="Shot glasses with golf balls fused into the glass, on a brushed steel table">
+            <img src="./images/FOUND/found-5.webp" width="858" height="1267" loading="lazy" alt="A player putts up a ramp at the shopfront, with Queen's Road West outside">
+          </div>
+          <p class="inv-feature-desc">This is an investigation into rediscovering day-to-day objects and materials under a new light, uncovering hidden narratives within the material properties of reclaimed objects. It's a moment of admiration for utilitarian things that often get overlooked, and an appreciation of embracing irregular results.</p>
+          <dl class="inv-facts">
+            <div><dt>Dates</dt><dd>30 Sep to 6 Dec 2026</dd></div>
+            <div><dt>Where</dt><dd>Sai Ying Pun, Hong Kong</dd></div>
+            <div><dt>Type</dt><dd>PROJCT venture</dd></div>
+          </dl>
+          <div class="inv-row-actions">
+            <a href="https://189found.club" target="_blank" rel="noopener noreferrer" class="inv-btn inv-btn--fill">Book at 189found.club</a>
+            <a href="projects/found.html" class="inv-btn inv-btn--outline">More about FOUND</a>
+          </div>
+        </article>
       </div>
     </section>
 
- 
+    <!-- PROGRAMME: upcoming first, then past, newest first -->
+    <section class="panel inv-section" id="programme">
+      <div class="container">
+        <h2 class="kicker">Programme</h2>
+        <p class="inv-intro">Talks, installations and ventures at 189 Queen's Road West. Select an event for the full programme.</p>
+        <ul class="inv-events" role="list">
+
+          <!-- Mindy Seu, day 1. Venue to confirm. -->
+          <li class="inv-event" data-status="upcoming">
+            <div class="inv-event-top"><span>Lecture performance</span><span class="inv-event-status">Upcoming</span></div>
+            <div class="inv-event-img"><img loading="lazy" src="./images/Mindy Seu/sexual-history-book-800.webp" width="800" height="534" alt="A Sexual History of the Internet, the artist book by Mindy Seu, beside two phones showing the performance script"></div>
+            <h3 class="inv-event-title"><a href="projects/a-sexual-history-of-the-internet.html">A Sexual History of the Internet<span class="inv-event-by">Mindy Seu</span></a></h3>
+            <p class="inv-event-meta"><span>Sun 13 Dec 2026</span><span>Hong Kong</span></p>
+            <p class="inv-event-desc">A participatory lecture performance. The audience reads the histories and citations aloud from a shared script on their phones.</p>
+            <span class="inv-event-more" aria-hidden="true">More details</span>
+          </li>
+
+          <!-- Mindy Seu, day 2. Panelists to confirm from the final line-up. -->
+          <li class="inv-event" data-status="upcoming">
+            <div class="inv-event-top"><span>Panel</span><span class="inv-event-status">Upcoming</span></div>
+            <h3 class="inv-event-title"><a href="projects/new-media-art-panel.html">The Current Condition of New Media Art</a></h3>
+            <p class="inv-event-meta"><span>Mon 14 Dec 2026</span><span>Hong Kong</span></p>
+            <p class="inv-event-desc">Performative futures, intimacy in digital space, softer futures, reclaiming agency, and tools that break out of standards.</p>
+            <span class="inv-event-more" aria-hidden="true">More details</span>
+          </li>
+
+          <!-- FOUND: un-comment after 6 Dec 2026 and place it first among past events
+          <li class="inv-event" data-status="past">
+            <div class="inv-event-top"><span>PROJCT venture</span><span class="inv-event-status">Past</span></div>
+            <div class="inv-event-img"><img loading="lazy" src="./images/FOUND/found-7-960.webp" alt="Guests at FOUND under blue light, with a putter and ball on a plywood station"></div>
+            <h3 class="inv-event-title"><a href="projects/found.html">FOUND<span class="inv-event-by">Minigolf Social Club</span></a></h3>
+            <p class="inv-event-meta"><span>30 Sep to 6 Dec 2026</span><span>Sai Ying Pun</span></p>
+            <p class="inv-event-desc">A minigolf social club in Sai Ying Pun, rediscovering day-to-day objects and materials under a new light.</p>
+            <span class="inv-event-more" aria-hidden="true">More details</span>
+          </li>
+          -->
+
+          <li class="inv-event" data-status="past">
+            <div class="inv-event-top"><span>Installation</span><span class="inv-event-status">Past</span></div>
+            <div class="inv-event-img"><img loading="lazy" src="./images/Wit installation/IMG_1221.webp" width="1200" height="800" alt="Infinite Maze 189, Wit Pimkanchanapong"></div>
+            <h3 class="inv-event-title"><a href="projects/infinite-maze-189.html">Infinite Maze 189<span class="inv-event-by">with Wit Pimkanchanapong</span></a></h3>
+            <p class="inv-event-meta"><span>15 May to 17 Jul 2026</span><span>Sai Ying Pun</span></p>
+            <p class="inv-event-desc">The 4th edition of Wit Pimkanchanapong's Infinite Maze. Panels shift and lines of light reconfigure, creating a living maze that constantly rewrites its own map.</p>
+            <span class="inv-event-more" aria-hidden="true">More details</span>
+          </li>
+
+        </ul>
+      </div>
+    </section>
 
     <!-- THE SPACE -->
     <section class="panel" id="space">
@@ -147,78 +163,6 @@
         </div>
       </div>
     </section>
-
-       <!-- UPCOMING EVENTS -->
-       <section class="inv-upcoming">
-        <h2 class="inv-upcoming-title">Upcoming projects</h2>
-        <div class="inv-cards">
-  
-          <!-- <article class="inv-card">
-            <div class="inv-card-top">
-              <span class="inv-card-label">Exhibition View</span>
-              <span class="inv-card-date">20 May– 10 July</span>
-            </div>
-            <div class="inv-card-img"><img loading="lazy" src="./images/rendered.webp" alt="189 Maze"></div>
-            <div class="inv-card-body">
-              <h3 class="inv-card-title">189 MAZE</h3>
-              <p class="inv-card-desc">Wit Pimkanchanapong's 4th edition of the Infinite Maze — a living installation that constantly rewrites its own map.</p>
-              <div class="inv-card-actions">
-                <a href="#" class="inv-btn-sm inv-btn--outline">About</a>
-                <a href="mailto:hi@projct.co?subject=Book a slot — 189 Maze" class="inv-btn-sm inv-btn--fill">Book</a>
-              </div>
-            </div>
-          </article>
-  
-          <article class="inv-card">
-            <div class="inv-card-top">
-              <span class="inv-card-label">Exhibition View</span>
-              <span class="inv-card-date">20 May– 10 July</span>
-            </div>
-            <div class="inv-card-img"><img loading="lazy" src="./images/rendered.webp" alt="189 Maze"></div>
-            <div class="inv-card-body">
-              <h3 class="inv-card-title">189 MAZE</h3>
-              <p class="inv-card-desc">Wit Pimkanchanapong's 4th edition of the Infinite Maze — a living installation that constantly rewrites its own map.</p>
-              <div class="inv-card-actions">
-                <a href="#" class="inv-btn-sm inv-btn--outline">About</a>
-                <a href="mailto:hi@projct.co?subject=Book a slot — 189 Maze" class="inv-btn-sm inv-btn--fill">Book</a>
-              </div>
-            </div>
-          </article>
-  
-          <article class="inv-card">
-            <div class="inv-card-top">
-              <span class="inv-card-label">Exhibition View</span>
-              <span class="inv-card-date">20 May– 10 July</span>
-            </div>
-            <div class="inv-card-img"><img loading="lazy" src="./images/rendered.webp" alt="189 Maze"></div>
-            <div class="inv-card-body">
-              <h3 class="inv-card-title">189 MAZE</h3>
-              <p class="inv-card-desc">Wit Pimkanchanapong's 4th edition of the Infinite Maze — a living installation that constantly rewrites its own map.</p>
-              <div class="inv-card-actions">
-                <a href="#" class="inv-btn-sm inv-btn--outline">About</a>
-                <a href="mailto:hi@projct.co?subject=Book a slot — 189 Maze" class="inv-btn-sm inv-btn--fill">Book</a>
-              </div>
-            </div>
-          </article>
-  
-          <article class="inv-card">
-            <div class="inv-card-top">
-              <span class="inv-card-label">Exhibition View</span>
-              <span class="inv-card-date">20 May– 10 July</span>
-            </div>
-            <div class="inv-card-img"><img loading="lazy" src="./images/rendered.webp" alt="189 Maze"></div>
-            <div class="inv-card-body">
-              <h3 class="inv-card-title">189 MAZE</h3>
-              <p class="inv-card-desc">Wit Pimkanchanapong's 4th edition of the Infinite Maze — a living installation that constantly rewrites its own map.</p>
-              <div class="inv-card-actions">
-                <a href="#" class="inv-btn-sm inv-btn--outline">About</a>
-                <a href="mailto:hi@projct.co?subject=Book a slot — 189 Maze" class="inv-btn-sm inv-btn--fill">Book</a>
-              </div>
-            </div>
-          </article> -->
-  
-        </div>
-      </section>
 
   </main>
 
